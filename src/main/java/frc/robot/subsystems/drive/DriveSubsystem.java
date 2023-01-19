@@ -8,6 +8,8 @@ import java.lang.reflect.Field;
 import java.sql.Time;
 import java.util.stream.Stream;
 
+import org.opencv.core.Mat;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -98,6 +100,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d pose) {
+    
     odometry.resetPosition(gyro.getRotation2d(),
     new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()}, pose);
   }
@@ -129,7 +132,9 @@ public class DriveSubsystem extends SubsystemBase {
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(getOffset())))
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+    //SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+    //fix velocity wobble
+    
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
@@ -146,8 +151,8 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setDesiredStateAuto(desiredStates[3]);
   }
   //not used
-  public double getGyroAngle() {
-    return gyro.getYaw();
+  public Rotation2d getGyroAngle() {
+    return gyro.getRotation2d();
   }
   public double getGyroAngleDegrees(){
     return gyro.getRotation2d().getDegrees();

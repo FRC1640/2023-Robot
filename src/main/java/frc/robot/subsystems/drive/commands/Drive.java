@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.utilities.Logger;
+
+import javax.xml.crypto.dsig.keyinfo.X509IssuerSerial;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -52,10 +55,22 @@ public class Drive extends CommandBase {
             xSpeed = -driverController.getLeftY() * 0.55;
             ySpeed = -driverController.getLeftX() * 0.55;
             rot = -driverController.getRightX() * 0.35;
+            // System.out.println("oiwehfiowehf");
         } else {
             xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
             ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
+            rot = driverController.getRightX();
+            // xSpeed = driverController.getLeftY();
+            // ySpeed = driverController.getLeftX();
+            double linearSpeed = Math.sqrt((xSpeed * xSpeed) + (ySpeed * ySpeed));
+            // double alpha = 1 / (Math.min(Math.abs(rot/linearSpeed), Math.abs(linearSpeed/rot)) + 1);
+            // xSpeed *= alpha;
+            // ySpeed *= alpha;
+            // rot *= alpha;
+            // System.out.println("xSpeed: " + xSpeed + "\nySpeed: " + ySpeed + "\nrot: " + rot + "\nalpha: " + alpha);
+            System.out.println("Gyro: " + driveSubsystem.getGyroAngle().getDegrees());
             rot = -m_rotLimiter.calculate(driverController.getRightX());
+            
         }
 
         if (Math.hypot(xSpeed, ySpeed) < 0.15) {
