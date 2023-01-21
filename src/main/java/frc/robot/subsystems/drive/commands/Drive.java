@@ -42,6 +42,7 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
+        System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
 
         if(driverController.getBackButtonPressed()) {
             fieldRelative = !fieldRelative;

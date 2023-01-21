@@ -158,7 +158,7 @@ public class DriveSubsystem extends SubsystemBase {
     return gyro.getRotation2d().getDegrees();
   }
   public double getGyroPitch(){
-    return gyro.getPitch() + 180;
+    return gyro.getPitch();
   }
 
   public void pointWheels(double angle) {

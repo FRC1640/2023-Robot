@@ -1,5 +1,6 @@
 package frc.robot.auton.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -7,7 +8,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 public class Balance extends CommandBase{
     private final DriveSubsystem driveSubsystem;
     PIDController rotateController = new PIDController(0.0015, 0, 0.0);
-    PIDController driveController = new PIDController(0, 0, 0);
+    PIDController driveController = new PIDController(0.0085, 0, 0.002);
 
     public Balance(DriveSubsystem swerve) {
   
@@ -18,15 +19,26 @@ public class Balance extends CommandBase{
     }
     @Override
     public void initialize() {
-        driveController.setIntegratorRange(-0.4, 0.4);
+        
     }
     @Override
     public void execute(){
         double rotateSetpoint = 0;
-        double rot = rotateController.calculate(driveSubsystem.getGyroAngleDegrees(), rotateSetpoint);
+        //double rot = rotateController.calculate(driveSubsystem.getGyroAngleDegrees(), rotateSetpoint);
         
-        double drive = rotateController.calculate(driveSubsystem.getGyroPitch(), rotateSetpoint);
-        driveSubsystem.drive(drive, 0, rot, false);
+        //SUCCESS: increasing clamp, p, and clamp range
+        double drive = 0;
+        if (driveSubsystem.getGyroPitch() >= 3 || driveSubsystem.getGyroPitch() <= -3){
+            drive = driveController.calculate(driveSubsystem.getGyroPitch(), rotateSetpoint);
+        }
+        else{
+            drive = MathUtil.clamp(drive, -0.06, 0.06);
+        }
+        driveSubsystem.drive(drive, 0, 0, false);
+
+
+        System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
+        System.out.println("Drive: " + drive);
         
     }
     @Override

@@ -47,10 +47,6 @@ public class ChargeStation {
     swerve::getPose, // Functional interface to feed supplier
     kDriveKinematics, new PIDController(0.3, 0.0, 0.0), new PIDController(0.3, 0.0, 0.0), new PIDController(0.5, 0, 0),
     swerve::setModuleStates, false, swerve);
-    return Commands.sequence(new EndPitch(swerve).deadlineWith(chargePathController), new Balance(swerve));
-  }
-
-  public ChargeStation() {
-    throw new UnsupportedOperationException("This is a utility class!");
+    return Commands.sequence(new Balance(swerve));//new EndPitch(swerve).deadlineWith(chargePathController), 
   }
 }

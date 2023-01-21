@@ -6,6 +6,7 @@ package frc.robot.subsystems.drive;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
@@ -39,7 +40,7 @@ public class SwerveModule {
 		this.cfg = cfg;
 		driveMotor = new CANSparkMax(cfg.getDriveChannel(), MotorType.kBrushless);
 		turningMotor = new CANSparkMax(cfg.getSteerChannel(), MotorType.kBrushless);
-
+		driveMotor.setIdleMode(IdleMode.kBrake);
 		driveEncoder = driveMotor.getEncoder();
 		turningEncoder = new Resolver(cfg.getResolverChannel(), cfg.getMinVoltage(), cfg.getMaxVoltage(),
 				cfg.getOffset(), cfg.isReverseAngle());
