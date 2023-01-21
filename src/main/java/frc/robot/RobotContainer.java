@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.auton.commands.Autos;
+import frc.robot.auton.paths.ChargeStation;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -35,6 +35,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
-    return Autos.exampleAuto();
+    ChargeStation auto = new ChargeStation();
+    return auto.loadAuto();
   }
 }
