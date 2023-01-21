@@ -18,14 +18,16 @@ public class Balance extends CommandBase{
     }
     @Override
     public void initialize() {
+        driveController.setIntegratorRange(-0.4, 0.4);
     }
     @Override
     public void execute(){
         double rotateSetpoint = 0;
         double rot = rotateController.calculate(driveSubsystem.getGyroAngleDegrees(), rotateSetpoint);
-
+        
         double drive = rotateController.calculate(driveSubsystem.getGyroPitch(), rotateSetpoint);
         driveSubsystem.drive(drive, 0, rot, false);
+        
     }
     @Override
     public void end(boolean interrupted){
