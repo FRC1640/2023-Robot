@@ -8,7 +8,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 public class Balance extends CommandBase{
     private final DriveSubsystem driveSubsystem;
     PIDController rotateController = new PIDController(0.0015, 0, 0.0);
-    PIDController driveController = new PIDController(0.0085, 0, 0.0025);
+    PIDController driveController = new PIDController(0.0085, 0, 0.002);
 
     public Balance(DriveSubsystem swerve) {
   
@@ -33,12 +33,12 @@ public class Balance extends CommandBase{
         }
         else{
             drive = MathUtil.clamp(drive, -0.06, 0.06);
+            if (drive <= 0.01){
+                drive = 0;
+                driveSubsystem.xWheels();
+            }
         }
         driveSubsystem.drive(drive, 0, 0, false);
-        if (drive <= 0.01){
-            drive = 0;
-            driveSubsystem.xWheels();
-        }
 
         System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
         System.out.println("Drive: " + drive);
