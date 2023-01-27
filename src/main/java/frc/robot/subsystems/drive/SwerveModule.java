@@ -40,7 +40,7 @@ public class SwerveModule {
 		this.cfg = cfg;
 		driveMotor = new CANSparkMax(cfg.getDriveChannel(), MotorType.kBrushless);
 		turningMotor = new CANSparkMax(cfg.getSteerChannel(), MotorType.kBrushless);
-		driveMotor.setIdleMode(IdleMode.kBrake);
+		driveMotor.setIdleMode(IdleMode.kCoast);
 		driveEncoder = driveMotor.getEncoder();
 		turningEncoder = new Resolver(cfg.getResolverChannel(), cfg.getMinVoltage(), cfg.getMaxVoltage(),
 				cfg.getOffset(), cfg.isReverseAngle());

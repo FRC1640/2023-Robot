@@ -5,14 +5,19 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Limelight;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.utilities.Logger;
 
+import javax.swing.JList.DropLocation;
 import javax.xml.crypto.dsig.keyinfo.X509IssuerSerial;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -42,8 +47,13 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
-
+        // System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
+        // if (driveSubsystem.aprilTagLength() > 0){
+        //     System.out.println("tag");
+        //     driveSubsystem.resetOdometry(new Pose2d(new Translation2d(driveSubsystem.getBotPose().getX() + 8, driveSubsystem.getBotPose().getY() + 4), driveSubsystem.getGyroAngle()));
+        // }
+        driveSubsystem.getPose();
+        // System.out.println("Pose: " + driveSubsystem.getPose());
         if(driverController.getBackButtonPressed()) {
             fieldRelative = !fieldRelative;
             System.out.println("Toggled FC/RC");
@@ -69,7 +79,7 @@ public class Drive extends CommandBase {
             // ySpeed *= alpha;
             // rot *= alpha;
             // System.out.println("xSpeed: " + xSpeed + "\nySpeed: " + ySpeed + "\nrot: " + rot + "\nalpha: " + alpha);
-            System.out.println("Gyro: " + driveSubsystem.getGyroAngle().getDegrees());
+            // System.out.println("Gyro: " + driveSubsystem.getGyroAngle().getDegrees());
             rot = -m_rotLimiter.calculate(driverController.getRightX());
             
         }

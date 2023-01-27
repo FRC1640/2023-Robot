@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Limelight;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 import frc.robot.subsystems.drive.commands.Drive;
 import frc.robot.utilities.Logger;
@@ -56,6 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backRight = new SwerveModule(PivotConfig.getConfig(PivotId.BR));
   NetworkTableEntry xEntry;
   NetworkTableEntry yEntry;
+  Limelight limelight = new Limelight();
   NetworkTableEntry FLtargetSpeedEntry,FLspeedEntry,BLtargetSpeedEntry,BLspeedEntry,FRtargetSpeedEntry,FRspeedEntry,BRtargetSpeedEntry,BRspeedEntry;
   // OK
   private final AHRS gyro = new AHRS(SPI.Port.kMXP);
@@ -108,7 +110,23 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetGyro() {
     gyro.reset();
   }
+  public double aprilTagLength(){
+    return limelight.getBotPose().length;
+  }
+  public Pose2d getBotPose(){
+    Translation2d translation2d = new Translation2d(-9999, -9999);
+    Rotation2d rotation2d = new Rotation2d(0);
+    if (limelight.getBotPose().length > 0){
+      translation2d = new Translation2d(limelight.getBotPose()[0], limelight.getBotPose()[1]);
+      rotation2d = new Rotation2d();
+    }
+    else{
+      translation2d = null;
+      rotation2d = null;
+    }
 
+    return new Pose2d(translation2d, rotation2d);
+  }
   public void setOffset(double value) {
 		offset = value;
 	}
@@ -134,7 +152,7 @@ public class DriveSubsystem extends SubsystemBase {
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
     //SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     //fix velocity wobble
-    
+    // System.out.println("FR: " + frontRight.getVelocity() + "\nBL: " + backLeft.getVelocity() + "\nBR: " + backRight.getVelocity());
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
@@ -188,7 +206,9 @@ public class DriveSubsystem extends SubsystemBase {
         gyro.getRotation2d(),
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
   }
-
+  public double getArea(){
+    return limelight.getTargetArea();
+  }
   public Pose2d getPose() {
     Logger.log("x: " + odometry.getPoseMeters().getX() + "y: " + odometry.getPoseMeters().getY() + "gyro: " + getGyroAngle());
     //Logger.log("Time: "+ System.currentTimeMillis() + " x position: " + odometry.getPoseMeters().getX() + " y position: " + odometry.getPoseMeters().getY());

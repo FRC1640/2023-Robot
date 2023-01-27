@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.auton.commands.Align;
+import frc.robot.auton.paths.AlignAuto;
 import frc.robot.auton.paths.ChargeStation;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,7 +37,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
-    ChargeStation auto = new ChargeStation();
+    AlignAuto auto = new AlignAuto();
     return auto.loadAuto();
   }
 }
