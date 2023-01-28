@@ -1,0 +1,10 @@
+{
+  "download": {
+    "localDir": "C:\\Users\\nitsu\\Desktop",
+    "remoteDir": "/home/lvuser/",
+    "serverTeam": "1640"
+  },
+  "output": {
+    "outputFolder": "C:\\Users\\nitsu\\Downloads"
+  }
+}

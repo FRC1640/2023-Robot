@@ -18,6 +18,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -43,16 +45,17 @@ public class Drive extends CommandBase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+    }
 
     @Override
     public void execute() {
-        // System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
+        System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
         // if (driveSubsystem.aprilTagLength() > 0){
         //     System.out.println("tag");
         //     driveSubsystem.resetOdometry(new Pose2d(new Translation2d(driveSubsystem.getBotPose().getX() + 8, driveSubsystem.getBotPose().getY() + 4), driveSubsystem.getGyroAngle()));
         // }
-        driveSubsystem.getPose();
+        // driveSubsystem.getPose();
         // System.out.println("Pose: " + driveSubsystem.getPose());
         if(driverController.getBackButtonPressed()) {
             fieldRelative = !fieldRelative;
