@@ -67,10 +67,10 @@ public class SwerveModule {
 	}
 	public SwerveModulePosition getPosition() {
 		return new SwerveModulePosition(
-			driveEncoder.getPosition(), new Rotation2d(turningEncoder.get()));
+			((-driveEncoder.getPosition() / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(turningEncoder.get()));
 	  }
 	public double getPositionY() {
-		return driveEncoder.getPosition() * kWheelRadius * 0.10472 * 0.12 * Math.cos(turningEncoder.get());
+		return (driveEncoder.getPosition()) * kWheelRadius * 0.10472 * 0.12 * Math.cos(turningEncoder.get());
 	}
 
 	public double getVelocity() {

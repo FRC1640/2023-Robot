@@ -28,15 +28,16 @@ public class AlignAuto {
       public CommandBase loadAuto(){
         swerve.resetOdometry(new Pose2d(new Translation2d(swerve.getBotPose().getX() + 8, swerve.getBotPose().getY() + 4), swerve.getBotPose().getRotation()));
         Translation2d pose = swerve.getPose().getTranslation();
+        System.out.println("Pose: " + pose);
         double angle = Math.atan2(1 - pose.getY() , 13.8 - pose.getX());
         PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
-            new PathConstraints(0.05, 0.01),
+            new PathConstraints(2, 1),
             new PathPoint(pose, new Rotation2d(0)),
-            new PathPoint(new Translation2d(13.6, 0.7), new Rotation2d(0))
+            new PathPoint(new Translation2d(13.6, 1.4), new Rotation2d(0))
           );
         PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,
         swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.3, 0.0, 0.0), new PIDController(0.3, 0.0, 0.0), new PIDController(0.5, 0, 0),
+        kDriveKinematics, new PIDController(0.4, 0.0, 0.0), new PIDController(0.4, 0.0, 0.0), new PIDController(0.5, 0, 0),
         swerve::setModuleStates, false, swerve);
         return path;
       }
