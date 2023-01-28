@@ -5,18 +5,24 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.auton.commands.Autos;
+import frc.robot.auton.commands.Align;
+import frc.robot.auton.paths.AlignAuto;
+import frc.robot.auton.paths.ChargeStation;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
+  
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  public static final DriveSubsystem drive = new DriveSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+    drive.initDefaultCommand();
     configureBindings();
   }
 
@@ -31,6 +37,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
-    return Autos.exampleAuto();
+    AlignAuto auto = new AlignAuto();
+    return auto.loadAuto();
   }
 }
