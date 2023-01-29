@@ -9,14 +9,19 @@ import frc.robot.auton.commands.Align;
 import frc.robot.auton.paths.AlignAuto;
 import frc.robot.auton.paths.ChargeStation;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.commands.ResetGyro;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
-  
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  XboxController driverController = new XboxController(0);
+  XboxController operatorController = new XboxController(1);
+  Joystick joystick = new Joystick(0);
+  Joystick opJoystick = new Joystick(1);
   public static final DriveSubsystem drive = new DriveSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -27,7 +32,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    
+    JoystickButton startButton = new JoystickButton(joystick, 8);
+    startButton.onTrue(new ResetGyro(drive));
   }
 
   /**
@@ -37,7 +43,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
-    AlignAuto auto = new AlignAuto();
+    ChargeStation auto = new ChargeStation();
     return auto.loadAuto();
   }
 }

@@ -33,10 +33,10 @@ public class Balance extends CommandBase{
         }
         else{
             drive = MathUtil.clamp(drive, -0.06, 0.06);
-            if (drive <= 0.01){
-                drive = 0;
-                driveSubsystem.xWheels();
-            }
+            // if (drive <= 0.01){
+            //     drive = 0;
+            //     driveSubsystem.xWheels();
+            // }
         }
         driveSubsystem.drive(drive, 0, 0, false);
 
