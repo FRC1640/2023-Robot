@@ -22,4 +22,11 @@ public class SwerveUtil {
         double r = Math.sqrt((x*x) + (y*y));
         return VecBuilder.fill(x, y).div(r).times(Math.pow(r, n));
     }
+
+    public static Pair circlifyJoystick(double xSquare, double ySquare) {
+        magnitude = sqrt(xSquare * xSquare + ySquare * ySquare);
+        xCircle = (magnitude > 1.0) ? (xSquare / magnitude) : xSquare;
+        yCircle = (magnitude > 1.0) ? (ySquare / magnitude) : ySquare;
+        return Pair(xCircle, yCircle);
+    }
 }
