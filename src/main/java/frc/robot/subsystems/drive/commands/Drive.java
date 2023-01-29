@@ -7,12 +7,15 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.utilities.Logger;
+import frc.subsystems.drive.SwerveUtil;
 
 import javax.xml.crypto.dsig.keyinfo.X509IssuerSerial;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -48,17 +51,23 @@ public class Drive extends CommandBase {
             System.out.println("Toggled FC/RC");
         }
 
-        // System.out.println(driveSubsystem.getGyroAngle());
+        Vector<N2> deadzone = SwerveUtil.applyDeadzone(driverController.getLeftX(), driverController.getLeftY(), 0.2, 0.1);
+        Vector<N2> sensitivity = SwerveUtil.applySensitivity(deadzone.get(0, 0), deadzone.get(1, 0), 1.0/1.7);
+        double joyStickLeftX = sensitivity.get(0, 0);
+        double joyStickLeftY = sensitivity.get(1, 0);
+        System.out.println("X: " + String.format("%+.2f", joyStickLeftX) + " Y: " + String.format("%.2f", joyStickLeftY));
+
+        // System.out.println(driveSubsystem.getGyroAngle());\
         Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
         if(leftTrigger.getAsBoolean()) {
-            xSpeed = -driverController.getLeftY() * 0.55;
-            ySpeed = -driverController.getLeftX() * 0.55;
+            xSpeed = -joyStickLeftY * 0.55;
+            ySpeed = -joyStickLeftX * 0.55;
             rot = -driverController.getRightX() * 0.35;
             // System.out.println("oiwehfiowehf");
         } else {
-            xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
-            ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
+            xSpeed = -m_xspeedLimiter.calculate(joyStickLeftY);
+            ySpeed = -m_yspeedLimiter.calculate(joyStickLeftX);
             rot = driverController.getRightX();
             // xSpeed = driverController.getLeftY();
             // ySpeed = driverController.getLeftX();
@@ -68,15 +77,15 @@ public class Drive extends CommandBase {
             // ySpeed *= alpha;
             // rot *= alpha;
             // System.out.println("xSpeed: " + xSpeed + "\nySpeed: " + ySpeed + "\nrot: " + rot + "\nalpha: " + alpha);
-            System.out.println("Gyro: " + driveSubsystem.getGyroAngle().getDegrees());
+            // System.out.println("Gyro: " + driveSubsystem.getGyroAngle().getDegrees());
             rot = -m_rotLimiter.calculate(driverController.getRightX());
             
         }
 
-        if (Math.hypot(xSpeed, ySpeed) < 0.15) {
-            xSpeed = 0;
-            ySpeed = 0;
-        }
+        // if (Math.hypot(xSpeed, ySpeed) < 0.15) {
+        //     xSpeed = 0;
+        //     ySpeed = 0;
+        // }
 
         if (Math.abs(rot) < 0.15) {
             rot = 0;

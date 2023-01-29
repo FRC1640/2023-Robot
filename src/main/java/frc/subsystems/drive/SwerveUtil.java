@@ -20,6 +20,10 @@ public class SwerveUtil {
 
     public static Vector<N2> applySensitivity(double x, double y, double n){
         double r = Math.sqrt((x*x) + (y*y));
-        return VecBuilder.fill(x, y).div(r).times(Math.pow(r, n));
+        if (r == 0){
+            return VecBuilder.fill(0, 0);
+        } else {
+            return VecBuilder.fill(x, y).div(r).times(Math.pow(r, 1.0/n));
+        }
     }
 }
