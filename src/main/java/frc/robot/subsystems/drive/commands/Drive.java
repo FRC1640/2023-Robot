@@ -50,7 +50,8 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
+        System.out.println("Speed: " + driveSubsystem.getSpeed());
+        // System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
         // if (driveSubsystem.aprilTagLength() > 0){
         //     System.out.println("tag");
         //     driveSubsystem.resetOdometry(new Pose2d(new Translation2d(driveSubsystem.getBotPose().getX() + 8, driveSubsystem.getBotPose().getY() + 4), driveSubsystem.getGyroAngle()));

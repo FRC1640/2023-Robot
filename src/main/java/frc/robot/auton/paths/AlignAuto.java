@@ -26,14 +26,17 @@ public class AlignAuto {
     public static final double y = 0.301625; 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(y, x),new Translation2d(y, -x), new Translation2d(-y, x), new Translation2d(-y, -x));
       public CommandBase loadAuto(){
+        //TODO: reset gyro to odometry angle from apriltag or set an offset. robot must be perfectly straight for auto to work currently.
+        swerve.resetGyro();
         swerve.resetOdometry(new Pose2d(new Translation2d(swerve.getBotPose().getX() + 8, swerve.getBotPose().getY() + 4), swerve.getBotPose().getRotation()));
         Translation2d pose = swerve.getPose().getTranslation();
+        
         System.out.println("Pose: " + pose);
         double angle = Math.atan2(1 - pose.getY() , 13.8 - pose.getX());
         PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
             new PathConstraints(2, 1),
             new PathPoint(pose, new Rotation2d(0)),
-            new PathPoint(new Translation2d(13.6, 1.4), new Rotation2d(0))
+            new PathPoint(new Translation2d(14, 1.1), new Rotation2d(0))
           );
         PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,
         swerve::getPose, // Functional interface to feed supplier

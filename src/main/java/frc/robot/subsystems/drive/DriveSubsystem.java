@@ -110,6 +110,9 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetGyro() {
     gyro.reset();
   }
+  public void resetGyroLocation(){
+    gyro.reset();
+  }
   public double aprilTagLength(){
     return limelight.getBotPose().length;
   }
@@ -178,7 +181,9 @@ public class DriveSubsystem extends SubsystemBase {
   public double getGyroPitch(){
     return gyro.getPitch();
   }
-
+  public double getSpeed(){
+    return frontLeft.getVelocity();
+  }
   public void pointWheels(double angle) {
     frontLeft.setAngleD(angle);
     frontRight.setAngleD(angle);
