@@ -25,7 +25,7 @@ public class EndPitch extends CommandBase {
           initTime = System.currentTimeMillis();
           setTime = false;
         }
-        System.out.println("Pitch: " + gyro.getGyroPitch());
+        // System.out.println("Pitch: " + gyro.getGyroPitch());
       }
       @Override
       public void end(boolean interrupted){

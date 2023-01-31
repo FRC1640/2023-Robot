@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.utilities.Logger;
 
@@ -34,12 +35,13 @@ public class Drive extends CommandBase {
     private double xSpeed;
     private double ySpeed;
     private double rot;
-
+    Gyro gyro;
     private boolean fieldRelative = true;
 
-    public Drive(DriveSubsystem driveSubsystem, boolean fieldRelative) {
+    public Drive(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
+        this.gyro = gyro;
         addRequirements(driveSubsystem);
     }
 
@@ -49,7 +51,8 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("Speed: " + driveSubsystem.getSpeed());
+        // System.out.println("Speed: " + driveSubsystem.getSpeed());
+        System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
         // System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
         // if (driveSubsystem.aprilTagLength() > 0){
         //     System.out.println("tag");
