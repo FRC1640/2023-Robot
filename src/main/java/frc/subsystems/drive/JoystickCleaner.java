@@ -11,15 +11,6 @@ public class JoystickCleaner {
         this.y = 0;
     }
 
-    public static void main(String[] args) {
-        JoystickCleaner cleaner = new JoystickCleaner();
-        cleaner.setX(1);
-        cleaner.setY(-1);
-        cleaner.applyCirclify();
-
-        System.out.println(cleaner.getX() + ", " + cleaner.getY());
-    }
-
     public void applyDeadband(double lowerDb, double upperDb) {
         double r = Math.sqrt(x*x + y*y);
         if (r <= lowerDb) {
