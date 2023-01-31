@@ -14,10 +14,12 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.sensors.Gyro;
+import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class AlignAuto {
-    private final DriveSubsystem swerve = RobotContainer.drive;
+    
   
 
 
@@ -25,18 +27,18 @@ public class AlignAuto {
     public static final double x = 0.276225; 
     public static final double y = 0.301625; 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(y, x),new Translation2d(y, -x), new Translation2d(-y, x), new Translation2d(-y, -x));
-      public CommandBase loadAuto(){
+    public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, Limelight limelight) { 
+        gyro.setOffset(limelight.getBotPose().getRotation().getDegrees());
         //TODO: reset gyro to odometry angle from apriltag or set an offset. robot must be perfectly straight for auto to work currently.
-        swerve.resetGyro();
-        swerve.resetOdometry(new Pose2d(new Translation2d(swerve.getBotPose().getX() + 8, swerve.getBotPose().getY() + 4), swerve.getBotPose().getRotation()));
+        
+        swerve.resetOdometry(new Pose2d(new Translation2d(limelight.getBotPose().getX() + 8, limelight.getBotPose().getY() + 4), limelight.getBotPose().getRotation()));
         Translation2d pose = swerve.getPose().getTranslation();
         
         System.out.println("Pose: " + pose);
-        double angle = Math.atan2(1 - pose.getY() , 13.8 - pose.getX());
         PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
             new PathConstraints(2, 1),
-            new PathPoint(pose, new Rotation2d(0)),
-            new PathPoint(new Translation2d(14, 1.1), new Rotation2d(0))
+            new PathPoint(pose, new Rotation2d(0), new Rotation2d(0)),
+            new PathPoint(new Translation2d(14.3, 1.3), new Rotation2d(0), new Rotation2d(0))
           );
         PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,
         swerve::getPose, // Functional interface to feed supplier

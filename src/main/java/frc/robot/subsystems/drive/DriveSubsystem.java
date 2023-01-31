@@ -29,73 +29,50 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Limelight;
+import frc.robot.sensors.Gyro;
+import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 import frc.robot.subsystems.drive.commands.Drive;
 import frc.robot.utilities.Logger;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
+  private Gyro gyro;
+  
   public static final double kMaxSpeed = 6; // 3 meters per second  
   public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second  
-  
-  private AnalogInput pixy = new AnalogInput(5);
+
+  Limelight limelight;
 
   public static final double x = 0.276225; // 10.875"
   public static final double y = 0.301625; // 11.875"
 
-  // OK
   private final Translation2d frontLeftLocation = new Translation2d(x, y);
   private final Translation2d frontRightLocation = new Translation2d(x, -y);
   private final Translation2d backLeftLocation = new Translation2d(-x, y);
   private final Translation2d backRightLocation = new Translation2d(-x, -y);
 
-  // OK
   private final SwerveModule frontLeft = new SwerveModule(PivotConfig.getConfig(PivotId.FL));
   private final SwerveModule frontRight = new SwerveModule(PivotConfig.getConfig(PivotId.FR));
   private final SwerveModule backLeft = new SwerveModule(PivotConfig.getConfig(PivotId.BL));
   private final SwerveModule backRight = new SwerveModule(PivotConfig.getConfig(PivotId.BR));
-  NetworkTableEntry xEntry;
-  NetworkTableEntry yEntry;
-  Limelight limelight = new Limelight();
-  NetworkTableEntry FLtargetSpeedEntry,FLspeedEntry,BLtargetSpeedEntry,BLspeedEntry,FRtargetSpeedEntry,FRspeedEntry,BRtargetSpeedEntry,BRspeedEntry;
-  // OK
-  private final AHRS gyro = new AHRS(SPI.Port.kMXP);
+
   public Field2d field = new Field2d();
-
-  private double offset;
-
+  
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-  private final SwerveDriveOdometry odometry =
+  private final SwerveDriveOdometry odometry;
+    public DriveSubsystem(Gyro gyro, Limelight limelight) {
+      this.gyro = gyro;
+      this.limelight = limelight;
+      odometry  =
       new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), 
       new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
 
-  public DriveSubsystem() {
-    // NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    // NetworkTable table = inst.getTable("odometry");
-    // NetworkTable table1 = inst.getTable("speed");
+    }
 
-    // xEntry = table.getEntry("X");
-    // yEntry = table.getEntry("Y");
-    // FLtargetSpeedEntry = table1.getEntry("FLtarget");
-    // FLspeedEntry = table1.getEntry("FLactual");
-    // FRtargetSpeedEntry = table1.getEntry("FRtarget");
-    // FRspeedEntry = table1.getEntry("FRactual");
-    // BLtargetSpeedEntry = table1.getEntry("BLtarget");
-    // BLspeedEntry = table1.getEntry("BLactual");
-    // BRtargetSpeedEntry = table1.getEntry("BRtarget");
-    // BRspeedEntry = table1.getEntry("BRactual");
-    
-    // Shuffleboard.getTab("Field").add(field);
-    gyro.reset();
-  }
-
-  public double getPixyVoltage() {
-    return pixy.getVoltage();
-  }
 
   public void initDefaultCommand() {
     setDefaultCommand(new Drive(this, true));
@@ -107,36 +84,7 @@ public class DriveSubsystem extends SubsystemBase {
     new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()}, pose);
   }
 
-  public void resetGyro() {
-    gyro.reset();
-  }
-  public void resetGyroLocation(){
-    gyro.reset();
-  }
-  public double aprilTagLength(){
-    return limelight.getBotPose().length;
-  }
-  public Pose2d getBotPose(){
-    Translation2d translation2d = new Translation2d(-9999, -9999);
-    Rotation2d rotation2d = new Rotation2d(0);
-    if (limelight.getBotPose().length > 0){
-      translation2d = new Translation2d(limelight.getBotPose()[0], limelight.getBotPose()[1]);
-      rotation2d = new Rotation2d();
-    }
-    else{
-      translation2d = null;
-      rotation2d = null;
-    }
 
-    return new Pose2d(translation2d, rotation2d);
-  }
-  public void setOffset(double value) {
-		offset = value;
-	}
-
-	public double getOffset() {
-		return offset;
-	}
 
   /**
    * Method to drive the robot using joystick info.
@@ -151,7 +99,7 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates =
         kinematics.toSwerveModuleStates(
             fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(getOffset())))
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, new Rotation2d(gyro.getRotation2d().getRadians()))
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
     //SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     //fix velocity wobble
@@ -172,15 +120,7 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setDesiredStateAuto(desiredStates[3]);
   }
   //not used
-  public Rotation2d getGyroAngle() {
-    return gyro.getRotation2d();
-  }
-  public double getGyroAngleDegrees(){
-    return gyro.getRotation2d().getDegrees();
-  }
-  public double getGyroPitch(){
-    return gyro.getPitch();
-  }
+  
   public double getSpeed(){
     return frontLeft.getVelocity();
   }
@@ -211,11 +151,8 @@ public class DriveSubsystem extends SubsystemBase {
         gyro.getRotation2d(),
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
   }
-  public double getArea(){
-    return limelight.getTargetArea();
-  }
   public Pose2d getPose() {
-    Logger.log("x: " + odometry.getPoseMeters().getX() + "y: " + odometry.getPoseMeters().getY() + "gyro: " + getGyroAngle());
+    Logger.log("x: " + odometry.getPoseMeters().getX() + "y: " + odometry.getPoseMeters().getY() + "gyro: " + gyro.getGyroAngle());
     //Logger.log("Time: "+ System.currentTimeMillis() + " x position: " + odometry.getPoseMeters().getX() + " y position: " + odometry.getPoseMeters().getY());
     
     // Logger.log(String.format("FLvel: %.2f, FLangle: %.2f\nFRvel: %.2f, FRangle: %.2f\nBLvel: %.2f, BLangle: %.2f\nBRvel: %.2f, BRangle: %.2f", 
