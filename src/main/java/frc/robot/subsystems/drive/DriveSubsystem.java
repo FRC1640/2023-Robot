@@ -29,8 +29,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Limelight;
 import frc.robot.sensors.Gyro;
+import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 import frc.robot.subsystems.drive.commands.Drive;
 import frc.robot.utilities.Logger;
@@ -41,9 +41,8 @@ public class DriveSubsystem extends SubsystemBase {
   
   public static final double kMaxSpeed = 6; // 3 meters per second  
   public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second  
-  
-  private AnalogInput pixy = new AnalogInput(5);
-  Limelight limelight = new Limelight();
+
+  Limelight limelight;
 
   public static final double x = 0.276225; // 10.875"
   public static final double y = 0.301625; // 11.875"
@@ -65,17 +64,15 @@ public class DriveSubsystem extends SubsystemBase {
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
   private final SwerveDriveOdometry odometry;
-    public DriveSubsystem(Gyro gyro) {
+    public DriveSubsystem(Gyro gyro, Limelight limelight) {
       this.gyro = gyro;
+      this.limelight = limelight;
       odometry  =
       new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), 
       new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
-      
+
     }
 
-  public double getPixyVoltage() {
-    return pixy.getVoltage();
-  }
 
   public void initDefaultCommand() {
     setDefaultCommand(new Drive(this, true));
@@ -86,23 +83,7 @@ public class DriveSubsystem extends SubsystemBase {
     odometry.resetPosition(gyro.getRotation2d(),
     new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()}, pose);
   }
-  public double aprilTagLength(){
-    return limelight.getBotPose().length;
-  }
-  public Pose2d getBotPose(){
-    Translation2d translation2d = new Translation2d(-9999, -9999);
-    Rotation2d rotation2d = new Rotation2d(0);
-    if (limelight.getBotPose().length > 0){
-      translation2d = new Translation2d(limelight.getBotPose()[0], limelight.getBotPose()[1]);
-      rotation2d = new Rotation2d();
-    }
-    else{
-      translation2d = null;
-      rotation2d = null;
-    }
 
-    return new Pose2d(translation2d, rotation2d);
-  }
 
 
   /**
@@ -169,9 +150,6 @@ public class DriveSubsystem extends SubsystemBase {
     odometry.update(
         gyro.getRotation2d(),
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
-  }
-  public double getArea(){
-    return limelight.getTargetArea();
   }
   public Pose2d getPose() {
     Logger.log("x: " + odometry.getPoseMeters().getX() + "y: " + odometry.getPoseMeters().getY() + "gyro: " + gyro.getGyroAngle());

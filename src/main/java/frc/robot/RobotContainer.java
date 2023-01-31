@@ -9,6 +9,7 @@ import frc.robot.auton.commands.Align;
 import frc.robot.auton.paths.AlignAuto;
 import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
+import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.ResetGyro;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -27,11 +28,11 @@ public class RobotContainer {
   Joystick opJoystick = new Joystick(1);
   boolean wasEnabled = false;
   DriveSubsystem drive;
-
+  Limelight limelight = new Limelight();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     gyro = new Gyro();
-    drive = new DriveSubsystem(gyro);
+    drive = new DriveSubsystem(gyro, limelight);
     // Configure the trigger bindings
     drive.initDefaultCommand();
     configureBindings();
@@ -48,7 +49,6 @@ public class RobotContainer {
     gyro.resetGyro();
     wasEnabled = true;
     DataLogManager.log("first enabled method ran");
-    System.out.println("enabled");
   }
 
   /**
@@ -58,7 +58,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
-    ChargeStation auto = new ChargeStation();
-    return auto.loadAuto(gyro, drive);
+    AlignAuto auto = new AlignAuto();
+    return auto.loadAuto(gyro, drive, limelight);
   }
 }

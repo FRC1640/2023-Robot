@@ -1,5 +1,8 @@
-package frc.robot;
+package frc.robot.sensors;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -206,8 +209,24 @@ public class Limelight {
 		return tx.getDouble(-9999);
 	}
 	
-	public double[] getBotPose(){
-		return botpose.getDoubleArray(new double[] {});
+	public Pose2d getBotPose(){
+		double[] botPoseArray = botpose.getDoubleArray(new double[] {});
+		Translation2d translation2d = new Translation2d(-9999, -9999);
+		Rotation2d rotation2d = new Rotation2d(0);
+		
+		if (botPoseArray.length > 0) {
+			translation2d = new Translation2d(botPoseArray[0], botPoseArray[1]);
+			rotation2d = new Rotation2d();
+		}
+		else {
+			translation2d = null;
+			rotation2d = null;
+		}
+
+		return new Pose2d(translation2d, rotation2d);
+	}
+	public double aprilTagLength(){
+		return botpose.getDoubleArray(new double[] {}).length;
 	}
 	/**
 	* @return Returns Horizontal sidelength of the rough bounding box (0 - 320 pixels)
