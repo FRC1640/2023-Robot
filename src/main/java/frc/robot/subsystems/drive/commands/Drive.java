@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.utilities.Logger;
 
@@ -25,8 +26,8 @@ import edu.wpi.first.wpilibj.SPI;
 public class Drive extends CommandBase {
 
     DriveSubsystem driveSubsystem;
-    XboxController driverController = new XboxController(0);
-    Joystick joystick = new Joystick(0);
+    XboxController driverController;
+    Joystick driveJoystick;
 
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
@@ -34,12 +35,15 @@ public class Drive extends CommandBase {
     private double xSpeed;
     private double ySpeed;
     private double rot;
-
+    Gyro gyro;
     private boolean fieldRelative = true;
 
-    public Drive(DriveSubsystem driveSubsystem, boolean fieldRelative) {
+    public Drive(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController, Joystick driveJoystick) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
+        this.gyro = gyro;
+        this.driverController = driveController;
+        this.driveJoystick = driveJoystick;
         addRequirements(driveSubsystem);
     }
 
