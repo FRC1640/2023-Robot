@@ -74,9 +74,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
 
-  public void initDefaultCommand() {
-    setDefaultCommand(new Drive(this, true, gyro));
-  }
 
   public void resetOdometry(Pose2d pose) {
     

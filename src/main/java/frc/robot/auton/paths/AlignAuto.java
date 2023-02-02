@@ -30,7 +30,7 @@ public class AlignAuto {
     public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, Limelight limelight) { 
         gyro.resetGyro();
         gyro.setOffset(-limelight.getBotPose().getRotation().getDegrees());
-        //TODO: reset gyro to odometry angle from apriltag or set an offset. robot must be perfectly straight for auto to work currently.
+        
         
         swerve.resetOdometry(new Pose2d(new Translation2d(limelight.getBotPose().getX() + 8, limelight.getBotPose().getY() + 4), limelight.getBotPose().getRotation()));
         Translation2d pose = swerve.getPose().getTranslation();
@@ -38,7 +38,7 @@ public class AlignAuto {
         // System.out.println("Pose: " + pose);
         PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
             new PathConstraints(2, 1),
-            new PathPoint(pose, new Rotation2d(0), new Rotation2d(0)),
+            new PathPoint(pose, new Rotation2d(0), new Rotation2d(swerve.getPose().getRotation().getRadians())),
             new PathPoint(new Translation2d(14.3, 1.3), new Rotation2d(0), new Rotation2d(0))
           );
         PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,

@@ -26,8 +26,8 @@ import edu.wpi.first.wpilibj.SPI;
 public class Drive extends CommandBase {
 
     DriveSubsystem driveSubsystem;
-    XboxController driverController = new XboxController(0);
-    Joystick joystick = new Joystick(0);
+    XboxController driverController;
+    Joystick driveJoystick;
 
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
@@ -38,10 +38,12 @@ public class Drive extends CommandBase {
     Gyro gyro;
     private boolean fieldRelative = true;
 
-    public Drive(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro) {
+    public Drive(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController, Joystick driveJoystick) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
         this.gyro = gyro;
+        this.driverController = driveController;
+        this.driveJoystick = driveJoystick;
         addRequirements(driveSubsystem);
     }
 
