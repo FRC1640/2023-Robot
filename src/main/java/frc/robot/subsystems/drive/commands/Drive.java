@@ -49,7 +49,7 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("Speed: " + driveSubsystem.getSpeed());
+        // System.out.println("Speed: " + driveSubsystem.getSpeed());
         // System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
         // if (driveSubsystem.aprilTagLength() > 0){
         //     System.out.println("tag");

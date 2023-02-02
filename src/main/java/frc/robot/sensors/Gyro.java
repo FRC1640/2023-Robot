@@ -14,6 +14,9 @@ public class Gyro {
         DataLogManager.log("Reset gyro");
         gyro.reset();
       }
+    public AHRS getGyro(){
+      return gyro;
+    }
     public Rotation2d getGyroAngle() {
       return new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(offset));
     }

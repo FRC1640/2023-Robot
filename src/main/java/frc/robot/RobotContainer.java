@@ -10,6 +10,7 @@ import frc.robot.auton.paths.AlignAuto;
 import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
+import frc.robot.subsystems.DashboardInit;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.ResetGyro;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -32,10 +33,11 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     gyro = new Gyro();
-    drive = new DriveSubsystem(gyro, limelight);
+    drive = new DriveSubsystem(gyro);
     // Configure the trigger bindings
     drive.initDefaultCommand();
     configureBindings();
+    DashboardInit dashboard = new DashboardInit(gyro);
   }
 
   private void configureBindings() {

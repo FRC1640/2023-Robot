@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.Gyro;
-import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 import frc.robot.subsystems.drive.commands.Drive;
 import frc.robot.utilities.Logger;
@@ -42,7 +41,6 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 6; // 3 meters per second  
   public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second  
 
-  Limelight limelight;
 
   public static final double x = 0.276225; // 10.875"
   public static final double y = 0.301625; // 11.875"
@@ -64,9 +62,8 @@ public class DriveSubsystem extends SubsystemBase {
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
   private final SwerveDriveOdometry odometry;
-    public DriveSubsystem(Gyro gyro, Limelight limelight) {
+    public DriveSubsystem(Gyro gyro) {
       this.gyro = gyro;
-      this.limelight = limelight;
       odometry  =
       new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), 
       new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
