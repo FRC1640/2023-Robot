@@ -216,7 +216,7 @@ public class Limelight {
 		
 		if (botPoseArray.length > 0) {
 			translation2d = new Translation2d(botPoseArray[0], botPoseArray[1]);
-			rotation2d = new Rotation2d();
+			rotation2d = new Rotation2d(Math.toRadians(botPoseArray[5]));
 		}
 		else {
 			translation2d = null;

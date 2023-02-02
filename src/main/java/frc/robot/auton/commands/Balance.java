@@ -41,8 +41,8 @@ public class Balance extends CommandBase{
         }
         driveSubsystem.drive(drive, 0, 0, false);
 
-        System.out.println("Pitch: " + gyro.getGyroPitch());
-        System.out.println("Drive: " + drive);
+        // System.out.println("Pitch: " + gyro.getGyroPitch());
+        // System.out.println("Drive: " + drive);
         
     }
     @Override

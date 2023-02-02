@@ -11,6 +11,7 @@ import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.commands.Drive;
 import frc.robot.subsystems.drive.commands.ResetGyro;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
@@ -24,7 +25,7 @@ public class RobotContainer {
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
-  Joystick joystick = new Joystick(0);
+  Joystick driveJoystick = new Joystick(0);
   Joystick opJoystick = new Joystick(1);
   boolean wasEnabled = false;
   DriveSubsystem drive;
@@ -34,12 +35,12 @@ public class RobotContainer {
     gyro = new Gyro();
     drive = new DriveSubsystem(gyro, limelight);
     // Configure the trigger bindings
-    drive.initDefaultCommand();
+    drive.setDefaultCommand(new Drive(drive, true, gyro, driverController, driveJoystick));
     configureBindings();
   }
 
   private void configureBindings() {
-    JoystickButton startButton = new JoystickButton(joystick, 8);
+    JoystickButton startButton = new JoystickButton(driveJoystick, 8);
     startButton.onTrue(new ResetGyro(drive, gyro));
   }
   public void firstEnabled(){
