@@ -1,18 +1,15 @@
 package frc.robot.subsystems.drive.commands;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.sensors.Gyro;
-import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.utilities.Logger;
 
-public class ResetGyro extends CommandBase {
+public class ResetGyroCommand extends CommandBase {
 
-    private DriveSubsystem driveSubsystem;
     private Gyro gyro;
-    public ResetGyro (DriveSubsystem driveSubsystem, Gyro gyro) {
-        this.driveSubsystem = driveSubsystem;
+    public ResetGyroCommand (Gyro gyro) {
         this.gyro = gyro;
-        addRequirements(driveSubsystem);
     }
     
     @Override
@@ -22,7 +19,6 @@ public class ResetGyro extends CommandBase {
     public void execute() {
         gyro.resetGyro();
         gyro.setOffset(0);
-        Logger.log("Gyro reset!");
     }
 
     @Override

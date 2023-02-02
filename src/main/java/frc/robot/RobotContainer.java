@@ -11,8 +11,8 @@ import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.drive.commands.Drive;
-import frc.robot.subsystems.drive.commands.ResetGyro;
+import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
+import frc.robot.subsystems.drive.commands.ResetGyroCommand;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -30,26 +30,30 @@ public class RobotContainer {
   boolean wasEnabled = false;
   DriveSubsystem drive;
   Limelight limelight = new Limelight();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     gyro = new Gyro();
-    drive = new DriveSubsystem(gyro, limelight);
+    drive = new DriveSubsystem(gyro);
+
+    drive.setDefaultCommand(new JoystickDriveCommand(drive, true, gyro, driverController));
+
     // Configure the trigger bindings
-    drive.setDefaultCommand(new Drive(drive, true, gyro, driverController, driveJoystick));
     configureBindings();
   }
 
   private void configureBindings() {
     JoystickButton startButton = new JoystickButton(driveJoystick, 8);
-    startButton.onTrue(new ResetGyro(drive, gyro));
+    startButton.onTrue(new ResetGyroCommand(gyro));
   }
+
   public void firstEnabled(){
     if (wasEnabled){
       return;
     }
     gyro.resetGyro();
     wasEnabled = true;
-    DataLogManager.log("first enabled method ran");
+    DataLogManager.log("Robot was enabled for the first time.");
   }
 
   /**
