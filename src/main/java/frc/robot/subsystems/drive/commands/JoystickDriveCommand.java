@@ -8,6 +8,8 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.subsystems.drive.JoystickCleaner;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.controller.PIDController;
+
 
 public class JoystickDriveCommand extends CommandBase {
     final double SLOW_LINEAR_SPEED = 0.55;
@@ -57,16 +59,6 @@ public class JoystickDriveCommand extends CommandBase {
 
         Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
-        /* Apply linear deadband */
-        joystickCleaner.setX(xSpeed);
-        joystickCleaner.setY(ySpeed);
-        joystickCleaner.applyDeadband(LOWER_DB, UPPER_DB);
-        xSpeed = joystickCleaner.getX();
-        ySpeed = joystickCleaner.getY();
-
-        /* Apply rotational deadband */
-        rot = MathUtil.applyDeadband(rot, LOWER_DB, 1 - UPPER_DB);
-
         if(leftTrigger.getAsBoolean()) {
             xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
             ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
@@ -77,6 +69,16 @@ public class JoystickDriveCommand extends CommandBase {
             rot = -m_rotLimiter.calculate(driverController.getRightX());
         }
 
+        /* Apply linear deadband */
+        joystickCleaner.setX(xSpeed);
+        joystickCleaner.setY(ySpeed);
+        joystickCleaner.applyDeadband(LOWER_DB, UPPER_DB);
+        xSpeed = joystickCleaner.getX();
+        ySpeed = joystickCleaner.getY();
+
+        /* Apply rotational deadband */
+        rot = MathUtil.applyDeadband(rot, LOWER_DB, 1 - UPPER_DB);
+
         /* Increase rotational sensitivity */
         rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0 / 3.0);
 
@@ -84,7 +86,7 @@ public class JoystickDriveCommand extends CommandBase {
         if(rot == 0 && Math.abs(gyro.getGyroRoll()) < 2 && Math.abs(gyro.getGyroPitch()) < 2){
             if (!gyroCorrectionOn) {
                 gyroCorrectionOn = true;
-                gyroCorrectionHeading = gyro.getGyroAngle();
+                gyroCorrectionHeading = gyro.getGyroAngle().getRadians();
             }
         }
         else{
@@ -93,7 +95,7 @@ public class JoystickDriveCommand extends CommandBase {
 
         /* Apply gyro correction */
         if (gyroCorrectionOn) {
-            rot = gyroCorrectionPID.calculate(gyro.getGyroAngle(), gyroCorrectionHeading);
+            rot = gyroCorrectionPID.calculate(gyro.getGyroAngle().getRadians(), gyroCorrectionHeading);
         }
 
         driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
