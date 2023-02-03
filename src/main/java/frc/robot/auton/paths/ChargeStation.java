@@ -8,10 +8,8 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -19,13 +17,11 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotContainer;
 import frc.robot.auton.commands.Balance;
 import frc.robot.auton.commands.EndPitch;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.drive.commands.ResetGyro;
-import frc.robot.subsystems.drive.commands.ResetOdometry;
+import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 
 public class ChargeStation {
   
@@ -43,7 +39,7 @@ public class ChargeStation {
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve) { 
     chargeState = chargePath.getInitialState();
     Pose2d chargePose = new Pose2d(chargeState.poseMeters.getTranslation(), chargeState.holonomicRotation);
-    Command resetOdo = new ResetOdometry(swerve, chargePose);
+    Command resetOdo = new ResetOdometryCommand(swerve, chargePose);
 
 
     PPSwerveControllerCommand chargePathController = new PPSwerveControllerCommand(chargePath,
