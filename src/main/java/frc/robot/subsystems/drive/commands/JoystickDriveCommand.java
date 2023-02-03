@@ -25,7 +25,12 @@ public class JoystickDriveCommand extends CommandBase {
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
+
     private boolean fieldRelative = true;
+
+    private boolean gyroCorrectionOn = false;
+    private double gyroCorrectionHeading;
+    private PIDController gyroCorrectionPID = new PIDController(0.025, 0, 0);
 
     public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController) {
         this.fieldRelative = fieldRelative;
@@ -36,7 +41,9 @@ public class JoystickDriveCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() { }
+    public void initialize() {
+        gyroCorrectionOn = false;
+    }
 
     @Override
     public void execute() {
@@ -50,16 +57,6 @@ public class JoystickDriveCommand extends CommandBase {
 
         Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
-        if(leftTrigger.getAsBoolean()) {
-            xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
-            ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
-            rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
-        } else {
-            xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
-            ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
-            rot = -m_rotLimiter.calculate(driverController.getRightX());
-        }
-
         /* Apply linear deadband */
         joystickCleaner.setX(xSpeed);
         joystickCleaner.setY(ySpeed);
@@ -70,8 +67,34 @@ public class JoystickDriveCommand extends CommandBase {
         /* Apply rotational deadband */
         rot = MathUtil.applyDeadband(rot, LOWER_DB, 1 - UPPER_DB);
 
+        if(leftTrigger.getAsBoolean()) {
+            xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
+            ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
+            rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
+        } else {
+            xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
+            ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
+            rot = -m_rotLimiter.calculate(driverController.getRightX());
+        }
+
         /* Increase rotational sensitivity */
         rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0 / 3.0);
+
+        /* Determine whether to apply gyro correction */
+        if(rot == 0 && Math.abs(gyro.getGyroRoll()) < 2 && Math.abs(gyro.getGyroPitch()) < 2){
+            if (!gyroCorrectionOn) {
+                gyroCorrectionOn = true;
+                gyroCorrectionHeading = gyro.getGyroAngle();
+            }
+        }
+        else{
+            gyroCorrectionOn = false;
+        }
+
+        /* Apply gyro correction */
+        if (gyroCorrectionOn) {
+            rot = gyroCorrectionPID.calculate(gyro.getGyroAngle(), gyroCorrectionHeading);
+        }
 
         driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
     }
