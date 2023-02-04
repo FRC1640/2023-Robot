@@ -81,7 +81,7 @@ public class JoystickDriveCommand extends CommandBase {
         rot = MathUtil.applyDeadband(rot, LOWER_DB, 1 - UPPER_DB);
 
         /* Increase rotational sensitivity */
-        rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0 / 3.0);
+        rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0);
 
         /* Determine whether to apply gyro correction */
         if(Math.abs(rot) < 0.01) {
