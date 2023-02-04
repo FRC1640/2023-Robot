@@ -10,6 +10,7 @@ import frc.robot.auton.paths.AlignAuto;
 import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
+import frc.robot.subsystems.DashboardInit;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
@@ -35,7 +36,7 @@ public class RobotContainer {
   public RobotContainer() {
     gyro = new Gyro();
     drive = new DriveSubsystem(gyro);
-
+    DashboardInit dashboardInit = new DashboardInit(gyro);
     drive.setDefaultCommand(new JoystickDriveCommand(drive, true, gyro, driverController));
 
     // Configure the trigger bindings
