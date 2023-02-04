@@ -25,25 +25,24 @@ public class RobotContainer {
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
-  Joystick driveJoystick = new Joystick(0);
-  Joystick opJoystick = new Joystick(1);
   boolean wasEnabled = false;
   DriveSubsystem drive;
   Limelight limelight = new Limelight();
+
+  JoystickButton startButton = new JoystickButton(driverController, 8);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     gyro = new Gyro();
     drive = new DriveSubsystem(gyro);
 
-    drive.setDefaultCommand(new JoystickDriveCommand(drive, true, gyro, driverController));
+    drive.setDefaultCommand(new JoystickDriveCommand(drive, true, gyro, startButton, driverController));
 
     // Configure the trigger bindings
     configureBindings();
   }
 
   private void configureBindings() {
-    JoystickButton startButton = new JoystickButton(driveJoystick, 8);
     startButton.onTrue(new ResetGyroCommand(gyro));
   }
 

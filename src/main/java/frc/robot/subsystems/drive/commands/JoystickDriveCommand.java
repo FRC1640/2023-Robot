@@ -20,15 +20,12 @@ public class JoystickDriveCommand extends CommandBase {
 
     DriveSubsystem driveSubsystem;
     Gyro gyro;
+    Trigger resetGyroTrigger;
     XboxController driverController;
     
     Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
     JoystickCleaner joystickCleaner = new JoystickCleaner();
-
-    private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
 
     private boolean fieldRelative = true;
 
@@ -36,10 +33,11 @@ public class JoystickDriveCommand extends CommandBase {
     private double gyroCorrectionHeading;
     private PIDController gyroCorrectionPID = new PIDController(0.5, 0, 0);
 
-    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController) {
+    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, Trigger resetGyroTrigger, XboxController driveController) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
         this.gyro = gyro;
+        this.resetGyroTrigger = resetGyroTrigger;
         this.driverController = driveController;
         addRequirements(driveSubsystem);
 
@@ -59,18 +57,17 @@ public class JoystickDriveCommand extends CommandBase {
 
         if (driverController.getBackButtonPressed()) {
             fieldRelative = !fieldRelative;
-            System.out.format("%b\n", fieldRelative);
         }
 
-        if(leftTrigger.getAsBoolean()) {
-            xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
-            ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
-            rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
-        } else {
-            xSpeed = -driverController.getLeftY();
-            ySpeed = -driverController.getLeftX();
-            rot = -driverController.getRightX();
+        if (resetGyroTrigger.getAsBoolean()) {
+            gyroCorrectionOn = false;
+            gyroCorrectionHeading = 0;
         }
+
+        xSpeed = -driverController.getLeftY();
+        ySpeed = -driverController.getLeftX();
+        rot = -driverController.getRightX();
+
         // System.out.format("%.2f\n", Math.toDegrees(Math.atan2(ySpeed, xSpeed)));
 
         /* Apply linear deadband */
@@ -86,10 +83,8 @@ public class JoystickDriveCommand extends CommandBase {
         /* Increase rotational sensitivity */
         rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0 / 3.0);
 
-        System.out.format("%.2f\n", Math.toDegrees(Math.atan2(ySpeed, xSpeed)));
-
         /* Determine whether to apply gyro correction */
-        if(Math.abs(rot) < 0.01 && Math.abs(gyro.getGyroRoll()) < 5 && Math.abs(gyro.getGyroPitch()) < 5){
+        if(Math.abs(rot) < 0.01) {
             if (!gyroCorrectionOn) {
                 gyroCorrectionOn = true;
                 gyroCorrectionHeading = gyro.getGyroAngle().getRadians();
@@ -101,12 +96,14 @@ public class JoystickDriveCommand extends CommandBase {
 
         /* Apply gyro correction */
         if (gyroCorrectionOn) {
-            // rot = gyroCorrectionPID.calculate(gyro.getGyroAngle().getRadians(), gyroCorrectionHeading);
+            rot = gyroCorrectionPID.calculate(gyro.getGyroAngle().getRadians(), gyroCorrectionHeading);
         }
 
-        // System.out.format("%.2f, %.2f, %s\n", Math.toDegrees(gyroCorrectionHeading), rot, Boolean.toString(gyroCorrectionOn));
-        // System.out.format("%.2f, %.2f\n", Math.hypot(xSpeed, ySpeed), rot);
-        // System.out.format("%.2f\n", Math.toDegrees(Math.atan2(ySpeed, xSpeed)));
+        if(leftTrigger.getAsBoolean()) {
+            xSpeed *= SLOW_LINEAR_SPEED;
+            ySpeed *= SLOW_LINEAR_SPEED;
+            rot *= SLOW_ROTATIONAL_SPEED;
+        }
 
         driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
     }
