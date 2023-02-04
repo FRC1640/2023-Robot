@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.subsystems.drive.JoystickCleaner;
+import frc.robot.subsystems.drive.JoystickCleaner;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
