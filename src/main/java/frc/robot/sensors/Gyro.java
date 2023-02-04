@@ -39,4 +39,7 @@ public class Gyro {
     public double getOffset() {
       return offset;
     }
+    public AHRS getGyro(){
+      return gyro;
+    }
 }
