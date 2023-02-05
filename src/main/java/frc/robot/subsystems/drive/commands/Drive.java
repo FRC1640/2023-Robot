@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Limelight;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.sensors.DistanceSensor;
 import frc.robot.utilities.Logger;
 
 import javax.swing.JList.DropLocation;
@@ -37,7 +38,7 @@ public class Drive extends CommandBase {
     private double rot;
 
     private boolean fieldRelative = true;
-
+    DistanceSensor distanceSensor = new DistanceSensor();
     public Drive(DriveSubsystem driveSubsystem, boolean fieldRelative) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
@@ -50,7 +51,9 @@ public class Drive extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
+        // System.out.println("Pitch: " + driveSubsystem.getGyroPitch());
+        System.out.println("Distance: " + distanceSensor.readDistance());
+        // distanceSensor.readDistance();
         // if (driveSubsystem.aprilTagLength() > 0){
         //     System.out.println("tag");
         //     driveSubsystem.resetOdometry(new Pose2d(new Translation2d(driveSubsystem.getBotPose().getX() + 8, driveSubsystem.getBotPose().getY() + 4), driveSubsystem.getGyroAngle()));
