@@ -1,28 +1,38 @@
 package frc.robot.subsystems.sensors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 
 public class DistanceSensor {
 
   AnalogInput analog = new AnalogInput(4);
-  // static int AVERAGE_OF = 50;
+  static int maxAverage = 25;
+  double iterations = 0;
+  List<Double> list = new ArrayList<>();
   // static double MCU_VOLTAGE = 5.0;
   
   
 
-  public double readDistance() {
+  public boolean readDistance() {
     double voltageReading = analog.getVoltage();
     // Robojax.com code for sharp IR sensor
-    //double voltage_temp_average = 0;
+    double voltageAverage = 0;
     // System.out.println("Voltage: " + analog.getValue());
-    /*for (int i = 0; i < AVERAGE_OF; i++) {
-      double sensorValue = analog.getValue();
-      // delay(1);
-      voltage_temp_average += analog.getVoltage();
-
+    if (iterations < maxAverage){
+      iterations += 1;
+      list.add(voltageReading);
     }
-    voltage_temp_average /= AVERAGE_OF;
-    */
+    else {
+      list.add(voltageReading);
+      list.remove(0);
+    }
+    for (int i = 0; i < list.size(); i++){
+      voltageAverage += list.get(i);
+    }
+    voltageAverage /= iterations;
+    
     //analog.getAverageVoltage();
 
     // eqution of the fitting curve
@@ -31,7 +41,8 @@ public class DistanceSensor {
     // return (6762/(analog.getValue()-9))+7;
 
     //return 15.9019*Math.pow(voltageReading, 2.0)+(-65.6834)*voltageReading+77.1776;
-    return 83.0137*Math.pow(Math.E, voltageReading*-1.08658);
+    //return 83.0137*Math.pow(Math.E, voltageReading*-1.08658);
+    return (2.28211 * Math.pow(voltageAverage, 3)) + (7.09806 * Math.pow(voltageAverage, 2)) + (-54.4178 * voltageAverage) + 71.5654 > 15;
     // Robojax.com code for sharp IR sensor
   }// readDistance
 }
