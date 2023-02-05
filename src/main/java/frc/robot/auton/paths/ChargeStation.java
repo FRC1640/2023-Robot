@@ -8,23 +8,22 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotContainer;
 import frc.robot.auton.commands.Balance;
 import frc.robot.auton.commands.EndPitch;
+import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 
 public class ChargeStation {
-  private final DriveSubsystem swerve = RobotContainer.drive;
   
 
 
@@ -33,20 +32,20 @@ public class ChargeStation {
   public static final double y = 0.301625; 
   public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(y, x),new Translation2d(y, -x), new Translation2d(-y, x), new Translation2d(-y, -x));
 
-
-  PathPlannerTrajectory chargePath = PathPlanner.loadPath("Charge Station", new PathConstraints(3, 2));
+  
+  PathPlannerTrajectory chargePath = PathPlanner.loadPath("Charge Station", new PathConstraints(2, 2));
   PathPlannerState chargeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
-  public CommandBase loadAuto() { 
+  public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve) { 
     chargeState = chargePath.getInitialState();
     Pose2d chargePose = new Pose2d(chargeState.poseMeters.getTranslation(), chargeState.holonomicRotation);
-
+    Command resetOdo = new ResetOdometryCommand(swerve, chargePose);
 
 
     PPSwerveControllerCommand chargePathController = new PPSwerveControllerCommand(chargePath,
     swerve::getPose, // Functional interface to feed supplier
     kDriveKinematics, new PIDController(0.3, 0.0, 0.0), new PIDController(0.3, 0.0, 0.0), new PIDController(0.5, 0, 0),
     swerve::setModuleStates, false, swerve);
-    return Commands.sequence(new Balance(swerve));//new EndPitch(swerve).deadlineWith(chargePathController), 
+    return Commands.sequence(resetOdo, new EndPitch(swerve, gyro).deadlineWith(chargePathController), new Balance(swerve, gyro));// 
   }
 }
