@@ -6,6 +6,9 @@ package frc.robot.subsystems.drive;
 
 import java.util.stream.Stream;
 
+import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,8 +30,8 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 6; // 3 meters per second  
   public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second  
 
-  public static final double x = 0.276225; // 10.875"
-  public static final double y = 0.301625; // 11.875"
+  public static final double x = Units.inchesToMeters(10.375); // 10.375"
+  public static final double y = Units.inchesToMeters(12.375); // 12.375"
 
   private final Translation2d frontLeftLocation = new Translation2d(x, y);
   private final Translation2d frontRightLocation = new Translation2d(x, -y);
@@ -91,6 +95,11 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
+
+
+    //prints
+    // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(), frontRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD());
+    // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getDriveEncoder().getVelocity(), frontRight.getDriveEncoder().getVelocity(), backLeft.getDriveEncoder().getVelocity(),backRight.getDriveEncoder().getVelocity());
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
@@ -139,5 +148,9 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
+  }
+  public CANSparkMax getMotor(){
+    System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(), frontRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD());
+    return frontLeft.getMotor();
   }
 }
