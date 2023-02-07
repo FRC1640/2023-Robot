@@ -23,9 +23,6 @@ public class Gyro {
     public double getGyroPitch(){
       return gyro.getPitch();
     }
-    public double getGyroRoll(){
-      return gyro.getRoll();
-    }
     public Rotation2d getRotation2d(){
       return new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(offset));
     }
