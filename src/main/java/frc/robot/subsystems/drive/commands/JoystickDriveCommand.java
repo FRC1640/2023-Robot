@@ -8,8 +8,6 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.JoystickCleaner;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.controller.PIDController;
-
 
 public class JoystickDriveCommand extends CommandBase {
     final double SLOW_LINEAR_SPEED = 0.55;
@@ -20,34 +18,25 @@ public class JoystickDriveCommand extends CommandBase {
 
     DriveSubsystem driveSubsystem;
     Gyro gyro;
-    Trigger resetGyroTrigger;
     XboxController driverController;
-    
-    Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
     JoystickCleaner joystickCleaner = new JoystickCleaner();
 
+    private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
     private boolean fieldRelative = true;
 
-    private boolean gyroCorrectionOn = false;
-    private double gyroCorrectionHeading;
-    private PIDController gyroCorrectionPID = new PIDController(0.5, 0, 0);
-
-    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, Trigger resetGyroTrigger, XboxController driveController) {
+    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
         this.gyro = gyro;
-        this.resetGyroTrigger = resetGyroTrigger;
         this.driverController = driveController;
         addRequirements(driveSubsystem);
-
-        gyroCorrectionPID.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
-    public void initialize() {
-        gyroCorrectionOn = false;
-    }
+    public void initialize() { }
 
     @Override
     public void execute() {
@@ -59,16 +48,17 @@ public class JoystickDriveCommand extends CommandBase {
             fieldRelative = !fieldRelative;
         }
 
-        if (resetGyroTrigger.getAsBoolean()) {
-            gyroCorrectionOn = false;
-            gyroCorrectionHeading = 0;
+        Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
+
+        if(leftTrigger.getAsBoolean()) {
+            xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
+            ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
+            rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
+        } else {
+            xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
+            ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
+            rot = -m_rotLimiter.calculate(driverController.getRightX());
         }
-
-        xSpeed = -driverController.getLeftY();
-        ySpeed = -driverController.getLeftX();
-        rot = -driverController.getRightX();
-
-        // System.out.format("%.2f\n", Math.toDegrees(Math.atan2(ySpeed, xSpeed)));
 
         /* Apply linear deadband */
         joystickCleaner.setX(xSpeed);
@@ -81,29 +71,7 @@ public class JoystickDriveCommand extends CommandBase {
         rot = MathUtil.applyDeadband(rot, LOWER_DB, 1 - UPPER_DB);
 
         /* Increase rotational sensitivity */
-        rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0);
-
-        /* Determine whether to apply gyro correction */
-        if(Math.abs(rot) < 0.01) {
-            if (!gyroCorrectionOn) {
-                gyroCorrectionOn = true;
-                gyroCorrectionHeading = gyro.getGyroAngle().getRadians();
-            }
-        }
-        else{
-            gyroCorrectionOn = false;
-        }
-
-        /* Apply gyro correction */
-        if (gyroCorrectionOn) {
-            rot = gyroCorrectionPID.calculate(gyro.getGyroAngle().getRadians(), gyroCorrectionHeading);
-        }
-
-        if(leftTrigger.getAsBoolean()) {
-            xSpeed *= SLOW_LINEAR_SPEED;
-            ySpeed *= SLOW_LINEAR_SPEED;
-            rot *= SLOW_ROTATIONAL_SPEED;
-        }
+        rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0 / 3.0);
 
         driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
     }
