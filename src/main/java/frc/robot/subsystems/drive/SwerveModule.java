@@ -77,9 +77,6 @@ public class SwerveModule {
 		return (driveEncoder.getPosition()) * kWheelRadius * 0.10472 * 0.12 * Math.cos(steeringEncoder.get());
 	}
 
-	public CANSparkMax getMotor(){
-		return steeringMotor;
-	}
 
 	public double getVelocity() {
 		//return driveEncoder.getVelocity();
@@ -138,11 +135,6 @@ public class SwerveModule {
 
 		double driveFeedForward = -driveFeedforward.calculate(targetSpeed);
 		double driveOutput = -drivePIDController.calculate(getVelocity(), targetSpeed);
-
-		// if (cfg.getName() == PivotId.FR) {
-		// 	System.out.printf("targetSpeed: %.2f, driveFeedForward: %.2f, driveOutput: %.2f", targetSpeed, driveFeedForward, driveOutput);
-			
-		// }
 
 		driveMotor.setVoltage(driveFeedForward + driveOutput);
 		steeringMotor.set(turnOutput);

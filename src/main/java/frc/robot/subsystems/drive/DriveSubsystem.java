@@ -149,8 +149,4 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     updateOdometry();
   }
-  public CANSparkMax getMotor(){
-    System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(), frontRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD());
-    return frontLeft.getMotor();
-  }
 }
