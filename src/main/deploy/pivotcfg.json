@@ -2,13 +2,13 @@
     "FL" : {
         "name" : "FL",
         "position" : {
-            "x" : -10.875,
-            "y" : 11.875
+            "x" : -10.375,
+            "y" : 12.375
         },
-        "minVoltage" : 0.21,
-        "maxVoltage" : 4.7,
-        "driveChannel" : 8,
-        "steerChannel" : 9,
+        "minvoltage" : 0.1,
+        "maxvoltage" : 4.9,
+        "driveChannel" : 3,
+        "steerChannel" : 4,
         "resolverChannel" : 0,
         "cvtChannel" : 0,
 		"offset" : 45,
@@ -20,13 +20,13 @@
     "FR" : {
         "name" : "FR",
         "position" : {
-            "x" : 10.875,
-            "y" : 11.875
+            "x" : 10.375,
+            "y" : 12.375
         },
-        "minVoltage" : 0.21,
-        "maxVoltage" : 4.7,
-        "driveChannel" : 1,
-        "steerChannel" : 20,
+        "minvoltage" : 0.1,
+        "maxvoltage" : 4.9,
+        "driveChannel" : 2,
+        "steerChannel" : 1,
         "resolverChannel" : 2,
         "cvtChannel" : 2,
 		"offset" : -45,
@@ -38,13 +38,13 @@
     "BL" : {
         "name" : "BL",
         "position" : {
-            "x" : -10.875,
-            "y" : -11.875
+            "x" : -10.375,
+            "y" : -12.375
         },
-        "minVoltage" : 0.21,
-        "maxVoltage" : 4.7,
-        "driveChannel" : 12,
-        "steerChannel" : 11,
+        "minvoltage" : 0.1,
+        "maxvoltage" : 4.9,
+        "driveChannel" : 18,
+        "steerChannel" : 17,
         "resolverChannel" : 1,
         "cvtChannel" : 1,
 		"offset" : 135,
@@ -56,13 +56,13 @@
     "BR" : {
         "name" : "BR",
         "position" : {
-            "x" : 10.875,
-            "y" : -11.875
+            "x" : 10.375,
+            "y" : -12.375
         },
-        "minVoltage" : 0.21,
-        "maxVoltage" : 4.7,
-        "driveChannel" : 17,
-        "steerChannel" : 18,
+        "minvoltage" : 0.1,
+        "maxvoltage" : 4.9,
+        "driveChannel" : 19,
+        "steerChannel" : 20,
         "resolverChannel" : 3,
         "cvtChannel" : 3,
 		"offset" : -135,
