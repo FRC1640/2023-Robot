@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ArmSubsystem extends SubsystemBase{
     //TODO: set ids
-    CANSparkMax lowerArmMotor = new CANSparkMax(0, MotorType.kBrushless);
+    CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
+    CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
     CANSparkMax upperArmMotor = new CANSparkMax(0, MotorType.kBrushless);
     
     double lowerArmSpeedManual = 0;
@@ -37,7 +38,7 @@ public class ArmSubsystem extends SubsystemBase{
     }
     ArmMode mode;
     public ArmSubsystem(){
-
+        lowerArmMotor2.follow(lowerArmMotor1);
     }
     @Override
     public void periodic() {
@@ -56,7 +57,7 @@ public class ArmSubsystem extends SubsystemBase{
 
         }
 
-        lowerArmMotor.set(lowerArmSpeed);
+        lowerArmMotor1.set(lowerArmSpeed);
         upperArmMotor.set(upperArmSpeed);
     }
     public void setMode(ArmMode newMode){
