@@ -36,7 +36,7 @@ public class ArmSubsystem extends SubsystemBase{
         }
     }
     ArmMode mode;
-    ArmSubsystem(){
+    public ArmSubsystem(){
 
     }
     @Override

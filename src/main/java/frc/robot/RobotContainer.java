@@ -10,6 +10,8 @@ import frc.robot.auton.paths.AlignAuto;
 import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
+import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.commands.ArmManualCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
@@ -28,15 +30,17 @@ public class RobotContainer {
   Joystick driveJoystick = new Joystick(0);
   Joystick opJoystick = new Joystick(1);
   boolean wasEnabled = false;
-  DriveSubsystem drive;
+  DriveSubsystem driveSubsystem;
   Limelight limelight = new Limelight();
-
+  ArmSubsystem armSubsystem;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     gyro = new Gyro();
-    drive = new DriveSubsystem(gyro);
+    driveSubsystem = new DriveSubsystem(gyro);
+    armSubsystem = new ArmSubsystem();
     DashboardInit dashboardInit = new DashboardInit(gyro);
-    drive.setDefaultCommand(new JoystickDriveCommand(drive, true, gyro, driverController));
+    driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController));
+    armSubsystem.setDefaultCommand(new ArmManualCommand(armSubsystem, operatorController));
     // drive.setDefaultCommand(new SetDriveDirect(drive, driverController));
     // Configure the trigger bindings
     configureBindings();
@@ -64,6 +68,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
     AlignAuto auto = new AlignAuto();
-    return auto.loadAuto(gyro, drive, limelight);
+    return auto.loadAuto(gyro, driveSubsystem, limelight);
   }
 }
