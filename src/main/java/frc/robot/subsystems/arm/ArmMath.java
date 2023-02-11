@@ -21,7 +21,7 @@ public class ArmMath {
         math.setX(0);
         math.setY(10000);
         math.inverseKinematics();
-        System.out.format("%.2f, %.2f\n", math.getLowerAngle(), math.getUpperAngle());
+        // System.out.format("%.2f, %.2f\n", math.getLowerAngle(), math.getUpperAngle());
     }
     public ArmMath(double lowerLength, double upperLength){
         this.lowerLength = lowerLength;
@@ -33,7 +33,7 @@ public class ArmMath {
     public void fowardKinematics(){
         double x1 = lowerLength * Math.sin(theta1);
         double y1 = lowerLength * Math.cos(theta1);
-        System.out.println("x1: " + x1 + "y1: " + y1);
+        // System.out.println("x1: " + x1 + "y1: " + y1);
         x = x1 + (upperLength * Math.sin(theta1 + theta2));
         y = y1 + (upperLength * Math.cos(theta1 + theta2));
     }

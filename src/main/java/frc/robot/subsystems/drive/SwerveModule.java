@@ -97,9 +97,9 @@ public class SwerveModule {
 
 	public void setDesiredState(SwerveModuleState state) {
 		desiredState = state;
-		if (cfg.getName() == PivotId.FL){
-			System.out.format("%.2f, %.2f\n", desiredState.angle.getDegrees(), steeringEncoder.getD());
-		}
+		// if (cfg.getName() == PivotId.FL){
+		// 	System.out.format("%.2f, %.2f\n", desiredState.angle.getDegrees(), steeringEncoder.getD());
+		// }
 		double dAngle = state.angle.getDegrees() - steeringEncoder.getD();
 		double dAngleAbs = Math.abs(dAngle) % 360;
 		boolean flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);

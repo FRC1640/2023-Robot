@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm.commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem.ArmMode;
 
 public class ArmManualCommand extends CommandBase{
     ArmSubsystem armSubsystem;
@@ -14,7 +15,9 @@ public class ArmManualCommand extends CommandBase{
     }
     
     @Override
-    public void initialize() {}
+    public void initialize() {
+        armSubsystem.setMode(ArmMode.Manual);
+    }
 
     @Override
     public void execute() {
