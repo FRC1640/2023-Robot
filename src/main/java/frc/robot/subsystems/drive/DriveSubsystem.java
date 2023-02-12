@@ -34,10 +34,10 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   private final Translation2d centerLocation = new Translation2d(0,0);
 
-  private final Translation2d frontLeftLocation = new Translation2d(x, y);
-  private final Translation2d frontRightLocation = new Translation2d(x, -y);
-  private final Translation2d backLeftLocation = new Translation2d(-x, y);
-  private final Translation2d backRightLocation = new Translation2d(-x, -y);
+  private final Translation2d frontLeftLocation = new Translation2d(-x, y);
+  private final Translation2d frontRightLocation = new Translation2d(x, y);
+  private final Translation2d backLeftLocation = new Translation2d(-x, -y);
+  private final Translation2d backRightLocation = new Translation2d(x, -y);
 
   private final SwerveModule frontLeft = new SwerveModule(PivotConfig.getConfig(PivotId.FL));
   private final SwerveModule frontRight = new SwerveModule(PivotConfig.getConfig(PivotId.FR));

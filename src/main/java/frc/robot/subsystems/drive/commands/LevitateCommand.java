@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive.commands;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.sensors.DistanceSensor;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -18,13 +19,13 @@ public class LevitateCommand extends CommandBase{
     @Override
     public void execute() {
       if (!leftSensor.isOff() && !rightSensor.isOff()){
-        //drive right
+        driveSubsystem.drive(0, 0.1, 0, false);
       }
       if (leftSensor.isOff()){
-        //pivot on left
+        driveSubsystem.driveAxis(0, 0, 0.1, false, new Translation2d(-10.375,12.375));
       }
       if (rightSensor.isOff()){
-        //pivot on right
+        driveSubsystem.driveAxis(0, 0, 0.1, false, new Translation2d(-10.375,-12.375));
       }
       if (leftSensor.isOff() && rightSensor.isOff()){
         //drive right and foot
