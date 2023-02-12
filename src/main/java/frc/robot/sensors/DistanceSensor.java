@@ -6,8 +6,12 @@ import java.util.List;
 import edu.wpi.first.wpilibj.AnalogInput;
 
 public class DistanceSensor {
+  private AnalogInput analog;
 
-  AnalogInput analog = new AnalogInput(4);
+  public DistanceSensor (int channel){
+    analog = new AnalogInput(channel);
+  }
+
   static int maxAverage = 25;
   double iterations = 0;
   List<Double> list = new ArrayList<>();
