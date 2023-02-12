@@ -16,13 +16,7 @@ public class ArmMath {
     double y;
     double theta1;
     double theta2;
-    public static void main(String args[]){
-        ArmMath math = new ArmMath(3, 3);
-        math.setX(0);
-        math.setY(10000);
-        math.inverseKinematics();
-        // System.out.format("%.2f, %.2f\n", math.getLowerAngle(), math.getUpperAngle());
-    }
+
     public ArmMath(double lowerLength, double upperLength){
         this.lowerLength = lowerLength;
         this.upperLength = upperLength;

@@ -22,11 +22,13 @@ public class ArmManualCommand extends CommandBase{
     @Override
     public void execute() {
         armSubsystem.setManualLower(opController.getLeftY());
+        armSubsystem.setManualUpper(opController.getRightY());
     }
 
     @Override
     public void end(boolean interrupted) {
         armSubsystem.setManualLower(0);
+        armSubsystem.setManualUpper(0);
     }
 
     @Override

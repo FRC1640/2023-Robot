@@ -33,9 +33,9 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
 
-  private final Translation2d frontLeftLocation = new Translation2d(x, y);
-  private final Translation2d frontRightLocation = new Translation2d(x, -y);
-  private final Translation2d backLeftLocation = new Translation2d(-x, y);
+  private final Translation2d frontLeftLocation = new Translation2d(-x, y);
+  private final Translation2d frontRightLocation = new Translation2d(x, y);
+  private final Translation2d backLeftLocation = new Translation2d(x, -y);
   private final Translation2d backRightLocation = new Translation2d(-x, -y);
 
   private final SwerveModule frontLeft = new SwerveModule(PivotConfig.getConfig(PivotId.FL));
@@ -95,7 +95,8 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
-
+    
+    
 
     //prints
     // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(), frontRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD());

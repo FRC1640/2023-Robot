@@ -1,5 +1,8 @@
 package frc.robot.subsystems.arm;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import javax.swing.TransferHandler.TransferSupport;
 
 import com.revrobotics.CANSparkMax;
@@ -14,10 +17,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 
 public class ArmSubsystem extends SubsystemBase{
-    //TODO: set ids swap ids
+    //TODO: set ids
     CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
     CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
-    // CANSparkMax upperArmMotor = new CANSparkMax(0, MotorType.kBrushless);
+    CANSparkMax upperArmMotor1 = new CANSparkMax(0, MotorType.kBrushless);
+    CANSparkMax upperArmMotor2 = new CANSparkMax(0, MotorType.kBrushless);
     
     double lowerArmSpeedManual = 0;
     double upperArmSpeedManual = 0;
@@ -25,6 +29,8 @@ public class ArmSubsystem extends SubsystemBase{
     double lowerArmSpeedPreset = 0;
     double upperArmSpeedPreset = 0;
 
+    double lowerArmSpeedEndEffector = 0;
+    double upperArmSpeedEndEffector = 0;
     final double lowerArmMaxSpeed = 0;
     final double lowerArmMaxAccel = 0;
     final double upperArmMaxSpeed = 0;
@@ -40,24 +46,15 @@ public class ArmSubsystem extends SubsystemBase{
     }
     
     public static enum Preset{
-        Down(0, 0),
-        Up(1, 2, null);
-
-        public double lowerArmAngle;
-        public double upperArmAngle;
-        Preset(double lowerArmAngle, double upperArmAngle) {
-            this.lowerArmAngle = lowerArmAngle;
-            this.upperArmAngle = upperArmAngle;
-        }
-
-        Preset(double x, double y, Object donotuse) {
-            //TODO: MATH
-        }
+        Down(),
+        Up();
     }
+    // Map<Preset, ArmState> presetMap = new EnumMap<Preset, ArmState>();
+    //TODO: Map
     ArmMode mode;
     public ArmSubsystem(){
         lowerArmMotor2.follow(lowerArmMotor1);
-        
+        upperArmMotor2.follow(upperArmMotor1);
     }
     @Override
     public void periodic() {
@@ -68,14 +65,15 @@ public class ArmSubsystem extends SubsystemBase{
             upperArmSpeed = upperArmSpeedManual;
             
         }
-        else{
-            lowerArmSpeed = 0;
-            upperArmSpeed = 0;
-        }
 
         if (mode == ArmMode.Preset){
             lowerArmSpeed = lowerArmSpeedPreset;
 
+        }
+
+        if (mode == ArmMode.EndEffector){
+            lowerArmSpeed = lowerArmSpeedEndEffector;
+            upperArmSpeed = upperArmSpeedEndEffector;
         }
         System.out.format("%.2f, %.2f\n", upperArmSpeed, lowerArmSpeed);
         lowerArmMotor1.set(lowerArmSpeed);
@@ -91,6 +89,12 @@ public class ArmSubsystem extends SubsystemBase{
     }
     public void setManualLower(double speed){
         lowerArmSpeedManual = speed;
+    }
+    public void setEndEffectoLower(double speed){
+        lowerArmSpeedEndEffector = speed;
+    }
+    public void setEndEffectorUpper(double speed){
+        upperArmSpeedEndEffector = speed;
     }
     public void setPresetSpeedLower(double speed){
         lowerArmSpeedPreset = speed;
