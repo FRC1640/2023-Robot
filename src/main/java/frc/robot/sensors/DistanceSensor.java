@@ -15,7 +15,7 @@ public class DistanceSensor {
   
   
 
-  public boolean readDistance() {
+  public boolean isOff() {
     double voltageReading = analog.getVoltage();
     // Robojax.com code for sharp IR sensor
     double voltageAverage = 0;
