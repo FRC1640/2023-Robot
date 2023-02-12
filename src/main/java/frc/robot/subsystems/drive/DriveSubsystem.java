@@ -33,6 +33,7 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
 
+  private final Translation2d centerLocation = new Translation2d(0,0);
   private final Translation2d frontLeftLocation = new Translation2d(x, y);
   private final Translation2d frontRightLocation = new Translation2d(x, -y);
   private final Translation2d backLeftLocation = new Translation2d(-x, y);
@@ -85,29 +86,23 @@ public class DriveSubsystem extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    driveAxis(xSpeed, ySpeed, rot, fieldRelative, centerLocation);
+    //prints
+    // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(), frontRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD());
+    // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getDriveEncoder().getVelocity(), frontRight.getDriveEncoder().getVelocity(), backLeft.getDriveEncoder().getVelocity(),backRight.getDriveEncoder().getVelocity());
+  }
+  public void driveAxis(double xSpeed, double ySpeed, double rot, boolean fieldRelative, Translation2d rotAxis) {
     var swerveModuleStates = kinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot,
                 new Rotation2d(gyro.getRotation2d().getRadians()))
-            : new ChassisSpeeds(xSpeed, ySpeed, rot));
+            : new ChassisSpeeds(xSpeed, ySpeed, rot),
+            rotAxis);
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
-
-
-    //prints
-    // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(), frontRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD());
-    // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getDriveEncoder().getVelocity(), frontRight.getDriveEncoder().getVelocity(), backLeft.getDriveEncoder().getVelocity(),backRight.getDriveEncoder().getVelocity());
-  }
-
-  public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, kMaxSpeed);
-    frontLeft.setDesiredStateAuto(desiredStates[0]);
-    frontRight.setDesiredStateAuto(desiredStates[1]);
-    backLeft.setDesiredStateAuto(desiredStates[2]);
-    backRight.setDesiredStateAuto(desiredStates[3]);
   }
   
   public void pointWheels(double angle) {
