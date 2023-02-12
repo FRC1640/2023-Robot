@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 
@@ -124,12 +125,12 @@ public class ArmSubsystem extends SubsystemBase{
     }
 
 
-    public Command armProfile(double lowerPos, double upperPos){
+    public Command armProfile(double lowerPos, double upperPos, double startPositionLower, double startPositionUpper){
         TrapezoidProfileCommand lowerProfile = new TrapezoidProfileCommand(
             new TrapezoidProfile(
                 new TrapezoidProfile.Constraints(
                     getLowerArmMaxSpeed(), getLowerArmMaxAccel()),
-                     new TrapezoidProfile.State(lowerPos - getLowerPosition(), 0)),
+                     new TrapezoidProfile.State(lowerPos - startPositionLower, 0)),
                      state -> setPresetSpeedLower(state.velocity / getLowerArmMaxSpeed()));
         
         //upper profile
@@ -137,10 +138,26 @@ public class ArmSubsystem extends SubsystemBase{
             new TrapezoidProfile(
                 new TrapezoidProfile.Constraints(
                     getUpperArmMaxSpeed(), getUpperArmMaxAccel()),
-                     new TrapezoidProfile.State(upperPos - getUpperPosition(), 0)),
+                     new TrapezoidProfile.State(upperPos - startPositionUpper, 0)),
                       state -> setPresetSpeedUpper(state.velocity / getUpperArmMaxSpeed()));
         ParallelCommandGroup group = new ParallelCommandGroup(lowerProfile, upperProfile);
         group.addRequirements(this);
+        return group;
+    }
+
+
+    public Command tripleMove(double lowerPos, double upperPos){
+        //TODO: set values
+        double lowerPos1 = -1;
+        double upperPos1 = getUpperPosition();
+        double lowerPos2 = getLowerPosition();
+        double upperPos2 = -1;
+        double lowerPos3 = lowerPos;
+        double upperPos3 = upperPos;
+        Command profile1 = armProfile(lowerPos1, upperPos1, getLowerPosition(), getUpperPosition());
+        Command profile2 = armProfile(lowerPos2, upperPos2, lowerPos1, upperPos1);
+        Command profile3 = armProfile(lowerPos3, upperPos3, lowerPos2, upperPos2);
+        SequentialCommandGroup group = new SequentialCommandGroup(profile1, profile2, profile3);
         return group;
     }
 }
