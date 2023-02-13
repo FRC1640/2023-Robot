@@ -20,8 +20,8 @@ public class ArmSubsystem extends SubsystemBase{
     //TODO: set ids
     CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
     CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
-    CANSparkMax upperArmMotor1 = new CANSparkMax(0, MotorType.kBrushless);
-    CANSparkMax upperArmMotor2 = new CANSparkMax(0, MotorType.kBrushless);
+    // CANSparkMax upperArmMotor1 = new CANSparkMax(0, MotorType.kBrushless);
+    // CANSparkMax upperArmMotor2 = new CANSparkMax(0, MotorType.kBrushless);
     
     double lowerArmSpeedManual = 0;
     double upperArmSpeedManual = 0;
@@ -37,7 +37,7 @@ public class ArmSubsystem extends SubsystemBase{
     final double upperArmMaxAccel = 0;
     
 
-    Preset currentPreset = Preset.Down;
+    Preset currentPreset = Preset.Ground;
     public static enum ArmMode {
         Manual,
         EndEffector,
@@ -46,15 +46,26 @@ public class ArmSubsystem extends SubsystemBase{
     }
     
     public static enum Preset{
-        Down(),
-        Up();
+        Ground,
+        C5,
+        LowCube,
+        HighCube,
+        LowCone,
+        HighCone;
     }
-    // Map<Preset, ArmState> presetMap = new EnumMap<Preset, ArmState>();
-    //TODO: Map
+    
+    static final Map<Preset, ArmState> presetMap = new EnumMap<>(Map.ofEntries( //TODO: Points
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0, 0)),
+        Map.entry(Preset.C5, ArmState.fromEndEffector(0, 0)),
+        Map.entry(Preset.LowCube, ArmState.fromEndEffector(0, 0)),
+        Map.entry(Preset.HighCube, ArmState.fromEndEffector(0, 0)),
+        Map.entry(Preset.LowCone, ArmState.fromEndEffector(0, 0)),
+        Map.entry(Preset.HighCone, ArmState.fromEndEffector(0, 0))
+    ));
     ArmMode mode;
     public ArmSubsystem(){
         lowerArmMotor2.follow(lowerArmMotor1);
-        upperArmMotor2.follow(upperArmMotor1);
+        // upperArmMotor2.follow(upperArmMotor1);
     }
     @Override
     public void periodic() {
