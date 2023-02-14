@@ -1,71 +1,48 @@
 package frc.robot.subsystems.arm;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies.UpperCamelCaseStrategy;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.numbers.N2;
 
 public class ArmMath {
-    /*
-     * ASSUMPTIONS:
-     * Theta1 = 0 when lower arm points straight up
-     * Theta1 and theta2 increase torwards the front of the robot 
-     * Theta2 = 0 when arms are parallel 
-     * Using radians
-     */
     double lowerLength;
     double upperLength;
-    double x;
-    double y;
+
     double theta1;
     double theta2;
+
+    double omega1;
+    double omega2;
+
+    double x;
+    double y;
+
+    double xPrime;
+    double yPrime;
+
+    MatBuilder<>, Nat<N2>> matBuilder = new MatBuilder<>(Nat.N2(), Nat.N2());
 
     public ArmMath(double lowerLength, double upperLength){
         this.lowerLength = lowerLength;
         this.upperLength = upperLength;
     }
-    /*
-     * Converts angle to position
-     */
-    public void fowardKinematics(){
-        double x1 = lowerLength * Math.sin(theta1);
-        double y1 = lowerLength * Math.cos(theta1);
-        // System.out.println("x1: " + x1 + "y1: " + y1);
-        x = x1 + (upperLength * Math.sin(theta1 + theta2));
-        y = y1 + (upperLength * Math.cos(theta1 + theta2));
+    public void kinematicsThing(){
+        x = lowerLength * Math.sin(theta1) + upperLength * Math.sin(theta1 + theta2);
+        y = lowerLength * Math.cos(theta1) + upperLength * Math.cos(theta1 + theta2);
+        xPrime =lowerLength * Math.cos(theta1) * omega1 + upperLength * Math.cos(theta1 + theta2) * (omega1 + omega2);
+        yPrime =lowerLength * Math.sin(theta1) * omega1 - upperLength * Math.sin(theta1 + theta2) * (omega1 + omega2);
+        
     }
-    /*
-     * Converts position to angle
-     */
-    public void inverseKinematics(){
-        theta2 = Math.acos((x * x + y * y - lowerLength * lowerLength - upperLength * upperLength) / (2 * lowerLength * upperLength));
-        System.out.println(theta2);
-        theta1 = Math.PI / 2 - Math.atan(y/x) + Math.atan((upperLength * Math.sin(-theta2)) / (lowerLength + upperLength * Math.cos(-theta2)));
-        if (Double.isNaN(theta1) || Double.isNaN(theta2)){
-            throw new IllegalStateException(String.format("The position %.2f,%.2f is not possible", x,y));
-        }
+    public void setTheta1(double theta1){
+        this.theta1 = theta1;
     }
-    public double getX(){
-        return x;
+    public void setTheta2(double theta2){
+        this.theta2 = theta2;
     }
-    public double getY(){
-        return y;
+    public void setOmega1(double omega1){
+        this.omega1 = omega1;
     }
-    public double getLowerAngle(){
-        return theta1;
-    }
-    public double getUpperAngle(){
-        return theta2;
-    }
-
-
-    public void setX(double x){
-        this.x = x;
-    }
-    public void setY(double y){
-        this.y = y;
-    }
-    public void setLowerAngle(double theta){
-        this.theta1 = theta;
-    }
-    public void setUpperAngle(double theta){
-        this.theta2 = theta;
+    public void setOmega2(double omega2){
+        this.omega2 = omega2;
     }
 }
