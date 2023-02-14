@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import java.util.EnumMap;
 import java.util.Map;
 
+import javax.print.attribute.standard.PresentationDirection;
 import javax.swing.TransferHandler.TransferSupport;
 
 import com.revrobotics.CANSparkMax;
@@ -16,13 +17,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 
-public class ArmSubsystem extends SubsystemBase{
-    //TODO: set ids
+public class ArmSubsystem extends SubsystemBase {
+    // TODO: set upper arm ids
+    // TODO: arm encoders
+    // TODO: remove presetmode and figure out button bindings
     CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
     CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
     // CANSparkMax upperArmMotor1 = new CANSparkMax(0, MotorType.kBrushless);
     // CANSparkMax upperArmMotor2 = new CANSparkMax(0, MotorType.kBrushless);
-    
+
     double lowerArmSpeedManual = 0;
     double upperArmSpeedManual = 0;
 
@@ -35,17 +38,19 @@ public class ArmSubsystem extends SubsystemBase{
     final double lowerArmMaxAccel = 0;
     final double upperArmMaxSpeed = 0;
     final double upperArmMaxAccel = 0;
-    
+    double lowerArmSpeed = 0;
+    double upperArmSpeed = 0;
 
     Preset currentPreset = Preset.Ground;
+
     public static enum ArmMode {
         Manual,
         EndEffector,
         Preset;
-        
+
     }
-    
-    public static enum Preset{
+
+    public static enum Preset {
         Ground,
         C5,
         LowCube,
@@ -53,36 +58,36 @@ public class ArmSubsystem extends SubsystemBase{
         LowCone,
         HighCone;
     }
-    
-    static final Map<Preset, ArmState> presetMap = new EnumMap<>(Map.ofEntries( //TODO: Points
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0, 0)),
-        Map.entry(Preset.C5, ArmState.fromEndEffector(0, 0)),
-        Map.entry(Preset.LowCube, ArmState.fromEndEffector(0, 0)),
-        Map.entry(Preset.HighCube, ArmState.fromEndEffector(0, 0)),
-        Map.entry(Preset.LowCone, ArmState.fromEndEffector(0, 0)),
-        Map.entry(Preset.HighCone, ArmState.fromEndEffector(0, 0))
-    ));
+
+    static final Map<Preset, ArmState> presetMap = new EnumMap<>(Map.ofEntries( // TODO: Points
+            Map.entry(Preset.Ground, ArmState.fromEndEffector(0, 0)),
+            Map.entry(Preset.C5, ArmState.fromEndEffector(0, 0)),
+            Map.entry(Preset.LowCube, ArmState.fromEndEffector(0, 0)),
+            Map.entry(Preset.HighCube, ArmState.fromEndEffector(0, 0)),
+            Map.entry(Preset.LowCone, ArmState.fromEndEffector(0, 0)),
+            Map.entry(Preset.HighCone, ArmState.fromEndEffector(0, 0))));
     ArmMode mode;
-    public ArmSubsystem(){
+
+    public ArmSubsystem() {
         lowerArmMotor2.follow(lowerArmMotor1);
         // upperArmMotor2.follow(upperArmMotor1);
     }
+
     @Override
     public void periodic() {
-        double lowerArmSpeed = 0;
-        double upperArmSpeed = 0;
-        if (mode == ArmMode.Manual){
+
+        if (mode == ArmMode.Manual) {
             lowerArmSpeed = lowerArmSpeedManual;
             upperArmSpeed = upperArmSpeedManual;
-            
+
         }
 
-        if (mode == ArmMode.Preset){
+        if (mode == ArmMode.Preset) {
             lowerArmSpeed = lowerArmSpeedPreset;
 
         }
 
-        if (mode == ArmMode.EndEffector){
+        if (mode == ArmMode.EndEffector) {
             lowerArmSpeed = lowerArmSpeedEndEffector;
             upperArmSpeed = upperArmSpeedEndEffector;
         }
@@ -90,79 +95,101 @@ public class ArmSubsystem extends SubsystemBase{
         lowerArmMotor1.set(lowerArmSpeed);
         // upperArmMotor.set(upperArmSpeed);
     }
-    public void setMode(ArmMode newMode){
+
+    public void setMode(ArmMode newMode) {
         mode = newMode;
         lowerArmSpeedManual = 0;
         upperArmSpeedManual = 0;
     }
-    public void setManualUpper(double speed){
+
+    public void setManualUpper(double speed) {
         upperArmSpeedManual = speed;
     }
-    public void setManualLower(double speed){
+
+    public void setManualLower(double speed) {
         lowerArmSpeedManual = speed;
     }
-    public void setEndEffectoLower(double speed){
+
+    public void setEndEffectoLower(double speed) {
         lowerArmSpeedEndEffector = speed;
     }
-    public void setEndEffectorUpper(double speed){
+
+    public void setEndEffectorUpper(double speed) {
         upperArmSpeedEndEffector = speed;
     }
-    public void setPresetSpeedLower(double speed){
+
+    public void setPresetSpeedLower(double speed) {
         lowerArmSpeedPreset = speed;
     }
-    public void setPresetSpeedUpper(double speed){
+
+    public void setPresetSpeedUpper(double speed) {
         upperArmSpeedPreset = speed;
     }
-    public double getLowerArmMaxSpeed(){
+
+    public double getLowerArmMaxSpeed() {
         return lowerArmMaxSpeed;
     }
-    public double getUpperArmMaxSpeed(){
+
+    public double getUpperArmMaxSpeed() {
         return upperArmMaxSpeed;
     }
-    public double getLowerArmMaxAccel(){
+
+    public double getLowerArmMaxAccel() {
         return lowerArmMaxAccel;
     }
-    public double getUpperArmMaxAccel(){
+
+    public double getUpperArmMaxAccel() {
         return upperArmMaxAccel;
     }
-    public void setPreset(Preset preset){
+
+    public void setPreset(Preset preset) {
         currentPreset = preset;
     }
-    public Preset getPreset(){
+
+    public Preset getPreset() {
         return currentPreset;
     }
-    public double getLowerPosition(){
+    //TODO: return angle, not encoder count
+    public double getLowerPosition() {
         return lowerArmMotor1.getEncoder().getPosition();
     }
-    public double getUpperPosition(){
+
+    public double getUpperPosition() {
         // return upperArmMotor.getEncoder().getPosition();
         return 0;
     }
 
+    public void stopArm() {
+        lowerArmSpeed = 0;
+        upperArmSpeed = 0;
+    }
 
-    public Command armProfile(double lowerPos, double upperPos, double startPositionLower, double startPositionUpper){
+    public Command armProfile(double lowerPos, double upperPos, double startPositionLower, double startPositionUpper) {
         TrapezoidProfileCommand lowerProfile = new TrapezoidProfileCommand(
-            new TrapezoidProfile(
-                new TrapezoidProfile.Constraints(
-                    getLowerArmMaxSpeed(), getLowerArmMaxAccel()),
-                     new TrapezoidProfile.State(lowerPos - startPositionLower, 0)),
-                     state -> setPresetSpeedLower(state.velocity / getLowerArmMaxSpeed()));
-        
-        //upper profile
+                new TrapezoidProfile(
+                        new TrapezoidProfile.Constraints(
+                                getLowerArmMaxSpeed(), getLowerArmMaxAccel()),
+                        new TrapezoidProfile.State(lowerPos - startPositionLower, 0)),
+                state -> setPresetSpeedLower(state.velocity / getLowerArmMaxSpeed()));
+
+        // upper profile
         TrapezoidProfileCommand upperProfile = new TrapezoidProfileCommand(
-            new TrapezoidProfile(
-                new TrapezoidProfile.Constraints(
-                    getUpperArmMaxSpeed(), getUpperArmMaxAccel()),
-                     new TrapezoidProfile.State(upperPos - startPositionUpper, 0)),
-                      state -> setPresetSpeedUpper(state.velocity / getUpperArmMaxSpeed()));
+                new TrapezoidProfile(
+                        new TrapezoidProfile.Constraints(
+                                getUpperArmMaxSpeed(), getUpperArmMaxAccel()),
+                        new TrapezoidProfile.State(upperPos - startPositionUpper, 0)),
+                state -> setPresetSpeedUpper(state.velocity / getUpperArmMaxSpeed()));
         ParallelCommandGroup group = new ParallelCommandGroup(lowerProfile, upperProfile);
         group.addRequirements(this);
         return group;
     }
 
+    public Command armProfilePreset(Preset preset){
+        return armProfile(presetMap.get(preset).theta1, presetMap.get(preset).theta2, getLowerPosition(), getUpperPosition());
+    }
 
-    public Command tripleMove(double lowerPos, double upperPos){
-        //TODO: set values
+    public Command tripleMove(double lowerPos, double upperPos) {
+        // TODO: set values
         double lowerPos1 = -1;
         double upperPos1 = getUpperPosition();
         double lowerPos2 = getLowerPosition();

@@ -28,7 +28,7 @@ public class AlignAuto {
     public static final double x = Units.inchesToMeters(10.375); // 10.375"
     public static final double y = Units.inchesToMeters(12.375); // 12.375"
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(y, x),new Translation2d(y, -x), new Translation2d(-y, x), new Translation2d(-y, -x));
-    public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, Limelight limelight) { 
+    public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, Limelight limelight, double x, double y) { 
         gyro.resetGyro();
         gyro.setOffset(-limelight.getBotPose().getRotation().getDegrees());
         
@@ -40,7 +40,7 @@ public class AlignAuto {
         PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
             new PathConstraints(2, 1),
             new PathPoint(pose, new Rotation2d(0), new Rotation2d(swerve.getPose().getRotation().getRadians())),
-            new PathPoint(new Translation2d(14.3, 1.3), new Rotation2d(0), new Rotation2d(0))
+            new PathPoint(new Translation2d(x, y), new Rotation2d(0), new Rotation2d(0))
           );
         PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,
         swerve::getPose, // Functional interface to feed supplier

@@ -11,7 +11,9 @@ import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.arm.commands.ArmManualCommand;
+import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
@@ -27,8 +29,6 @@ public class RobotContainer {
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
-  Joystick driveJoystick = new Joystick(0);
-  Joystick opJoystick = new Joystick(1);
   boolean wasEnabled = false;
   DriveSubsystem driveSubsystem;
   Limelight limelight = new Limelight();
@@ -38,17 +38,20 @@ public class RobotContainer {
     gyro = new Gyro();
     driveSubsystem = new DriveSubsystem(gyro);
     armSubsystem = new ArmSubsystem();
-    DashboardInit dashboardInit = new DashboardInit(gyro);
+    DashboardInit dashboardInit = new DashboardInit(gyro, armSubsystem);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController));
-    armSubsystem.setDefaultCommand(new ArmManualCommand(armSubsystem, operatorController));
+    armSubsystem.setDefaultCommand(new ArmStopCommand(armSubsystem));
     // drive.setDefaultCommand(new SetDriveDirect(drive, driverController));
     // Configure the trigger bindings
     configureBindings();
   }
 
   private void configureBindings() {
-    JoystickButton startButton = new JoystickButton(driveJoystick, 8);
+    JoystickButton startButton = new JoystickButton(driverController, 8);
     startButton.onTrue(new ResetGyroCommand(gyro));
+
+    Trigger manualCommandTrigger = new Trigger(() -> (driverController.getLeftY() >= 0.1 || driverController.getRightY() >= 0.1));
+    manualCommandTrigger.whileTrue(new ArmManualCommand(armSubsystem, driverController));
   }
 
   public void firstEnabled(){
@@ -67,7 +70,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
-    AlignAuto auto = new AlignAuto();
-    return auto.loadAuto(gyro, driveSubsystem, limelight);
+    ChargeStation auto = new ChargeStation();
+    return auto.loadAuto(gyro, driveSubsystem);
   }
 }
