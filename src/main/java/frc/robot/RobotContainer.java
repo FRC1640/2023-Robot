@@ -50,7 +50,7 @@ public class RobotContainer {
     JoystickButton startButton = new JoystickButton(driverController, 8);
     startButton.onTrue(new ResetGyroCommand(gyro));
 
-    Trigger manualCommandTrigger = new Trigger(() -> (driverController.getLeftY() >= 0.1 || driverController.getRightY() >= 0.1));
+    Trigger manualCommandTrigger = new Trigger(() -> (Math.abs(driverController.getLeftY()) >= 0.05 || Math.abs(driverController.getRightY()) >= 0.05));
     manualCommandTrigger.whileTrue(new ArmManualCommand(armSubsystem, driverController));
   }
 

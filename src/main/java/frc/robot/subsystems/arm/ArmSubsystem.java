@@ -23,8 +23,8 @@ public class ArmSubsystem extends SubsystemBase {
     // TODO: remove presetmode and figure out button bindings
     CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
     CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
-    // CANSparkMax upperArmMotor1 = new CANSparkMax(0, MotorType.kBrushless);
-    // CANSparkMax upperArmMotor2 = new CANSparkMax(0, MotorType.kBrushless);
+    CANSparkMax upperArmMotor1 = new CANSparkMax(6, MotorType.kBrushless);
+    CANSparkMax upperArmMotor2 = new CANSparkMax(7, MotorType.kBrushless);
 
     double lowerArmSpeedManual = 0;
     double upperArmSpeedManual = 0;
@@ -70,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem() {
         lowerArmMotor2.follow(lowerArmMotor1);
-        // upperArmMotor2.follow(upperArmMotor1);
+        upperArmMotor2.follow(upperArmMotor1);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ArmSubsystem extends SubsystemBase {
         }
         System.out.format("%.2f, %.2f\n", upperArmSpeed, lowerArmSpeed);
         lowerArmMotor1.set(lowerArmSpeed);
-        // upperArmMotor.set(upperArmSpeed);
+        upperArmMotor1.set(upperArmSpeed);
     }
 
     public void setMode(ArmMode newMode) {

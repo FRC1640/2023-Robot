@@ -1,7 +1,10 @@
 package frc.robot.subsystems.arm;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 
 public class ArmMath {
@@ -20,19 +23,25 @@ public class ArmMath {
     double xPrime;
     double yPrime;
 
-    MatBuilder<>, Nat<N2>> matBuilder = new MatBuilder<>(Nat.N2(), Nat.N2());
-
+    MatBuilder<N2, N2> matBuilder = new MatBuilder<>(Nat.N2(), Nat.N2());
+    Matrix<N2,N2> J = matBuilder.fill(1, 0, 0, 1);
+    Vector<N2> v = VecBuilder.fill(1,0);
+    Vector<N2> omega = new Vector<>(J.solve(v.extractColumnVector(0)));
     public ArmMath(double lowerLength, double upperLength){
         this.lowerLength = lowerLength;
         this.upperLength = upperLength;
     }
-    public void kinematicsThing(){
-        x = lowerLength * Math.sin(theta1) + upperLength * Math.sin(theta1 + theta2);
-        y = lowerLength * Math.cos(theta1) + upperLength * Math.cos(theta1 + theta2);
-        xPrime =lowerLength * Math.cos(theta1) * omega1 + upperLength * Math.cos(theta1 + theta2) * (omega1 + omega2);
-        yPrime =lowerLength * Math.sin(theta1) * omega1 - upperLength * Math.sin(theta1 + theta2) * (omega1 + omega2);
+    // public Matrix<N2,N2> calcJacobian(){
+    //     MatBuilder<N2, N2> matBuilder = new MatBuilder<>(Nat.N2(), Nat.N2());
+    //     double c1 = Math.cos(theta1);
+    //     double c2 = Math.cos(theta1 + theta2);
+    //     double s1 = Math.sin(theta1);
+    //     double s2 = Math.sin(theta1 + theta2);
+    //     Matrixm = Matrix<N2,N2> m = matBuilder.fill(lowerLength * c1 + upperLength * c2, upperLength * c2,
+    //     -lowerLength * s1 - upperLength * s2, -upperLength * s2);
+    //     return 
         
-    }
+    // }
     public void setTheta1(double theta1){
         this.theta1 = theta1;
     }
