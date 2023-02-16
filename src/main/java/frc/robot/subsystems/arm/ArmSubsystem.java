@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 
 public class ArmSubsystem extends SubsystemBase {
-    // TODO: set upper arm ids
     // TODO: arm encoders
     // TODO: figure out button bindings
     //TODO: LIMITS!!!!!
+    //TODO: max speeds
     CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
     CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
     CANSparkMax upperArmMotor1 = new CANSparkMax(6, MotorType.kBrushless);
@@ -36,7 +36,6 @@ public class ArmSubsystem extends SubsystemBase {
     double upperArmSpeed = 0;
 
     Preset currentPreset = Preset.Ground;
-
     public static enum Preset {
         Ground,
         C5,
