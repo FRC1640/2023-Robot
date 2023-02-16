@@ -8,7 +8,7 @@ public class ArmState {
         this.theta2 = theta2;
     }
     public static ArmState fromEndEffector(double x, double y){
-        ArmMath math = new ArmMath(0, 0); //TODO: ADD LENGTHS
+        ArmKinematics math = new ArmKinematics(0, 0); //TODO: ADD LENGTHS
         math.setX(x);
         math.setY(y);
         math.inverseKinematics();

@@ -20,35 +20,22 @@ import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 public class ArmSubsystem extends SubsystemBase {
     // TODO: set upper arm ids
     // TODO: arm encoders
-    // TODO: remove presetmode and figure out button bindings
+    // TODO: figure out button bindings
+    //TODO: LIMITS!!!!!
     CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
     CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
     CANSparkMax upperArmMotor1 = new CANSparkMax(6, MotorType.kBrushless);
     CANSparkMax upperArmMotor2 = new CANSparkMax(7, MotorType.kBrushless);
 
-    double lowerArmSpeedManual = 0;
-    double upperArmSpeedManual = 0;
-
-    double lowerArmSpeedPreset = 0;
-    double upperArmSpeedPreset = 0;
-
-    double lowerArmSpeedEndEffector = 0;
-    double upperArmSpeedEndEffector = 0;
     final double lowerArmMaxSpeed = 0;
     final double lowerArmMaxAccel = 0;
     final double upperArmMaxSpeed = 0;
     final double upperArmMaxAccel = 0;
+
     double lowerArmSpeed = 0;
     double upperArmSpeed = 0;
 
     Preset currentPreset = Preset.Ground;
-
-    public static enum ArmMode {
-        Manual,
-        EndEffector,
-        Preset;
-
-    }
 
     public static enum Preset {
         Ground,
@@ -66,7 +53,6 @@ public class ArmSubsystem extends SubsystemBase {
             Map.entry(Preset.HighCube, ArmState.fromEndEffector(0, 0)),
             Map.entry(Preset.LowCone, ArmState.fromEndEffector(0, 0)),
             Map.entry(Preset.HighCone, ArmState.fromEndEffector(0, 0))));
-    ArmMode mode;
 
     public ArmSubsystem() {
         lowerArmMotor2.follow(lowerArmMotor1);
@@ -75,55 +61,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-        if (mode == ArmMode.Manual) {
-            lowerArmSpeed = lowerArmSpeedManual;
-            upperArmSpeed = upperArmSpeedManual;
-
-        }
-
-        if (mode == ArmMode.Preset) {
-            lowerArmSpeed = lowerArmSpeedPreset;
-
-        }
-
-        if (mode == ArmMode.EndEffector) {
-            lowerArmSpeed = lowerArmSpeedEndEffector;
-            upperArmSpeed = upperArmSpeedEndEffector;
-        }
-        System.out.format("%.2f, %.2f\n", upperArmSpeed, lowerArmSpeed);
+        // System.out.format("%.2f, %.2f\n", upperArmSpeed, lowerArmSpeed);
         lowerArmMotor1.set(lowerArmSpeed);
         upperArmMotor1.set(upperArmSpeed);
-    }
-
-    public void setMode(ArmMode newMode) {
-        mode = newMode;
-        lowerArmSpeedManual = 0;
-        upperArmSpeedManual = 0;
-    }
-
-    public void setManualUpper(double speed) {
-        upperArmSpeedManual = speed;
-    }
-
-    public void setManualLower(double speed) {
-        lowerArmSpeedManual = speed;
-    }
-
-    public void setEndEffectoLower(double speed) {
-        lowerArmSpeedEndEffector = speed;
-    }
-
-    public void setEndEffectorUpper(double speed) {
-        upperArmSpeedEndEffector = speed;
-    }
-
-    public void setPresetSpeedLower(double speed) {
-        lowerArmSpeedPreset = speed;
-    }
-
-    public void setPresetSpeedUpper(double speed) {
-        upperArmSpeedPreset = speed;
     }
 
     public double getLowerArmMaxSpeed() {
@@ -155,13 +95,19 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getUpperPosition() {
-        // return upperArmMotor.getEncoder().getPosition();
-        return 0;
+        return upperArmMotor1.getEncoder().getPosition();
     }
 
     public void stopArm() {
         lowerArmSpeed = 0;
         upperArmSpeed = 0;
+    }
+
+    public void setSpeedLower(double speed){
+        lowerArmSpeed = speed;
+    }
+    public void setSpeedUpper(double speed){
+        upperArmSpeed = speed;
     }
 
     public Command armProfile(double lowerPos, double upperPos, double startPositionLower, double startPositionUpper) {
@@ -170,7 +116,7 @@ public class ArmSubsystem extends SubsystemBase {
                         new TrapezoidProfile.Constraints(
                                 getLowerArmMaxSpeed(), getLowerArmMaxAccel()),
                         new TrapezoidProfile.State(lowerPos - startPositionLower, 0)),
-                state -> setPresetSpeedLower(state.velocity / getLowerArmMaxSpeed()));
+                state -> setSpeedLower(state.velocity / getLowerArmMaxSpeed()));
 
         // upper profile
         TrapezoidProfileCommand upperProfile = new TrapezoidProfileCommand(
@@ -178,7 +124,7 @@ public class ArmSubsystem extends SubsystemBase {
                         new TrapezoidProfile.Constraints(
                                 getUpperArmMaxSpeed(), getUpperArmMaxAccel()),
                         new TrapezoidProfile.State(upperPos - startPositionUpper, 0)),
-                state -> setPresetSpeedUpper(state.velocity / getUpperArmMaxSpeed()));
+                state -> setSpeedUpper(state.velocity / getUpperArmMaxSpeed()));
         ParallelCommandGroup group = new ParallelCommandGroup(lowerProfile, upperProfile);
         group.addRequirements(this);
         return group;
