@@ -19,8 +19,8 @@ public class ArmManualCommand extends CommandBase{
 
     @Override
     public void execute() {
-        armSubsystem.setSpeedLower(opController.getLeftY() * 0.8);
-        armSubsystem.setSpeedUpper(opController.getRightY() * 0.8);
+        armSubsystem.setSpeedLower(opController.getLeftY() * 0.3);
+        armSubsystem.setSpeedUpper(opController.getRightY() * 0.3);
     }
 
     @Override

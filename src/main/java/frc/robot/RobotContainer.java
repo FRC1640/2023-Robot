@@ -17,8 +17,12 @@ import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
+import frc.robot.subsystems.grabber.GrabberSubsystem;
+import frc.robot.subsystems.grabber.commands.TeleopGrabberCommand;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -33,6 +37,8 @@ public class RobotContainer {
   DriveSubsystem driveSubsystem;
   Limelight limelight = new Limelight();
   ArmSubsystem armSubsystem;
+  Compressor pcmCompressor= new Compressor(0, PneumaticsModuleType.CTREPCM);
+  GrabberSubsystem grabberSubsystem = new GrabberSubsystem();
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -42,6 +48,7 @@ public class RobotContainer {
     DashboardInit dashboardInit = new DashboardInit(gyro, armSubsystem);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController));
     armSubsystem.setDefaultCommand(new ArmStopCommand(armSubsystem));
+    grabberSubsystem.setDefaultCommand(new TeleopGrabberCommand(grabberSubsystem, operatorController));
     // drive.setDefaultCommand(new SetDriveDirect(drive, driverController));
     // Configure the trigger bindings
     configureBindings();
@@ -51,7 +58,7 @@ public class RobotContainer {
     JoystickButton startButton = new JoystickButton(driverController, 8);
     startButton.onTrue(new ResetGyroCommand(gyro));
 
-    Trigger manualCommandTrigger = new Trigger(() -> (Math.abs(operatorController.getLeftY()) >= 0.05 || Math.abs(operatorController.getRightY()) >= 0.05));
+    Trigger manualCommandTrigger = new Trigger(() -> (Math.abs(operatorController.getLeftY()) >= 0.15 || Math.abs(operatorController.getRightY()) >= 0.15));
     manualCommandTrigger.whileTrue(new ArmManualCommand(armSubsystem, operatorController));
   }
 

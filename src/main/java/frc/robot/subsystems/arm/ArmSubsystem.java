@@ -45,13 +45,15 @@ public class ArmSubsystem extends SubsystemBase {
         HighCone;
     }
 
-    static final Map<Preset, ArmState> presetMap = new EnumMap<>(Map.ofEntries( // TODO: Points
-            Map.entry(Preset.Ground, ArmState.fromEndEffector(0, 0)),
-            Map.entry(Preset.C5, ArmState.fromEndEffector(0, 0)),
-            Map.entry(Preset.LowCube, ArmState.fromEndEffector(0, 0)),
-            Map.entry(Preset.HighCube, ArmState.fromEndEffector(0, 0)),
-            Map.entry(Preset.LowCone, ArmState.fromEndEffector(0, 0)),
-            Map.entry(Preset.HighCone, ArmState.fromEndEffector(0, 0))));
+    static final Map<Preset, ArmState> presetMap = null;
+    
+    // new EnumMap<>(Map.ofEntries( // TODO: Points
+    //         Map.entry(Preset.Ground, ArmState.fromEndEffector(0, 0)),
+    //         Map.entry(Preset.C5, ArmState.fromEndEffector(0, 0)),
+    //         Map.entry(Preset.LowCube, ArmState.fromEndEffector(0, 0)),
+    //         Map.entry(Preset.HighCube, ArmState.fromEndEffector(0, 0)),
+    //         Map.entry(Preset.LowCone, ArmState.fromEndEffector(0, 0)),
+    //         Map.entry(Preset.HighCone, ArmState.fromEndEffector(0, 0))));
 
     public ArmSubsystem() {
         lowerArmMotor2.follow(lowerArmMotor1);
@@ -63,6 +65,7 @@ public class ArmSubsystem extends SubsystemBase {
         // System.out.format("%.2f, %.2f\n", upperArmSpeed, lowerArmSpeed);
         lowerArmMotor1.set(lowerArmSpeed);
         upperArmMotor1.set(upperArmSpeed);
+        System.out.println(lowerArmSpeed + ", " + upperArmSpeed);
     }
 
     public double getLowerArmMaxSpeed() {
