@@ -1,4 +1,4 @@
-package frc.robot.subsystems.drive;
+package frc.robot.sensors;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import lombok.Getter;
@@ -30,6 +30,9 @@ public class Resolver {
      */
     public double get () {
         return Math.toRadians(getD());
+    }
+    public double getV(){
+        return resolver.getVoltage();
     }
 
     public double getD () {

@@ -70,7 +70,7 @@ public class JoystickDriveCommand extends CommandBase {
         ySpeed = joystickCleaner.getY();
 
         /* Apply rotational deadband */
-        rot = MathUtil.applyDeadband(rot, LOWER_DB, 1 - UPPER_DB);
+        rot = MathUtil.applyDeadband(rot, LOWER_DB);
 
         /* Increase rotational sensitivity */
         rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0 / 3.0);

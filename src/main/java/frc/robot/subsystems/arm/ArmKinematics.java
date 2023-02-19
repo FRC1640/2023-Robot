@@ -36,7 +36,7 @@ public class ArmKinematics {
      */
     public void inverseKinematics(){
         theta2 = Math.acos((x * x + y * y - lowerLength * lowerLength - upperLength * upperLength) / (2 * lowerLength * upperLength));
-        System.out.println(theta2);
+        // System.out.println(theta2);
         theta1 = Math.PI / 2 - Math.atan(y/x) + Math.atan((upperLength * Math.sin(-theta2)) / (lowerLength + upperLength * Math.cos(-theta2)));
         if (Double.isNaN(theta1) || Double.isNaN(theta2)){
             throw new IllegalStateException(String.format("The position %.2f,%.2f is not possible", x,y));

@@ -6,20 +6,21 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 
 public class TeleopGrabberCommand extends CommandBase {
     private GrabberSubsystem grabberSubsystem;
-    private XboxController opController;
-
-    public TeleopGrabberCommand(GrabberSubsystem grabberSubsystem, XboxController opController){
+    public TeleopGrabberCommand(GrabberSubsystem grabberSubsystem){
         this.grabberSubsystem = grabberSubsystem;
-        this.opController = opController;
         addRequirements(grabberSubsystem);
     }
-
+    @Override
     public void execute() {
-        grabberSubsystem.setClamped(opController.getAButton());
+        grabberSubsystem.setClamped(true);
     }
-
+    @Override
     public boolean isFinished(){
         return false;
+    }
+    @Override 
+    public void end(boolean interrupted){
+        grabberSubsystem.setClamped(false);
     }
 
 

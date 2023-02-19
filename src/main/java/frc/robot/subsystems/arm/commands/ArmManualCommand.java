@@ -1,5 +1,8 @@
 package frc.robot.subsystems.arm.commands;
 
+import org.opencv.osgi.OpenCVInterface;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -19,8 +22,9 @@ public class ArmManualCommand extends CommandBase{
 
     @Override
     public void execute() {
-        armSubsystem.setSpeedLower(opController.getLeftY() * 0.3);
-        armSubsystem.setSpeedUpper(opController.getRightY() * 0.3);
+        
+        armSubsystem.setSpeedLower(MathUtil.applyDeadband(opController.getLeftY(), 0.15));
+        armSubsystem.setSpeedUpper(MathUtil.applyDeadband(opController.getRightY(), 0.15));
     }
 
     @Override
