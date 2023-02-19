@@ -47,9 +47,9 @@ public class SwerveModule {
 		// driveMotor.burnFlash();
 		// steeringMotor.burnFlash();
 		driveEncoder = driveMotor.getEncoder();
-		steeringEncoder = new Resolver(cfg.getResolverChannel(), cfg.getMinVoltage(), cfg.getMaxVoltage(),
+		steeringEncoder = new Resolver(cfg.getResolverChannel(), cfg.getMinvoltage(), cfg.getMaxvoltage(),
 				cfg.getOffset(), cfg.isReverseAngle());
-
+		// System.out.println("Max: " + cfg.getOffset());
 		driveMotor.setInverted(cfg.isReverseDrive());
 		steeringMotor.setInverted(cfg.isReverseSteer());
 		turningPIDController.enableContinuousInput(-Math.PI, Math.PI);

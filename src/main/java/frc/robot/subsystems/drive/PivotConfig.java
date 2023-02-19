@@ -24,8 +24,8 @@ public class PivotConfig {
 
     private PivotId name;
     private Translation2d position;
-    private double minVoltage;
-    private double maxVoltage;
+    private double minvoltage;
+    private double maxvoltage;
     private int driveChannel;
     private int steerChannel;
     private int resolverChannel;

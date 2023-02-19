@@ -60,7 +60,7 @@ public class RobotContainer {
     armSubsystem.setDefaultCommand(new ArmStopCommand(armSubsystem));
 
 
-    new RunCommand(() -> System.out.println("Lower: " + armSubsystem.getLowerPosition() + " Upper: " + armSubsystem.getUpperPosition()))//
+    new RunCommand(() -> driveSubsystem.print())//
      .ignoringDisable(true).cancel();
     
     // drive.setDefaultCommand(new SetDriveDirect(drive, driverController));

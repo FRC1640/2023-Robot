@@ -33,9 +33,9 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
 
-  private final Translation2d frontLeftLocation = new Translation2d(-x, y);
-  private final Translation2d frontRightLocation = new Translation2d(x, y);
-  private final Translation2d backLeftLocation = new Translation2d(x, -y);
+  private final Translation2d frontLeftLocation = new Translation2d(x, y);
+  private final Translation2d frontRightLocation = new Translation2d(x, -y);
+  private final Translation2d backLeftLocation = new Translation2d(-x, y);
   private final Translation2d backRightLocation = new Translation2d(-x, -y);
 
   private final SwerveModule frontLeft = new SwerveModule(PivotConfig.getConfig(PivotId.FL));
@@ -99,14 +99,16 @@ public class DriveSubsystem extends SubsystemBase {
     
 
     //prints
-    // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(), frontRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD());
+    
     // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getDriveEncoder().getVelocity(), frontRight.getDriveEncoder().getVelocity(), backLeft.getDriveEncoder().getVelocity(),backRight.getDriveEncoder().getVelocity());
+  }
+  public void print(){
+    System.out.format("%.2f, %.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(),frontRight.getSteeringEncoder().getD(),backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getV());
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, kMaxSpeed);
     frontLeft.setDesiredStateAuto(desiredStates[0]);
-    frontRight.setDesiredStateAuto(desiredStates[1]);
     backLeft.setDesiredStateAuto(desiredStates[2]);
     backRight.setDesiredStateAuto(desiredStates[3]);
   }

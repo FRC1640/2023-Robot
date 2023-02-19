@@ -33,6 +33,11 @@ public class ArmSubsystem extends SubsystemBase {
     //TODO: LIMITS!!!!!
     //TODO: max speeds
     //TOODO: feedforward
+    /*
+     * GEAR RATIO:
+     * Shoulder: 580
+     * Elbow: 498
+     */
     CANSparkMax lowerArmMotor1 = new CANSparkMax(15, MotorType.kBrushless);
     CANSparkMax lowerArmMotor2 = new CANSparkMax(14, MotorType.kBrushless);
     CANSparkMax upperArmMotor1 = new CANSparkMax(6, MotorType.kBrushless);
@@ -62,10 +67,10 @@ public class ArmSubsystem extends SubsystemBase {
     final double upperI = 0;
     final double upperD = 0;
 
-    final double lowerArmMin = -17; //-17
+    final double lowerArmMin = -28; //-17
     final double lowerArmMax = 45; //45
     final double upperArmMin = 10; //10
-    final double upperArmMax = 175; //165
+    final double upperArmMax = 180; //165
     
 
     Preset currentPreset = Preset.Ground;
@@ -107,6 +112,7 @@ public class ArmSubsystem extends SubsystemBase {
         if (getLowerPosition() <= lowerArmMin){
             lowerArmVoltage = Math.min(lowerArmVoltage, 0);
         }
+        System.out.println(getUpperPosition());
         
         if (getUpperPosition() >= upperArmMax){
             upperArmVoltage = Math.max(upperArmVoltage, 0);
