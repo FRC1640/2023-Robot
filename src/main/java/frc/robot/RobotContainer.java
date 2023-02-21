@@ -81,7 +81,9 @@ public class RobotContainer {
 
     Trigger grabberTrigger = new Trigger(() -> operatorController.getRightBumper());
     grabberTrigger.toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
-
+    
+    Trigger presetTrigger = new Trigger(() -> operatorController.getXButton());
+    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.CubePickup));
   }
 
   public void firstEnabled(){
