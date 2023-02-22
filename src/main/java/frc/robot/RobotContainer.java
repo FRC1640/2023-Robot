@@ -49,7 +49,7 @@ public class RobotContainer {
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
-  static boolean cubeMode;
+  boolean cubeMode;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -87,7 +87,7 @@ public class RobotContainer {
     Trigger presetTrigger = new Trigger(() -> operatorController.getXButton());
     presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Pickup, cubeMode));
     Trigger presetTrigger1 = new Trigger(() -> operatorController.getYButton());
-    presetTrigger1.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Ground, cubeMode));
+    presetTrigger1.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Place, cubeMode));
 
     Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
     switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
@@ -96,10 +96,11 @@ public class RobotContainer {
     switchToCone.whileTrue(new RunCommand(() -> setMode(false)));
     /* 
      * PRESETS:
-     * Cone/cube ground pickup
-     * Cone upright ground
-     * C5 Cone/cube
-     * Mid/high cone/cube placing
+     * Cone/cube ground pickup (0.58, -0.17), (0.56, -0.12)
+     * Cone upright ground (0.51, -0.05)
+     * Mid cone/cube placing (1.03, 0.87), (1.09, 0.48)
+     * high cone/cube placing (1.43, 1.23), (1.5, 0.77)
+     * Travel (0.44, 0.23)
      */
   }
 

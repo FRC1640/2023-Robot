@@ -43,10 +43,10 @@ public class ArmSubsystem extends SubsystemBase {
     CANSparkMax upperArmMotor1 = new CANSparkMax(6, MotorType.kBrushless);
     CANSparkMax upperArmMotor2 = new CANSparkMax(7, MotorType.kBrushless);
 
-    final double lowerArmMaxSpeed = 45;
-    final double lowerArmMaxAccel = 180;
-    final double upperArmMaxSpeed =  70;
-    final double upperArmMaxAccel =720;
+    final double lowerArmMaxSpeed = 30;
+    final double lowerArmMaxAccel = 100;
+    final double upperArmMaxSpeed =  55;
+    final double upperArmMaxAccel =360;
 
     double lowerArmVoltage = 0;
     double upperArmVoltage = 0;
@@ -79,7 +79,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     public static enum Preset {
         Ground,
-        Pickup;
+        Pickup,
+        Place;
     }
 
     static final Map<Preset, ArmState> cubeMap =
@@ -91,7 +92,8 @@ public class ArmSubsystem extends SubsystemBase {
     static final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(
             Map.entry(Preset.Ground, ArmState.fromEndEffector(1, 1)),
-            Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.28, 0.18))
+            Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.28, 0.18)),
+            Map.entry(Preset.Place, ArmState.fromEndEffector(1.43, 1.23))
             ));
     public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
         // System.out.println(presetMap.get(Preset.Ground));
@@ -220,6 +222,23 @@ public class ArmSubsystem extends SubsystemBase {
         controller.setTolerance(5);
         return controller;
     }
+    // public Command armProfile(double posLower, double posUpper) {
+
+    //     ProfiledPIDCommand commandLower = new ProfiledPIDCommand(createControllerLower(), () -> getLowerPosition(), 
+    //         new TrapezoidProfile.State(posLower, 0), 
+    //             (pidV, trapState) -> setLowerVoltage(-(pidV + getLowerFFVoltage(trapState.velocity))));
+        
+        
+    //     ProfiledPIDCommand commandUpper = new ProfiledPIDCommand(createControllerUpper(), () -> getUpperPosition(), 
+    //         new TrapezoidProfile.State(posUpper, 0), 
+    //             (pidV, trapState) -> setUpperVoltage(-(pidV + getUpperFFVoltage(trapState.velocity))));
+        
+        
+    //     ParallelCommandGroup group = new ParallelCommandGroup(commandLower, commandUpper);
+    //     group.addRequirements(this);
+    //     return group;
+    // }
+
     public Command armProfile(double posLower, double posUpper) {
 
         ProfiledPIDCommand commandLower = new ProfiledPIDCommand(createControllerLower(), () -> getLowerPosition(), 
