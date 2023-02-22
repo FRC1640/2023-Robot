@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.print.attribute.standard.PresentationDirection;
 import javax.swing.TransferHandler.TransferSupport;
+import javax.swing.text.html.StyleSheet;
 
 import org.ejml.dense.row.mult.VectorVectorMult_CDRM;
 
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -58,11 +60,11 @@ public class ArmSubsystem extends SubsystemBase {
 
 
 
-    final double lowerP = 0.5;//0.016826
+    final double lowerP = 0.016826;//0.016826
     final double lowerI = 0;
     final double lowerD = 0;
 
-    final double upperP = 0.5; //.0014772
+    final double upperP = 0.0014772; //.0014772
     final double upperI = 0;
     final double upperD = 0;
 
@@ -70,21 +72,26 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMax = 48; //45
     final double upperArmMin = 1; //10
     final double upperArmMax = 180; //165
+
     
 
-    Preset currentPreset = Preset.Ground;
+    Preset currentPreset;
+
     public static enum Preset {
         Ground,
-        CubePickup,
-        ConePickup;
+        Pickup;
     }
 
-    static final Map<Preset, ArmState> presetMap =
-    
+    static final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
             Map.entry(Preset.Ground, ArmState.fromEndEffector(1, 1)),
-            Map.entry(Preset.ConePickup, ArmState.fromEndEffector(0.28, 0.18)),
-            Map.entry(Preset.CubePickup, ArmState.fromEndEffector(0.2, 0.1))
+            Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.2, 0.1))
+            ));
+
+    static final Map<Preset, ArmState> coneMap =
+    new EnumMap<>(Map.ofEntries(
+            Map.entry(Preset.Ground, ArmState.fromEndEffector(1, 1)),
+            Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.28, 0.18))
             ));
     public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
         // System.out.println(presetMap.get(Preset.Ground));
@@ -119,8 +126,9 @@ public class ArmSubsystem extends SubsystemBase {
         upperArmMotor1.setVoltage(upperArmVoltage);
         // System.out.println("theta: " + presetMap.get(Preset.Ground).theta2);
         // System.out.println("lower: " + getLowerPosition());
-        System.out.println("Pos: " + getEndEffectorPosition());
+        // System.out.println("Pos: " + getEndEffectorPosition());
         // System.out.println(lowerArmSpeed + ", " + upperArmSpeed);
+        // System.out.println("End effector: " + getEndEffectorPosition());
     }
 
     public double getLowerArmMaxSpeed() {
@@ -169,14 +177,14 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setSpeedLower(double speed){
-        lowerArmVoltage = speed * 12;
+        setLowerVoltage(speed * 12);
     }
     public void setSpeedUpper(double speed){
         setUpperVoltage(speed * 12);
     }
 
     public void setLowerVoltage(double voltage){
-        lowerArmVoltage =voltage;
+        lowerArmVoltage = voltage;
     }
     public void setUpperVoltage(double voltage){
         upperArmVoltage = voltage;
@@ -184,7 +192,7 @@ public class ArmSubsystem extends SubsystemBase {
         // kinematics.setX(getEndEffectorPosition().getX());
         // kinematics.setY(getEndEffectorPosition().getY());
         // kinematics.inverseKinematics();
-        // System.out.println("lower arm: " + getLowerPosition() + " target: " + Math.toDegrees(presetMap.get(Preset.Ground).theta1));
+        // System.out.println("lower arm: " + getLowerPosition() + " target: " + Math.toDegrees(presetMap.get(Preset.CubePickup).theta1) + " upper arm: " + getUpperPosition() + " target2: " + Math.toDegrees(presetMap.get(Preset.CubePickup).theta2));
     }
 
     public double getLowerFFVoltageAccel(double velocity, double accel){
@@ -203,12 +211,17 @@ public class ArmSubsystem extends SubsystemBase {
         return upperFF.calculate(velocity);
     }
     public ProfiledPIDController createControllerLower(){
-        return new ProfiledPIDController(lowerP,lowerI,lowerD, new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel));
+        ProfiledPIDController controller = new ProfiledPIDController(lowerP,lowerI,lowerD, new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel));
+        controller.setTolerance(5);
+        return controller;
     }
     public ProfiledPIDController createControllerUpper(){
-        return new ProfiledPIDController(upperP,upperI,upperD, new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel));
+        ProfiledPIDController controller = new ProfiledPIDController(upperP,upperI,upperD, new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel));
+        controller.setTolerance(5);
+        return controller;
     }
     public Command armProfile(double posLower, double posUpper) {
+
         ProfiledPIDCommand commandLower = new ProfiledPIDCommand(createControllerLower(), () -> getLowerPosition(), 
             new TrapezoidProfile.State(posLower, 0), 
                 (pidV, trapState) -> setLowerVoltage(-(pidV + getLowerFFVoltage(trapState.velocity))));
@@ -224,11 +237,30 @@ public class ArmSubsystem extends SubsystemBase {
         return group;
     }
 
-    public Command armProfilePreset(Preset preset){
-        System.out.println("theta2: " + Math.toDegrees(presetMap.get(preset).theta2) + " theta2Current: " + getUpperPosition());
-        Command test = armProfile(Math.toDegrees(presetMap.get(preset).theta1), Math.toDegrees(presetMap.get(preset).theta2));
+    public Command armProfilePreset(Preset preset, boolean cubeMode){
+        System.out.println(cubeMode);
+        double degreeThreshold = 5;
+        double velocityThreshold = 0.01;
         
-        return test;
+        Map<Preset, ArmState> presetMap;
+        if (cubeMode == true){
+            presetMap = cubeMap;
+            System.out.println("CUBE");
+        }
+        else{
+            presetMap = coneMap;
+            System.out.println("CONE");
+
+        }
+        // System.out.println("theta2: " + Math.toDegrees(presetMap.get(preset).theta2) + " theta2Current: " + getUpperPosition());
+        Command profile = armProfile(Math.toDegrees(presetMap.get(preset).theta1), Math.toDegrees(presetMap.get(preset).theta2));
+        double endTheta1 = Math.toDegrees(presetMap.get(preset).theta1);
+        double endTheta2 = Math.toDegrees(presetMap.get(preset).theta2);
+        currentPreset = preset;
+        return profile;
+        // .until(() -> (Math.abs(upperEncoder.getV()) <= velocityThreshold && 
+        //             Math.abs(lowerEncoder.getV()) <= velocityThreshold)).andThen(new PrintCommand("END!!!!!!!!"));
+        
     }
 
     public Translation2d getEndEffectorPosition(){
@@ -239,7 +271,6 @@ public class ArmSubsystem extends SubsystemBase {
         Translation2d point = new Translation2d(kinematics.getX(), kinematics.getY());
         return point;
     }
-
     // public Command tripleMove(double lowerPos, double upperPos) {
     //     // TODO: set values
     //     double lowerPos1 = -1;

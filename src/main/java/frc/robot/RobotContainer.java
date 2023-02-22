@@ -24,6 +24,7 @@ import frc.robot.subsystems.grabber.commands.TeleopGrabberCommand;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
@@ -38,6 +39,7 @@ public class RobotContainer {
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
+  GenericHID presetBoard = new GenericHID(2);
   boolean wasEnabled = false;
   DriveSubsystem driveSubsystem;
   Limelight limelight = new Limelight();
@@ -47,7 +49,7 @@ public class RobotContainer {
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
-  
+  static boolean cubeMode;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -83,7 +85,22 @@ public class RobotContainer {
     grabberTrigger.toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
     
     Trigger presetTrigger = new Trigger(() -> operatorController.getXButton());
-    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.CubePickup));
+    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Pickup, cubeMode));
+    Trigger presetTrigger1 = new Trigger(() -> operatorController.getYButton());
+    presetTrigger1.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Ground, cubeMode));
+
+    Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
+    switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
+
+    Trigger switchToCone = new Trigger(() -> presetBoard.getRawButtonPressed(5));
+    switchToCone.whileTrue(new RunCommand(() -> setMode(false)));
+    /* 
+     * PRESETS:
+     * Cone/cube ground pickup
+     * Cone upright ground
+     * C5 Cone/cube
+     * Mid/high cone/cube placing
+     */
   }
 
   public void firstEnabled(){
@@ -104,5 +121,9 @@ public class RobotContainer {
     //An example command will be run in autonomous
     ChargeStation auto = new ChargeStation();
     return auto.loadAuto(gyro, driveSubsystem);
+  }
+  public void setMode(boolean m){
+    cubeMode = m;
+    System.out.println(cubeMode);
   }
 }

@@ -103,7 +103,7 @@ public class DriveSubsystem extends SubsystemBase {
     // System.out.format("%.2f, %.2f, %.2f, %.2f\n", frontLeft.getDriveEncoder().getVelocity(), frontRight.getDriveEncoder().getVelocity(), backLeft.getDriveEncoder().getVelocity(),backRight.getDriveEncoder().getVelocity());
   }
   public void print(){
-    System.out.format("%.2f, %.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(),frontRight.getSteeringEncoder().getD(),backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getV());
+    // System.out.format("%.2f, %.2f, %.2f, %.2f, %.2f\n", frontLeft.getSteeringEncoder().getD(),frontRight.getSteeringEncoder().getD(),backLeft.getSteeringEncoder().getD(),backRight.getSteeringEncoder().getD(), backLeft.getSteeringEncoder().getV());
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
