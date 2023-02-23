@@ -45,10 +45,10 @@ public class ArmSubsystem extends SubsystemBase {
     CANSparkMax upperArmMotor1 = new CANSparkMax(6, MotorType.kBrushless);
     CANSparkMax upperArmMotor2 = new CANSparkMax(7, MotorType.kBrushless);
 
-    final double lowerArmMaxSpeed = 5;//30
-    final double lowerArmMaxAccel = 5;//5
-    final double upperArmMaxSpeed = 5;//55
-    final double upperArmMaxAccel = 5;//360
+    final double lowerArmMaxSpeed = 30;//30
+    final double lowerArmMaxAccel = 360;//5
+    final double upperArmMaxSpeed = 55;//55
+    final double upperArmMaxAccel = 360;//360
 
     double lowerArmVoltage = 0;
     double upperArmVoltage = 0;
@@ -87,13 +87,13 @@ public class ArmSubsystem extends SubsystemBase {
 
     static final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
-            Map.entry(Preset.Ground, ArmState.fromEndEffector(1, 1)),
+            Map.entry(Preset.Ground, new ArmState(Math.toRadians(15), Math.toRadians(45))),
             Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.2, 0.1))
             ));
 
     static final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(
-            Map.entry(Preset.Ground, ArmState.fromEndEffector(1, 1)),
+            Map.entry(Preset.Ground, new ArmState(Math.toRadians(15), Math.toRadians(45))),
             Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.28, 0.18)),
             Map.entry(Preset.Place, ArmState.fromEndEffector(1.43, 1.23))
             ));
@@ -128,11 +128,11 @@ public class ArmSubsystem extends SubsystemBase {
         
 
 
-        if (lowerArmMotor1.getOutputCurrent() > 35 || upperArmMotor1.getOutputCurrent() > 35){
-            lowerArmVoltage = 0;
-            upperArmVoltage = 0;
-            new ArmStopCommand(this).schedule();
-        } 
+        // if (lowerArmMotor1.getOutputCurrent() > 35 || upperArmMotor1.getOutputCurrent() > 35){
+        //     lowerArmVoltage = 0;
+        //     upperArmVoltage = 0;
+        //     new ArmStopCommand(this).schedule();
+        // } 
         System.out.println("lower arm: " + getLowerPosition() + " target: " + Math.toDegrees(coneMap.get(Preset.Ground).theta1) + " upper arm: " + getUpperPosition() + " target2: " + Math.toDegrees(coneMap.get(Preset.Ground).theta2));
         
 
@@ -258,17 +258,25 @@ public class ArmSubsystem extends SubsystemBase {
     // }
 
     public Command armProfile(double posLower, double posUpper) {
-        posLower -= getLowerPosition();
-        posUpper -= getUpperPosition();
-        TrapezoidProfileCommand commandLower = new TrapezoidProfileCommand(new TrapezoidProfile(new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel),
-             new TrapezoidProfile.State(posLower, 0)), (trapState) -> setLowerVoltage(getLowerFFVoltage(trapState.velocity)));
+        TrapezoidProfileCommand commandLower = new TrapezoidProfileCommand(
+            new TrapezoidProfile(
+                new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel),
+                new TrapezoidProfile.State(posLower, 0),
+                new TrapezoidProfile.State(getLowerPosition(), 0)
+            ),
+            trapState -> setLowerVoltage(-getLowerFFVoltage(trapState.velocity))
+        );
+
+        TrapezoidProfileCommand commandUpper = new TrapezoidProfileCommand(
+            new TrapezoidProfile(
+                new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel),
+                new TrapezoidProfile.State(posUpper, 0),
+                new TrapezoidProfile.State(getUpperPosition(), 0)
+            ),
+            trapState -> setUpperVoltage(-getUpperFFVoltage(trapState.velocity))
+        );
         
-        
-        TrapezoidProfileCommand commandUpper = new TrapezoidProfileCommand(new TrapezoidProfile(new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel),
-             new TrapezoidProfile.State(posUpper, 0)), (trapState) -> setUpperVoltage(-getUpperFFVoltage(trapState.velocity)));
-        
-        
-        ParallelCommandGroup group = new ParallelCommandGroup(commandUpper);
+        ParallelCommandGroup group = new ParallelCommandGroup(commandLower, commandUpper);
         group.addRequirements(this);
         return group;
     }

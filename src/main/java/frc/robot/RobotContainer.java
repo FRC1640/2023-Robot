@@ -15,7 +15,6 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.arm.commands.ArmEndEffectorCommand;
 import frc.robot.subsystems.arm.commands.ArmManualCommand;
-import frc.robot.subsystems.arm.commands.ArmProfileWrapper;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
@@ -86,9 +85,7 @@ public class RobotContainer {
     grabberTrigger.toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
     
     Trigger presetTrigger = new Trigger(() -> operatorController.getXButton());
-    presetTrigger.toggleOnTrue(new ArmProfileWrapper().profilePreset(Preset.Pickup, armSubsystem));
-    Trigger presetTrigger1 = new Trigger(() -> operatorController.getYButton());
-    presetTrigger1.toggleOnTrue(new ArmProfileWrapper().profilePreset(Preset.Ground, armSubsystem));
+    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Ground, false));
 
     // Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
     // switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
