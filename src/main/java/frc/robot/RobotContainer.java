@@ -15,6 +15,7 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.arm.commands.ArmEndEffectorCommand;
 import frc.robot.subsystems.arm.commands.ArmManualCommand;
+import frc.robot.subsystems.arm.commands.ArmProfileWrapper;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
@@ -85,15 +86,15 @@ public class RobotContainer {
     grabberTrigger.toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
     
     Trigger presetTrigger = new Trigger(() -> operatorController.getXButton());
-    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Pickup, cubeMode));
+    presetTrigger.toggleOnTrue(new ArmProfileWrapper().profilePreset(Preset.Pickup, armSubsystem));
     Trigger presetTrigger1 = new Trigger(() -> operatorController.getYButton());
-    presetTrigger1.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Place, cubeMode));
+    presetTrigger1.toggleOnTrue(new ArmProfileWrapper().profilePreset(Preset.Ground, armSubsystem));
 
-    Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
-    switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
+    // Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
+    // switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
 
-    Trigger switchToCone = new Trigger(() -> presetBoard.getRawButtonPressed(5));
-    switchToCone.whileTrue(new RunCommand(() -> setMode(false)));
+    // Trigger switchToCone = new Trigger(() -> presetBoard.getRawButtonPressed(5));
+    // switchToCone.whileTrue(new RunCommand(() -> setMode(false)));
     /* 
      * PRESETS:
      * Cone/cube ground pickup (0.58, -0.17), (0.56, -0.12)

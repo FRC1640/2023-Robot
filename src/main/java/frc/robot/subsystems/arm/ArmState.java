@@ -3,8 +3,8 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.util.Units;
 
 public class ArmState {
-    double theta1;
-    double theta2;
+    public double theta1;
+    public double theta2;
     public ArmState(double theta1, double theta2){
         this.theta1 = theta1;
         this.theta2 = theta2;

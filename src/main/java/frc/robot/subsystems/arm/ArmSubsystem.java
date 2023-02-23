@@ -27,7 +27,9 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.sensors.Resolver;
+import frc.robot.subsystems.arm.commands.ArmStopCommand;
 
 public class ArmSubsystem extends SubsystemBase {
     //TODO: LIMITS!!!!!
@@ -43,10 +45,10 @@ public class ArmSubsystem extends SubsystemBase {
     CANSparkMax upperArmMotor1 = new CANSparkMax(6, MotorType.kBrushless);
     CANSparkMax upperArmMotor2 = new CANSparkMax(7, MotorType.kBrushless);
 
-    final double lowerArmMaxSpeed = 30;
-    final double lowerArmMaxAccel = 100;
-    final double upperArmMaxSpeed =  55;
-    final double upperArmMaxAccel =360;
+    final double lowerArmMaxSpeed = 5;//30
+    final double lowerArmMaxAccel = 5;//5
+    final double upperArmMaxSpeed = 5;//55
+    final double upperArmMaxAccel = 5;//360
 
     double lowerArmVoltage = 0;
     double upperArmVoltage = 0;
@@ -124,6 +126,16 @@ public class ArmSubsystem extends SubsystemBase {
             upperArmVoltage = Math.min(upperArmVoltage, 0);
         }
         
+
+
+        if (lowerArmMotor1.getOutputCurrent() > 35 || upperArmMotor1.getOutputCurrent() > 35){
+            lowerArmVoltage = 0;
+            upperArmVoltage = 0;
+            new ArmStopCommand(this).schedule();
+        } 
+        System.out.println("lower arm: " + getLowerPosition() + " target: " + Math.toDegrees(coneMap.get(Preset.Ground).theta1) + " upper arm: " + getUpperPosition() + " target2: " + Math.toDegrees(coneMap.get(Preset.Ground).theta2));
+        
+
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
         // System.out.println("theta: " + presetMap.get(Preset.Ground).theta2);
@@ -132,6 +144,12 @@ public class ArmSubsystem extends SubsystemBase {
         // System.out.println(lowerArmSpeed + ", " + upperArmSpeed);
         // System.out.println("End effector: " + getEndEffectorPosition());
     }
+
+    public Map<Preset, ArmState> getMap(){
+        
+        return coneMap;
+    }
+    
 
     public double getLowerArmMaxSpeed() {
         return lowerArmMaxSpeed;
@@ -194,7 +212,7 @@ public class ArmSubsystem extends SubsystemBase {
         // kinematics.setX(getEndEffectorPosition().getX());
         // kinematics.setY(getEndEffectorPosition().getY());
         // kinematics.inverseKinematics();
-        // System.out.println("lower arm: " + getLowerPosition() + " target: " + Math.toDegrees(presetMap.get(Preset.CubePickup).theta1) + " upper arm: " + getUpperPosition() + " target2: " + Math.toDegrees(presetMap.get(Preset.CubePickup).theta2));
+        
     }
 
     public double getLowerFFVoltageAccel(double velocity, double accel){
@@ -240,18 +258,17 @@ public class ArmSubsystem extends SubsystemBase {
     // }
 
     public Command armProfile(double posLower, double posUpper) {
-
-        ProfiledPIDCommand commandLower = new ProfiledPIDCommand(createControllerLower(), () -> getLowerPosition(), 
-            new TrapezoidProfile.State(posLower, 0), 
-                (pidV, trapState) -> setLowerVoltage(-(pidV + getLowerFFVoltage(trapState.velocity))));
+        posLower -= getLowerPosition();
+        posUpper -= getUpperPosition();
+        TrapezoidProfileCommand commandLower = new TrapezoidProfileCommand(new TrapezoidProfile(new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel),
+             new TrapezoidProfile.State(posLower, 0)), (trapState) -> setLowerVoltage(getLowerFFVoltage(trapState.velocity)));
         
         
-        ProfiledPIDCommand commandUpper = new ProfiledPIDCommand(createControllerUpper(), () -> getUpperPosition(), 
-            new TrapezoidProfile.State(posUpper, 0), 
-                (pidV, trapState) -> setUpperVoltage(-(pidV + getUpperFFVoltage(trapState.velocity))));
+        TrapezoidProfileCommand commandUpper = new TrapezoidProfileCommand(new TrapezoidProfile(new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel),
+             new TrapezoidProfile.State(posUpper, 0)), (trapState) -> setUpperVoltage(-getUpperFFVoltage(trapState.velocity)));
         
         
-        ParallelCommandGroup group = new ParallelCommandGroup(commandLower, commandUpper);
+        ParallelCommandGroup group = new ParallelCommandGroup(commandUpper);
         group.addRequirements(this);
         return group;
     }
