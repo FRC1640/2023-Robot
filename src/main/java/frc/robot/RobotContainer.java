@@ -29,7 +29,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -81,16 +84,23 @@ public class RobotContainer {
     endEffectorCommandTrigger.and(manualCommandTrigger.negate())
       .whileTrue(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
-    Trigger grabberTrigger = new Trigger(() -> operatorController.getRightBumper());
-    grabberTrigger.toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
+    new Trigger(() -> operatorController.getRightBumper())
+      .toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
     
-    Trigger presetTrigger = new Trigger(() -> operatorController.getXButton());
-    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Ground, false)
-      .andThen(new PrintCommand("TESTING\nTESTING\nTESTING\nTESTING\nTESTING")));
+    new Trigger(() -> presetBoard.getPOV() == 0)
+      .toggleOnTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(true)));
 
-    Trigger preset2Trigger = new Trigger(() -> operatorController.getYButton());
-    preset2Trigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Pickup, false)
-      .andThen(new PrintCommand("TESTING\nTESTING\nTESTING\nTESTING\nTESTING")));
+    new Trigger(() -> presetBoard.getPOV() == 180)
+      .toggleOnTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)));
+
+    new Trigger(() -> presetBoard.getRawButton(1))
+      .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Ground));
+
+    new Trigger(() -> presetBoard.getRawButton(2))
+      .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Travel));
+
+    new Trigger(() -> presetBoard.getRawButton(3))
+      .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Pickup));
 
     // Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
     // switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
@@ -105,6 +115,10 @@ public class RobotContainer {
      * high cone/cube placing (1.43, 1.23), (1.5, 0.77)
      * Travel (0.44, 0.23)
      */
+
+    new RepeatCommand(new InstantCommand(
+      () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
+    )).ignoringDisable(true).schedule();
   }
 
   public void firstEnabled(){
