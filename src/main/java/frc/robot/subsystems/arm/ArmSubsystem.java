@@ -22,6 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
@@ -62,11 +63,11 @@ public class ArmSubsystem extends SubsystemBase {
 
 
 
-    final double lowerP = 0.016826;//0.016826
+    final double lowerP = 0.2;//0.016826
     final double lowerI = 0;
     final double lowerD = 0;
 
-    final double upperP = 0.0014772; //.0014772
+    final double upperP = 0.2; //.0014772
     final double upperI = 0;
     final double upperD = 0;
 
@@ -133,7 +134,7 @@ public class ArmSubsystem extends SubsystemBase {
         //     upperArmVoltage = 0;
         //     new ArmStopCommand(this).schedule();
         // } 
-        System.out.println("lower arm: " + getLowerPosition() + " target: " + Math.toDegrees(coneMap.get(Preset.Ground).theta1) + " upper arm: " + getUpperPosition() + " target2: " + Math.toDegrees(coneMap.get(Preset.Ground).theta2));
+        // System.out.println("lower arm: " + getLowerPosition() + " target: " + Math.toDegrees(coneMap.get(Preset.Ground).theta1) + " upper arm: " + getUpperPosition() + " target2: " + Math.toDegrees(coneMap.get(Preset.Ground).theta2));
         
 
         lowerArmMotor1.setVoltage(lowerArmVoltage);
@@ -232,54 +233,58 @@ public class ArmSubsystem extends SubsystemBase {
     }
     public ProfiledPIDController createControllerLower(){
         ProfiledPIDController controller = new ProfiledPIDController(lowerP,lowerI,lowerD, new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel));
-        controller.setTolerance(5);
+        controller.setTolerance(3);
         return controller;
     }
     public ProfiledPIDController createControllerUpper(){
         ProfiledPIDController controller = new ProfiledPIDController(upperP,upperI,upperD, new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel));
-        controller.setTolerance(5);
+        controller.setTolerance(3);
         return controller;
     }
-    // public Command armProfile(double posLower, double posUpper) {
-
-    //     ProfiledPIDCommand commandLower = new ProfiledPIDCommand(createControllerLower(), () -> getLowerPosition(), 
-    //         new TrapezoidProfile.State(posLower, 0), 
-    //             (pidV, trapState) -> setLowerVoltage(-(pidV + getLowerFFVoltage(trapState.velocity))));
-        
-        
-    //     ProfiledPIDCommand commandUpper = new ProfiledPIDCommand(createControllerUpper(), () -> getUpperPosition(), 
-    //         new TrapezoidProfile.State(posUpper, 0), 
-    //             (pidV, trapState) -> setUpperVoltage(-(pidV + getUpperFFVoltage(trapState.velocity))));
-        
-        
-    //     ParallelCommandGroup group = new ParallelCommandGroup(commandLower, commandUpper);
-    //     group.addRequirements(this);
-    //     return group;
-    // }
-
     public Command armProfile(double posLower, double posUpper) {
-        TrapezoidProfileCommand commandLower = new TrapezoidProfileCommand(
-            new TrapezoidProfile(
-                new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel),
-                new TrapezoidProfile.State(posLower, 0),
-                new TrapezoidProfile.State(getLowerPosition(), 0)
-            ),
-            trapState -> setLowerVoltage(-getLowerFFVoltage(trapState.velocity))
-        );
 
-        TrapezoidProfileCommand commandUpper = new TrapezoidProfileCommand(
-            new TrapezoidProfile(
-                new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel),
-                new TrapezoidProfile.State(posUpper, 0),
-                new TrapezoidProfile.State(getUpperPosition(), 0)
-            ),
-            trapState -> setUpperVoltage(-getUpperFFVoltage(trapState.velocity))
-        );
+        ProfiledPIDController lowerController = createControllerLower();
+        Command commandLower = new ProfiledPIDCommand(lowerController, () -> getLowerPosition(), 
+            new TrapezoidProfile.State(posLower, 0), 
+                (pidV, trapState) -> setLowerVoltage(-(getLowerFFVoltage(pidV + trapState.velocity))))
+            .until(() -> lowerController.atGoal());
+        
+        
+        ProfiledPIDController upperController = createControllerUpper();
+        Command commandUpper = new ProfiledPIDCommand(upperController, () -> getUpperPosition(), 
+            new TrapezoidProfile.State(posUpper, 0), 
+                (pidV, trapState) -> setUpperVoltage(-(getUpperFFVoltage(pidV + trapState.velocity))))
+            .until(() -> upperController.atGoal());
+        
         
         ParallelCommandGroup group = new ParallelCommandGroup(commandLower, commandUpper);
         group.addRequirements(this);
         return group;
     }
+
+    // public Command armProfile(double posLower, double posUpper) {
+    //     TrapezoidProfileCommand commandLower = new TrapezoidProfileCommand(
+    //         new TrapezoidProfile(
+    //             new TrapezoidProfile.Constraints(lowerArmMaxSpeed, lowerArmMaxAccel),
+    //             new TrapezoidProfile.State(posLower, 0),
+    //             new TrapezoidProfile.State(getLowerPosition(), 0)
+    //         ),
+    //         trapState -> setLowerVoltage(-getLowerFFVoltage(trapState.velocity))
+    //     );
+
+    //     TrapezoidProfileCommand commandUpper = new TrapezoidProfileCommand(
+    //         new TrapezoidProfile(
+    //             new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel),
+    //             new TrapezoidProfile.State(posUpper, 0),
+    //             new TrapezoidProfile.State(getUpperPosition(), 0)
+    //         ),
+    //         trapState -> setUpperVoltage(-getUpperFFVoltage(trapState.velocity))
+    //     );
+        
+    //     ParallelCommandGroup group = new ParallelCommandGroup(commandLower, commandUpper);
+    //     group.addRequirements(this);
+    //     return group;
+    // }
 
     public Command armProfilePreset(Preset preset, boolean cubeMode){
         System.out.println(cubeMode);

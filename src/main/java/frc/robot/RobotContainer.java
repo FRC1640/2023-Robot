@@ -85,7 +85,12 @@ public class RobotContainer {
     grabberTrigger.toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
     
     Trigger presetTrigger = new Trigger(() -> operatorController.getXButton());
-    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Ground, false));
+    presetTrigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Ground, false)
+      .andThen(new PrintCommand("TESTING\nTESTING\nTESTING\nTESTING\nTESTING")));
+
+    Trigger preset2Trigger = new Trigger(() -> operatorController.getYButton());
+    preset2Trigger.toggleOnTrue(armSubsystem.armProfilePreset(Preset.Pickup, false)
+      .andThen(new PrintCommand("TESTING\nTESTING\nTESTING\nTESTING\nTESTING")));
 
     // Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
     // switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
