@@ -13,6 +13,10 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
@@ -91,6 +95,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
         fixPresetMaps();
+        setupNetworkTables();
 
         lowerArmMotor2.follow(lowerArmMotor1);
         upperArmMotor2.follow(upperArmMotor1);
@@ -120,6 +125,9 @@ public class ArmSubsystem extends SubsystemBase {
 
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
+
+        /* NetworkTables */
+        updateNetworkTables();
     }
 
     public double getLowerArmMaxSpeed() {
@@ -314,5 +322,40 @@ public class ArmSubsystem extends SubsystemBase {
                 cubeMap.put(preset, value);
             }
         }
+    }
+
+    /* NetworkTables */
+
+    NetworkTableInstance nt;
+    NetworkTable table;
+    DoublePublisher xPub, yPub;
+    DoublePublisher xInchesPub, yInchesPub;
+    DoublePublisher theta1Pub, theta2Pub;
+    BooleanPublisher isInCubeModePub;
+
+    private void setupNetworkTables() {
+        nt = NetworkTableInstance.getDefault();
+        table = nt.getTable("armSubsystem");
+        xPub = table.getDoubleTopic("x").publish();
+        yPub = table.getDoubleTopic("y").publish();
+        xInchesPub = table.getDoubleTopic("xInches").publish();
+        yInchesPub = table.getDoubleTopic("yInches").publish();
+        theta1Pub = table.getDoubleTopic("theta1").publish();
+        theta2Pub = table.getDoubleTopic("theta2").publish();
+        isInCubeModePub = table.getBooleanTopic("isInCubeMode").publish();
+    }
+
+    private void updateNetworkTables() {
+        Translation2d endEffectorPos = getEndEffectorPosition();
+        double x = endEffectorPos.getX();
+        double y = endEffectorPos.getY();
+
+        xPub.set(x);
+        yPub.set(y);
+        xInchesPub.set(Units.metersToInches(x));
+        yInchesPub.set(Units.metersToInches(y));
+        theta1Pub.set(getLowerPosition());
+        theta2Pub.set(getUpperPosition());
+        isInCubeModePub.set(isInCubeMode);
     }
 }
