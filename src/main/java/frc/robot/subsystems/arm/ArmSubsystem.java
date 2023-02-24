@@ -231,6 +231,32 @@ public class ArmSubsystem extends SubsystemBase {
         return profile;
     }
 
+    public Command createEndEffectorProfileCommand(double x, double y) {
+        Translation2d goalPose = new Translation2d(x, y);
+        ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
+
+        return new ProfiledPIDCommand(
+            createControllerEndEffector(),
+            () -> -goalPose.getDistance(getEndEffectorPosition()),
+            new TrapezoidProfile.State(0, 0),
+            (pid, nextState) -> {
+                double speed = nextState.velocity;
+
+                Translation2d diff = goalPose.minus(getEndEffectorPosition());
+                if (diff.getNorm() > 1e-5) {
+                    diff = diff.times((speed + pid) / diff.getNorm());
+                }
+
+                math.setVx(diff.getX());
+                math.setVy(diff.getY());
+                math.inverseKinematics();
+                setLowerVoltage(-calcLowerFFVoltage(math.getOmega1()));
+                setUpperVoltage(-calcUpperFFVoltage(math.getOmega2()));
+            },
+            this // add ArmSubsystem requirement
+        );
+    }
+
     // public Command createTripleMoveCommand(double lowerPos, double upperPos) {
     //     // TODO: set values
     //     double lowerPos1 = -1;
@@ -255,6 +281,12 @@ public class ArmSubsystem extends SubsystemBase {
     private ProfiledPIDController createControllerUpper(){
         ProfiledPIDController controller = new ProfiledPIDController(upperP,upperI,upperD, new TrapezoidProfile.Constraints(upperArmMaxSpeed, upperArmMaxAccel));
         controller.setTolerance(upperArmTolerance);
+        return controller;
+    }
+
+    private ProfiledPIDController createControllerEndEffector() {
+        ProfiledPIDController controller = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfileConstraints(0.5, 2));
+        controller.setTolerance(0.05);
         return controller;
     }
 
