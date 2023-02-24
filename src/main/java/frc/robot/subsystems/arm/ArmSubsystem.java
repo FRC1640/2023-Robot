@@ -232,11 +232,12 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public Command createEndEffectorProfileCommand(double x, double y) {
+        ProfiledPIDController controller = createControllerEndEffector();
         Translation2d goalPose = new Translation2d(x, y);
         ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
 
         return new ProfiledPIDCommand(
-            createControllerEndEffector(),
+            controller,
             () -> -goalPose.getDistance(getEndEffectorPosition()),
             new TrapezoidProfile.State(0, 0),
             (pid, nextState) -> {
@@ -254,6 +255,8 @@ public class ArmSubsystem extends SubsystemBase {
                 setUpperVoltage(-calcUpperFFVoltage(math.getOmega2()));
             },
             this // add ArmSubsystem requirement
+        ).until(
+            () -> controller.atGoal()
         );
     }
 
@@ -285,7 +288,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private ProfiledPIDController createControllerEndEffector() {
-        ProfiledPIDController controller = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfileConstraints(0.5, 2));
+        ProfiledPIDController controller = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(0.5, 2));
         controller.setTolerance(0.05);
         return controller;
     }
