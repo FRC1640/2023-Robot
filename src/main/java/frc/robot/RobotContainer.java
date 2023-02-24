@@ -85,7 +85,9 @@ public class RobotContainer {
       .whileTrue(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
     new Trigger(() -> operatorController.getRightBumper())
-      .toggleOnTrue(new TeleopGrabberCommand(grabberSubsystem));
+      .onTrue(new InstantCommand(
+        () -> grabberSubsystem.toggleClamped()
+      ));
     
     new Trigger(() -> presetBoard.getPOV() == 0)
       .toggleOnTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(true)));

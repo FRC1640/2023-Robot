@@ -14,4 +14,8 @@ public class GrabberSubsystem extends SubsystemBase{
     public void setClamped(boolean clamped){
         solenoid.set(clamped);
     }
+
+    public void toggleClamped() {
+        solenoid.set(!solenoid.get());
+    }
 }
