@@ -12,6 +12,9 @@
   "transitory": {
     "armSubsystem": {
       "open": true
+    },
+    "robot": {
+      "open": true
     }
   }
 }

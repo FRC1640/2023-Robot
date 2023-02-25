@@ -256,7 +256,10 @@ public class ArmSubsystem extends SubsystemBase {
         Command profile = createArmProfileCommand(presetMap.get(preset).theta1Degrees, presetMap.get(preset).theta2Degrees);
         return profile;
     }
-
+    public Command createEndEffectorProfileCommand(Preset preset){
+        Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+        return createEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y);
+    }
     public Command createEndEffectorProfileCommand(double x, double y) {
         ProfiledPIDController controller = createControllerEndEffector();
         Translation2d goalPose = new Translation2d(x, y);
@@ -273,12 +276,13 @@ public class ArmSubsystem extends SubsystemBase {
                 if (diff.getNorm() > 1e-5) {
                     diff = diff.times((speed + pid) / diff.getNorm());
                 }
-
-                math.setVx(diff.getX());
-                math.setVy(diff.getY());
+                math.setTheta1(Math.toRadians(getLowerPosition()));
+                math.setTheta2(Math.toRadians(getUpperPosition()));
+                math.setVx(-diff.getX());
+                math.setVy(-diff.getY());
                 math.inverseKinematics();
-                setLowerVoltage(-calcLowerFFVoltage(math.getOmega1()));
-                setUpperVoltage(-calcUpperFFVoltage(math.getOmega2()));
+                setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
             },
             this // add ArmSubsystem requirement
         ).until(
