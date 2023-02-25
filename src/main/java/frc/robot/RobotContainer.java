@@ -47,7 +47,7 @@ public class RobotContainer {
   boolean cubeMode;
   Preset currentPreset;
 
-  Command armStopCommand = new ArmStopCommand(armSubsystem);
+  Command armStopCommand;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -57,6 +57,7 @@ public class RobotContainer {
     driveSubsystem = new DriveSubsystem(gyro);
     
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
+    armStopCommand  = new ArmStopCommand(armSubsystem);
     DashboardInit dashboardInit = new DashboardInit(gyro, armSubsystem);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
@@ -68,8 +69,8 @@ public class RobotContainer {
 
     // Prints (DO NOT DELETE, JUST COMMENT OUT THE PRINTS NOT BEING USED)
     new RepeatCommand(new InstantCommand(
-      () -> {} // do nothing
-      // () -> System.out.println(currentPreset)
+      // () -> {} // do nothing
+      () -> System.out.println(currentPreset)
       // () -> System.out.println("POV: " + presetBoard.getPOV())
       // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
     )).ignoringDisable(true).schedule();
@@ -96,20 +97,13 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> {
-          if (armStopCommand.isScheduled()) {
-            armSubsystem.createArmProfileCommand(currentPreset).schedule();
-          } else {
-            armStopCommand.schedule();
-          }
-        }
-      ));
+        () -> armSubsystem.createArmProfileCommand(currentPreset).schedule()));
 
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation)));
     
     new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
-      .whileTrue(new ArmStopCommand(armSubsystem));
+      .whileTrue(armStopCommand);
 
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kX))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing)));

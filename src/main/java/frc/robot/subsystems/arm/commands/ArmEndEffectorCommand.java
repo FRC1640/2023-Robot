@@ -32,8 +32,6 @@ public class ArmEndEffectorCommand extends CommandBase{
         math.inverseKinematics();
         armSubsystem.setLowerVoltage(math.getOmega1() * 12);
         armSubsystem.setUpperVoltage(math.getOmega2() * 12);
-
-        System.out.println(armSubsystem.getEndEffectorPosition());
     }
 
     @Override
