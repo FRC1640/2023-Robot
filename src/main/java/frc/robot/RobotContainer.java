@@ -22,6 +22,8 @@ import frc.robot.subsystems.drive.commands.ResetGyroCommand;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.TeleopGrabberCommand;
 
+import java.time.Instant;
+
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -54,7 +56,7 @@ public class RobotContainer {
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
   boolean cubeMode;
-  Preset currentPreset;
+  Preset currentPreset = Preset.Pickup;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     gyro = new Gyro();
@@ -96,51 +98,54 @@ public class RobotContainer {
     new Trigger(() -> (presetBoard.getPOV() >= 135 && presetBoard.getPOV() <= 225)&& presetBoard.getPOV() >= 0)
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(true)));
 
-    new Trigger(() -> operatorController.getAButton())
-      .toggleOnTrue(armSubsystem.createArmProfileCommand(currentPreset));
+    new Trigger(() -> operatorController.getAButtonPressed())
+      .onTrue(new InstantCommand(
+        () -> armSubsystem.createArmProfileCommand(currentPreset).schedule()
+      ));
 
-    new Trigger(() -> presetBoard.getRawButton(5))
+    new Trigger(() -> presetBoard.getRawButtonPressed(5))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation)));
     
     // new Trigger(() -> presetBoard.getRawAxis(2) == 1)
     //   .whileTrue(new InstantCommand(() -> setPreset(NONE))); RESERVED
 
-    new Trigger(() -> presetBoard.getRawButton(3))
+    new Trigger(() -> presetBoard.getRawButtonPressed(3))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing)));
     
-    new Trigger(() -> presetBoard.getRawButton(1))
+    new Trigger(() -> presetBoard.getRawButtonPressed(1))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing)));
 
-    new Trigger(() -> presetBoard.getRawButton(4))
+    new Trigger(() -> presetBoard.getRawButtonPressed(4))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround)));
     
-    new Trigger(() -> presetBoard.getRawButton(2))
+    new Trigger(() -> presetBoard.getRawButtonPressed(2))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing)));
     
-    new Trigger(() -> presetBoard.getRawButton(6))
+    new Trigger(() -> presetBoard.getRawButtonPressed(6))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground)));
     
       new Trigger(() -> presetBoard.getRawAxis(3) == 1)
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Pickup)));
 
 
-    // new Trigger(() -> presetBoard.getRawButton(1))
+    // new Trigger(() -> presetBoard.getRawButtonPressed(1))
     //   .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Ground));
 
-    // new Trigger(() -> presetBoard.getRawButton(2))
+    // new Trigger(() -> presetBoard.getRawButtonPressed(2))
     //   .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Travel));
 
-    // new Trigger(() -> presetBoard.getRawButton(3))
+    // new Trigger(() -> presetBoard.getRawButtonPressed(3))
     //   .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Pickup));
 
     // Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
     // switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
 
-    // Trigger switchToCone = new Trigger(() -> presetBoard.getRawButtonPressed(5));
+    // Trigger switchToCone = new Trigger(() -> presetBoard.getRawButtonPressedPressed(5));
     // switchToCone.whileTrue(new RunCommand(() -> setMode(false)));
 
 
     new RepeatCommand(new InstantCommand(
+      () -> System.out.println(currentPreset)
       // () -> System.out.println("POV: " + presetBoard.getPOV())
       // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
     )).ignoringDisable(true).schedule();
@@ -171,5 +176,8 @@ public class RobotContainer {
   }
   public void setPreset(Preset preset){
     currentPreset = preset;
+  }
+  public Preset getCurrentPreset(){
+    return currentPreset;
   }
 }

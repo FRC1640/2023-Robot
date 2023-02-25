@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -71,8 +72,9 @@ public class ArmSubsystem extends SubsystemBase {
      * Cone upright ground (0.51, -0.05) X
      * Mid cone/cube placing (1.03, 0.87), (1.09, 0.48) X
      * high cone/cube placing (1.43, 1.23), (1.5, 0.77) X
-     * Low placing (), () X
+     * Low placing (0.59, 0.2), () X
      * Substation () X
+     * Start ()
      */
     public static enum Preset {
         Ground,
@@ -82,26 +84,31 @@ public class ArmSubsystem extends SubsystemBase {
         HighPlacing,
         LowPlacing,
         Travel,
+        Start,
         Substation;
     }
 
     private boolean isInCubeMode = false;
 
-    private final Map<Preset, ArmState> cubeMap =
-    new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.56, -0.12)),
-        Map.entry(Preset.Pickup, new ArmState(-1.27, 162.50)),
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.09, 0.48)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.5, 0.77)),
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.44, 0.23))
-    ));
+    
 
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.58, -0.12)),
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.26, 0.17)),
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.51, -0.05)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.03, 0.87)),
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.59, 0.2)),
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.43, 1.23))
+    ));
+
+    private final Map<Preset, ArmState> cubeMap =
+    new EnumMap<>(Map.ofEntries(
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.56, -0.12)),
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.19, 0.12)),
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.09, 0.48)),
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.5, 0.77)),
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.44, 0.23))
     ));
 
     public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
