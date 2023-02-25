@@ -87,6 +87,9 @@ public class RobotContainer {
     endEffectorCommandTrigger.and(manualCommandTrigger.negate())
       .whileTrue(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
+    new Trigger(() -> operatorController.getBButton())
+      .whileTrue(new ArmStopCommand(armSubsystem));
+
     new Trigger(() -> operatorController.getRightBumper())
       .onTrue(new InstantCommand(
         () -> grabberSubsystem.toggleClamped()
@@ -106,8 +109,8 @@ public class RobotContainer {
     new Trigger(() -> presetBoard.getRawButtonPressed(5))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation)));
     
-    // new Trigger(() -> presetBoard.getRawAxis(2) == 1)
-    //   .whileTrue(new InstantCommand(() -> setPreset(NONE))); RESERVED
+    new Trigger(() -> presetBoard.getRawAxis(2) == 1)
+      .whileTrue(new ArmStopCommand(armSubsystem)); //stop command
 
     new Trigger(() -> presetBoard.getRawButtonPressed(3))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing)));
