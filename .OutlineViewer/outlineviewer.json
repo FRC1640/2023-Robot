@@ -9,12 +9,6 @@
     "mode": "Client (NT4)",
     "serverTeam": "1640"
   },
-  "Persistent Values": {
-    "open": false
-  },
-  "Transitory Values": {
-    "open": false
-  },
   "transitory": {
     "armSubsystem": {
       "open": true

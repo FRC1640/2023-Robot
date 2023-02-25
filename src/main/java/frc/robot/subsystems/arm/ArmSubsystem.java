@@ -18,12 +18,14 @@ import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.sensors.Resolver;
+import frc.robot.subsystems.arm.commands.ArmStopCommand;
 
 public class ArmSubsystem extends SubsystemBase {
     /*
@@ -65,6 +67,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
+    boolean currentStopFlag = false;
+    Timer currentTimer = new Timer();
     /* 
      * PRESETS:
      * Cone/cube ground pickup (0.58, -0.17), (0.56, -0.12) X
@@ -95,7 +99,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.58, -0.12)),
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.26, 0.17)),
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.28, 0.17)),
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.51, -0.05)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.03, 0.87)),
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.59, 0.2)),
@@ -141,8 +145,27 @@ public class ArmSubsystem extends SubsystemBase {
             upperArmVoltage = Math.min(upperArmVoltage, 0);
         }
 
+        /* Current Stop */
+        // if ((lowerArmMotor1.getOutputCurrent() >= 25 || upperArmMotor1.getOutputCurrent() >= 25)){
+        //     if (!currentStopFlag){
+        //         currentStopFlag = true;
+        //         currentTimer.reset();
+        //         currentTimer.start();
+        //     }
+        //     if (currentTimer.hasElapsed(0.15)){
+        //         lowerArmVoltage = 0;
+        //         upperArmVoltage = 0;
+        //         new ArmStopCommand(this).schedule();
+        //     }
+            
+        // }
+        // else{
+        //     currentStopFlag = false;
+        // }
+        
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
+        
 
         /* NetworkTables */
         updateNetworkTables();
@@ -319,8 +342,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private ProfiledPIDController createControllerEndEffector() {
-        ProfiledPIDController controller = new ProfiledPIDController(0.35, 0, 0, new TrapezoidProfile.Constraints(1.3, 0.5));
-        controller.setTolerance(0.05);
+        ProfiledPIDController controller = new ProfiledPIDController(0.35, 0, 0, new TrapezoidProfile.Constraints(1.1, 0.4));
+        controller.setTolerance(0.02);
         return controller;
     }
 
