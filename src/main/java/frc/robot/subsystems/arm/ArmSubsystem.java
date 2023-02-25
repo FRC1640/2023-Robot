@@ -64,14 +64,25 @@ public class ArmSubsystem extends SubsystemBase {
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
-
+    /* 
+     * PRESETS:
+     * Cone/cube ground pickup (0.58, -0.17), (0.56, -0.12) X
+     * Pickup + open () X
+     * Cone upright ground (0.51, -0.05) X
+     * Mid cone/cube placing (1.03, 0.87), (1.09, 0.48) X
+     * high cone/cube placing (1.43, 1.23), (1.5, 0.77) X
+     * Low placing (), () X
+     * Substation () X
+     */
     public static enum Preset {
         Ground,
         Pickup,
         UprightConeGround,
         MidPlacing,
         HighPlacing,
+        LowPlacing,
         Travel,
+        Substation;
     }
 
     private boolean isInCubeMode = false;

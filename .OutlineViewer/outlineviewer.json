@@ -2,7 +2,16 @@
   "Connections": {
     "open": true
   },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "1640"
+  },
   "Retained Values": {
     "open": false
+  },
+  "transitory": {
+    "armSubsystem": {
+      "open": true
+    }
   }
 }
