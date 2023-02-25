@@ -92,10 +92,10 @@ public class RobotContainer {
         () -> grabberSubsystem.toggleClamped()
       ));
     
-    new Trigger(() -> (presetBoard.getPOV() <= 45 || presetBoard.getPOV() >= 315) && presetBoard.getPOV() >= 0)
+    new Trigger(() -> ((presetBoard.getPOV() <= 45 || presetBoard.getPOV() >= 315) && presetBoard.getPOV() >= 0) || operatorController.getYButtonPressed())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)));
 
-    new Trigger(() -> (presetBoard.getPOV() >= 135 && presetBoard.getPOV() <= 225)&& presetBoard.getPOV() >= 0)
+    new Trigger(() -> ((presetBoard.getPOV() >= 135 && presetBoard.getPOV() <= 225)&& presetBoard.getPOV() >= 0) || operatorController.getXButtonPressed())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(true)));
 
     new Trigger(() -> operatorController.getAButtonPressed())
