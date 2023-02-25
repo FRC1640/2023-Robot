@@ -24,7 +24,13 @@ public class Limelight {
 	private NetworkTableEntry ledMode;
 	private NetworkTableEntry streamMode;
 	private NetworkTableEntry botpose;
+	private NetworkTableEntry tid; // april tag id oops didnt need this
+
+	private NetworkTableEntry aprilTagRobotSpace; // "3D transform of the primary in-view AprilTag in the coordinate system of the Robot"
+	private NetworkTableEntry robotAprilTagSpace;
+
 	private NetworkTable table;
+
 
 	/**
 	* Enum for Limelight Targeting Pipelines/Configurations
@@ -104,6 +110,14 @@ public class Limelight {
 		camMode = table.getEntry("camMode");	
 		ledMode = table.getEntry("ledMode");
 		streamMode = table.getEntry("stream");
+		tid = table.getEntry("tid"); // gets April tag ID #- maybe get rid of
+		aprilTagRobotSpace = table.getEntry("targetpose_robotspace"); // "3D transform of the primary in-view AprilTag in the coordinate system of the Robot (array (6))"
+		robotAprilTagSpace = table.getEntry("botpose_targetspace	"); // "3D transform of the primary in-view AprilTag in the coordinate system of the Robot (array (6))"
+
+		//tid = table.getEntry("tid").getDouble(0);
+
+
+
 
 		setLEDOn(LedEnum.FORCE_OFF);
 		setStreamMode(StreamEnum.PiP_1);
@@ -225,6 +239,45 @@ public class Limelight {
 
 		return new Pose2d(translation2d, rotation2d);
 	}
+
+	public Pose2d getTagInRobotSpace(){ // return the coordinates of the april tag in relation to the robot (maybe get rid of...)
+		double[] tagInRobotSpace = aprilTagRobotSpace.getDoubleArray(new double[] {});
+		Translation2d translation2d = new Translation2d(-9999, -9999);
+		Rotation2d rotation2d = new Rotation2d(0);
+
+		if (tagInRobotSpace.length > 0) {
+			translation2d = new Translation2d(tagInRobotSpace[0], tagInRobotSpace[1]);
+			rotation2d = new Rotation2d(Math.toRadians(tagInRobotSpace[5]));
+		}
+		else {
+			translation2d = null;
+			rotation2d = null;
+		}
+		
+		return new Pose2d(translation2d, rotation2d);
+	}
+
+	public Pose2d getRobotInAprilTagSpace(){ // return the coordinates of the ROBOT in relation to the APRIL TAG (maybe get rid of...)
+		double[] robotInTagSpace = robotAprilTagSpace.getDoubleArray(new double[] {});
+		Translation2d translation2d = new Translation2d(-9999, -9999);
+		Rotation2d rotation2d = new Rotation2d(0);
+
+		if (robotInTagSpace.length > 0) {
+			translation2d = new Translation2d(robotInTagSpace[0], robotInTagSpace[1]);
+			rotation2d = new Rotation2d(Math.toRadians(robotInTagSpace[5]));
+		}
+		else {
+			translation2d = null;
+			rotation2d = null;
+		}
+		
+		return new Pose2d(translation2d, rotation2d);
+	}
+
+	public double getAprilTagIndex(){
+		return tid.getDouble(0);
+	}
+
 	public double aprilTagLength(){
 		return botpose.getDoubleArray(new double[] {}).length;
 	}
