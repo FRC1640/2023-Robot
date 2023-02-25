@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.auton.commands.Align;
-import frc.robot.auton.paths.AlignAuto;
 import frc.robot.auton.paths.ChargeStation;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
@@ -20,32 +17,24 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
-import frc.robot.subsystems.grabber.commands.TeleopGrabberCommand;
-
-import java.time.Instant;
-
-import edu.wpi.first.wpilibj.AnalogEncoder;
+import frc.robot.utilities.PresetBoard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PerpetualCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
-  GenericHID presetBoard = new GenericHID(2);
+  PresetBoard presetBoard = new PresetBoard(2);
   boolean wasEnabled = false;
   DriveSubsystem driveSubsystem;
   Limelight limelight = new Limelight();
@@ -56,102 +45,89 @@ public class RobotContainer {
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
   boolean cubeMode;
-  Preset currentPreset = Preset.Pickup;
+  Preset currentPreset;
+
+  Command armStopCommand = new ArmStopCommand(armSubsystem);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    setupNetworkTables();
+
     gyro = new Gyro();
     driveSubsystem = new DriveSubsystem(gyro);
     
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
     DashboardInit dashboardInit = new DashboardInit(gyro, armSubsystem);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController));
-    armSubsystem.setDefaultCommand(new ArmStopCommand(armSubsystem));
+    armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
+    setPreset(Preset.Pickup);
 
-    new RunCommand(() -> driveSubsystem.print())//
-     .ignoringDisable(true).cancel();
-    
-    // drive.setDefaultCommand(new SetDriveDirect(drive, driverController));
     // Configure the trigger bindings
     configureBindings();
+
+    // Prints (DO NOT DELETE, JUST COMMENT OUT THE PRINTS NOT BEING USED)
+    new RepeatCommand(new InstantCommand(
+      () -> {} // do nothing
+      // () -> System.out.println(currentPreset)
+      // () -> System.out.println("POV: " + presetBoard.getPOV())
+      // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
+    )).ignoringDisable(true).schedule();
   }
 
   private void configureBindings() {
-    JoystickButton startButton = new JoystickButton(driverController, 8);
-    startButton.onTrue(new ResetGyroCommand(gyro));
+    new Trigger(() -> driverController.getStartButtonPressed())
+      .onTrue(new ResetGyroCommand(gyro));
 
-    Trigger manualCommandTrigger = new Trigger(() -> (operatorController.getLeftTriggerAxis() > 0.7));
-    manualCommandTrigger.whileTrue(new ArmManualCommand(armSubsystem, operatorController));
-
-    Trigger endEffectorCommandTrigger = new Trigger(() -> (operatorController.getRightTriggerAxis() > 0.7));
-    endEffectorCommandTrigger.and(manualCommandTrigger.negate())
-      .whileTrue(new ArmEndEffectorCommand(armSubsystem, operatorController));
+    new Trigger(() -> (operatorController.getLeftTriggerAxis() > 0.7))
+      .whileTrue(new ArmManualCommand(armSubsystem, operatorController));
 
     new Trigger(() -> operatorController.getBButton())
-      .whileTrue(new ArmStopCommand(armSubsystem));
+      .whileTrue(armStopCommand);
 
     new Trigger(() -> operatorController.getRightBumper())
-      .onTrue(new InstantCommand(
-        () -> grabberSubsystem.toggleClamped()
-      ));
+      .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
     
-    new Trigger(() -> ((presetBoard.getPOV() <= 45 || presetBoard.getPOV() >= 315) && presetBoard.getPOV() >= 0) || operatorController.getYButtonPressed())
+    new Trigger(() -> presetBoard.povIsUpwards() || operatorController.getYButtonPressed())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)));
 
-    new Trigger(() -> ((presetBoard.getPOV() >= 135 && presetBoard.getPOV() <= 225)&& presetBoard.getPOV() >= 0) || operatorController.getXButtonPressed())
+    new Trigger(() -> presetBoard.povIsDownwards() || operatorController.getXButtonPressed())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(true)));
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> armSubsystem.createArmProfileCommand(currentPreset).schedule()
+        () -> {
+          if (armStopCommand.isScheduled()) {
+            armSubsystem.createArmProfileCommand(currentPreset).schedule();
+          } else {
+            armStopCommand.schedule();
+          }
+        }
       ));
 
-    new Trigger(() -> presetBoard.getRawButtonPressed(5))
+    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation)));
     
-    new Trigger(() -> presetBoard.getRawAxis(2) == 1)
-      .whileTrue(new ArmStopCommand(armSubsystem)); //stop command
+    new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
+      .whileTrue(new ArmStopCommand(armSubsystem));
 
-    new Trigger(() -> presetBoard.getRawButtonPressed(3))
+    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kX))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing)));
     
-    new Trigger(() -> presetBoard.getRawButtonPressed(1))
+    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kA))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing)));
 
-    new Trigger(() -> presetBoard.getRawButtonPressed(4))
+    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kY))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround)));
     
-    new Trigger(() -> presetBoard.getRawButtonPressed(2))
+    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing)));
     
-    new Trigger(() -> presetBoard.getRawButtonPressed(6))
+    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kRB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground)));
     
-      new Trigger(() -> presetBoard.getRawAxis(3) == 1)
+      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Pickup)));
-
-
-    // new Trigger(() -> presetBoard.getRawButtonPressed(1))
-    //   .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Ground));
-
-    // new Trigger(() -> presetBoard.getRawButtonPressed(2))
-    //   .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Travel));
-
-    // new Trigger(() -> presetBoard.getRawButtonPressed(3))
-    //   .toggleOnTrue(armSubsystem.createArmProfileCommand(Preset.Pickup));
-
-    // Trigger switchToCube = new Trigger(() -> presetBoard.getRawAxis(2) == 1);
-    // switchToCube.whileTrue(new RunCommand(() -> setMode(true)));
-
-    // Trigger switchToCone = new Trigger(() -> presetBoard.getRawButtonPressedPressed(5));
-    // switchToCone.whileTrue(new RunCommand(() -> setMode(false)));
-
-
-    new RepeatCommand(new InstantCommand(
-      () -> System.out.println(currentPreset)
-      // () -> System.out.println("POV: " + presetBoard.getPOV())
-      // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
-    )).ignoringDisable(true).schedule();
   }
 
   public void firstEnabled(){
@@ -173,14 +149,27 @@ public class RobotContainer {
     ChargeStation auto = new ChargeStation();
     return auto.loadAuto(gyro, driveSubsystem);
   }
+
   public void setMode(boolean m){
     cubeMode = m;
-    System.out.println(cubeMode);
   }
+
   public void setPreset(Preset preset){
     currentPreset = preset;
+    presetPub.set(currentPreset.toString());
   }
+
   public Preset getCurrentPreset(){
     return currentPreset;
+  }
+
+  NetworkTableInstance nt;
+  NetworkTable table;
+  StringPublisher presetPub;
+
+  private void setupNetworkTables() {
+    nt = NetworkTableInstance.getDefault();
+    table = nt.getTable("robot");
+    presetPub = table.getStringTopic("currentPreset").publish();
   }
 }
