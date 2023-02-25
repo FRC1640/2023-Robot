@@ -69,8 +69,8 @@ public class RobotContainer {
 
     // Prints (DO NOT DELETE, JUST COMMENT OUT THE PRINTS NOT BEING USED)
     new RepeatCommand(new InstantCommand(
-      // () -> {} // do nothing
-      () -> System.out.println(currentPreset)
+      () -> {} // do nothing
+      // () -> System.out.println(currentPreset)
       // () -> System.out.println("POV: " + presetBoard.getPOV())
       // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
     )).ignoringDisable(true).schedule();
@@ -97,7 +97,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> armSubsystem.createArmProfileCommand(currentPreset).schedule()));
+        () -> armSubsystem.createEndEffectorProfileCommand(currentPreset).schedule()));
 
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation)));

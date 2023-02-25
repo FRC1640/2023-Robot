@@ -11,8 +11,8 @@ public class ArmState {
         this.theta1Degrees = theta1Degrees;
         this.theta2Degrees = theta2Degrees;
         ArmKinematics math = new ArmKinematics(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength); 
-        math.setLowerAngle(theta1Degrees);
-        math.setUpperAngle(theta2Degrees);
+        math.setLowerAngle(Math.toRadians(theta1Degrees));
+        math.setUpperAngle(Math.toRadians(theta2Degrees));
         math.fowardKinematics();
         this.x = math.getX();
         this.y = math.getY();

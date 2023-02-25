@@ -1,4 +1,7 @@
 {
+  "Clients": {
+    "open": true
+  },
   "Connections": {
     "open": true
   },
@@ -6,7 +9,10 @@
     "mode": "Client (NT4)",
     "serverTeam": "1640"
   },
-  "Retained Values": {
+  "Persistent Values": {
+    "open": false
+  },
+  "Transitory Values": {
     "open": false
   },
   "transitory": {

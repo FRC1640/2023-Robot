@@ -256,7 +256,7 @@ public class ArmSubsystem extends SubsystemBase {
         Command profile = createArmProfileCommand(presetMap.get(preset).theta1Degrees, presetMap.get(preset).theta2Degrees);
         return profile;
     }
-    public Command createEndEffectorProfileCommand(Preset preset){
+    public Command createEndEffectorProfileCommand(Preset preset){ //1.09, 0.48
         Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
         return createEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y);
     }
@@ -276,10 +276,11 @@ public class ArmSubsystem extends SubsystemBase {
                 if (diff.getNorm() > 1e-5) {
                     diff = diff.times((speed + pid) / diff.getNorm());
                 }
+                System.out.println("diff: " + diff + " goal: " + goalPose + " endEffector: " + getEndEffectorPosition());
                 math.setTheta1(Math.toRadians(getLowerPosition()));
                 math.setTheta2(Math.toRadians(getUpperPosition()));
-                math.setVx(-diff.getX());
-                math.setVy(-diff.getY());
+                math.setVx(diff.getX());
+                math.setVy(diff.getY());
                 math.inverseKinematics();
                 setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
                 setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
@@ -318,7 +319,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private ProfiledPIDController createControllerEndEffector() {
-        ProfiledPIDController controller = new ProfiledPIDController(0.2, 0, 0, new TrapezoidProfile.Constraints(0.5, 2));
+        ProfiledPIDController controller = new ProfiledPIDController(0.35, 0, 0, new TrapezoidProfile.Constraints(1.3, 0.5));
         controller.setTolerance(0.05);
         return controller;
     }
