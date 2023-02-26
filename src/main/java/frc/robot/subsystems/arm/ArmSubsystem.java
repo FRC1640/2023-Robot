@@ -131,6 +131,11 @@ public class ArmSubsystem extends SubsystemBase {
         lowerArmMotor2.setIdleMode(IdleMode.kBrake);
         upperArmMotor1.setIdleMode(IdleMode.kBrake);
         upperArmMotor2.setIdleMode(IdleMode.kBrake);
+        lowerArmMotor1.setSmartCurrentLimit(60);
+        lowerArmMotor2.setSmartCurrentLimit(60);
+        upperArmMotor1.setSmartCurrentLimit(60);
+        upperArmMotor2.setSmartCurrentLimit(60);
+
         lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 200);
 		lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
 		lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);

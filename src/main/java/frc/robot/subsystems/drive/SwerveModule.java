@@ -41,9 +41,9 @@ public class SwerveModule {
 		this.cfg = cfg;
 		driveMotor = new CANSparkMax(cfg.getDriveChannel(), MotorType.kBrushless);
 		steeringMotor = new CANSparkMax(cfg.getSteerChannel(), MotorType.kBrushless);
-		// driveMotor.setSmartCurrentLimit(60);
-		// steeringMotor.setSmartCurrentLimit(40);
-		// driveMotor.setIdleMode(IdleMode.kCoast);
+		driveMotor.setSmartCurrentLimit(60);
+		steeringMotor.setSmartCurrentLimit(40);
+		driveMotor.setIdleMode(IdleMode.kCoast);
 		// driveMotor.burnFlash();
 		// steeringMotor.burnFlash();
 		driveEncoder = driveMotor.getEncoder();
