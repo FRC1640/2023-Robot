@@ -117,6 +117,7 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.19, 0.12)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.09, 0.48)),
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.5, 0.77)),
+        Map.entry(Preset.Start, ArmState.fromEndEffector(0.19, 0.12)),
         Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070))
     ));
 
@@ -132,6 +133,11 @@ public class ArmSubsystem extends SubsystemBase {
         lowerArmMotor2.setIdleMode(IdleMode.kBrake);
         upperArmMotor1.setIdleMode(IdleMode.kBrake);
         upperArmMotor2.setIdleMode(IdleMode.kBrake);
+        lowerArmMotor1.setSmartCurrentLimit(60);
+        lowerArmMotor2.setSmartCurrentLimit(60);
+        upperArmMotor1.setSmartCurrentLimit(60);
+        upperArmMotor2.setSmartCurrentLimit(60);
+
         lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 200);
 		lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
 		lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
