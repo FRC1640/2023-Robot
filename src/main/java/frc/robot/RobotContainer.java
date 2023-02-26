@@ -100,25 +100,25 @@ public class RobotContainer {
       .onTrue(new InstantCommand(
         () -> currentArmCommand.schedule()));
 
-    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kLB))
+    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
     
     new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
       .whileTrue(armStopCommand);
 
-    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kX))
+    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kX))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.HighPlacing))));
     
-    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kA))
+    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kA))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.MidPlacing))));
 
-    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kY))
+    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kY))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround, armSubsystem.createEndEffectorProfileCommand(Preset.UprightConeGround))));
     
-    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kB))
+    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.LowPlacing))));
     
-    new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kRB))
+    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kRB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.createEndEffectorProfileCommand(Preset.Ground))));
     
       new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis))
@@ -131,9 +131,17 @@ public class RobotContainer {
             .andThen(armSubsystem.createEndEffectorProfileCommand(Preset.Pickup))
         )
       ));
-      
+
       new Trigger(() -> operatorController.getYButtonPressed())
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel)));
+      .whileTrue(new InstantCommand(
+        () -> setPreset(
+          Preset.Travel,
+          new InstantCommand(
+            () -> grabberSubsystem.setClamped(false)
+          )
+            .andThen(armSubsystem.createEndEffectorProfileCommand(Preset.Travel))
+        )
+      ));
   }
 
   public void firstEnabled(){
