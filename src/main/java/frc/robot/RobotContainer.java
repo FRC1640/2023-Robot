@@ -46,6 +46,7 @@ public class RobotContainer {
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
   boolean cubeMode;
   Preset currentPreset;
+  Command currentArmCommand;
 
   Command armStopCommand;
 
@@ -62,7 +63,7 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
-    setPreset(Preset.Pickup);
+    setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
 
     // Configure the trigger bindings
     configureBindings();
@@ -97,32 +98,40 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> armSubsystem.createEndEffectorProfileCommand(currentPreset).schedule()));
+        () -> currentArmCommand.schedule()));
 
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kLB))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation)));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
     
     new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
       .whileTrue(armStopCommand);
 
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kX))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing)));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.HighPlacing))));
     
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kA))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing)));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.MidPlacing))));
 
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kY))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround)));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround, armSubsystem.createEndEffectorProfileCommand(Preset.UprightConeGround))));
     
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kB))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing)));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.LowPlacing))));
     
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kRB))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground)));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.createEndEffectorProfileCommand(Preset.Ground))));
     
-      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButtonPressed())
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.Pickup)));
-
+      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis))
+      .whileTrue(new InstantCommand(
+        () -> setPreset(
+          Preset.Pickup,
+          new InstantCommand(
+            () -> grabberSubsystem.setClamped(false)
+          )
+            .andThen(armSubsystem.createEndEffectorProfileCommand(Preset.Pickup))
+        )
+      ));
+      
       new Trigger(() -> operatorController.getYButtonPressed())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel)));
   }
@@ -151,8 +160,9 @@ public class RobotContainer {
     cubeMode = m;
   }
 
-  public void setPreset(Preset preset){
+  public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
+    currentArmCommand = armCommand;
     presetPub.set(currentPreset.toString());
   }
 
