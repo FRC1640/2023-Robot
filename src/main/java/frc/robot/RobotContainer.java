@@ -120,7 +120,7 @@ public class RobotContainer {
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kRB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.createEndEffectorProfileCommand(Preset.Ground))));
     
-      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis))
+      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButton())
       .whileTrue(new InstantCommand(
         () -> setPreset(
           Preset.Pickup,
@@ -131,7 +131,7 @@ public class RobotContainer {
         )
       ));
 
-      new Trigger(() -> operatorController.getYButtonPressed())
+      new Trigger(() -> operatorController.getYButton())
       .whileTrue(new InstantCommand(
         () -> setPreset(
           Preset.Travel,

@@ -15,11 +15,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.auton.commands.Balance;
 import frc.robot.auton.commands.EndPitch;
 import frc.robot.sensors.Gyro;
+import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
+import frc.robot.subsystems.grabber.GrabberSubsystem;
 
 public class PlaceOut {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
@@ -31,18 +36,32 @@ public class PlaceOut {
   PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out", new PathConstraints(2, 2));
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
-  public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve) { 
+  public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
     placeState = placePath.getInitialState();
     gyro.resetGyro();
     gyro.setOffset(180);
     Pose2d placePose = new Pose2d(placeState.poseMeters.getTranslation(), placeState.holonomicRotation);
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
+    Command place = new InstantCommand(
+        () -> armSubsystem.createEndEffectorProfileCommand(Preset.HighPlacing).schedule());
+
+    Command safe = new InstantCommand(
+        () -> armSubsystem.createEndEffectorProfileCommand(Preset.Pickup).schedule());
+
+    Command pickup = new InstantCommand(
+        () -> armSubsystem.createEndEffectorProfileCommand(Preset.Pickup).schedule());
+
+    
+
+    Command grab = new InstantCommand(() -> grabberSubsystem.setClamped(true));
+    Command unGrab = new InstantCommand(() -> grabberSubsystem.setClamped(false));
 
     PPSwerveControllerCommand placePathController = new PPSwerveControllerCommand(placePath,
-    swerve::getPose, // Functional interface to feed supplier
-    kDriveKinematics, new PIDController(0.3, 0.0, 0.0), new PIDController(0.3, 0.0, 0.0), new PIDController(0.5, 0, 0),
-    swerve::setModuleStates, false, swerve);
-    return Commands.sequence(resetOdo);// 
+        swerve::getPose, // Functional interface to feed supplier
+        kDriveKinematics, new PIDController(0.3, 0.0, 0.0), new PIDController(0.3, 0.0, 0.0), new PIDController(0.5, 0, 0),
+        swerve::setModuleStates, true, swerve);
+    ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
+    return Commands.sequence(resetOdo, pickup, grab, place, unGrab, group);// 
   }
 }
