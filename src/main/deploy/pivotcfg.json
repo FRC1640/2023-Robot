@@ -2,11 +2,11 @@
     "FL" : {
         "name" : "FL",
         "position" : {
-            "x" : -10.375,
+            "x" : 10.375,
             "y" : 12.375
         },
-        "minvoltage" : 0.1,
-        "maxvoltage" : 4.9,
+        "minvoltage" : 0.05,
+        "maxvoltage" : 4.95,
         "driveChannel" : 3,
         "steerChannel" : 4,
         "resolverChannel" : 0,
@@ -21,10 +21,10 @@
         "name" : "FR",
         "position" : {
             "x" : 10.375,
-            "y" : 12.375
+            "y" : -12.375
         },
-        "minvoltage" : 0.1,
-        "maxvoltage" : 4.9,
+        "minvoltage" : 0.05,
+        "maxvoltage" : 4.95,
         "driveChannel" : 2,
         "steerChannel" : 1,
         "resolverChannel" : 2,
@@ -39,10 +39,10 @@
         "name" : "BL",
         "position" : {
             "x" : -10.375,
-            "y" : -12.375
+            "y" : 12.375
         },
-        "minvoltage" : 0.1,
-        "maxvoltage" : 4.9,
+        "minvoltage" : 0.05,
+        "maxvoltage" : 4.95,
         "driveChannel" : 18,
         "steerChannel" : 17,
         "resolverChannel" : 1,
@@ -56,11 +56,11 @@
     "BR" : {
         "name" : "BR",
         "position" : {
-            "x" : 10.375,
+            "x" : -10.375,
             "y" : -12.375
         },
-        "minvoltage" : 0.1,
-        "maxvoltage" : 4.9,
+        "minvoltage" : 0.05,
+        "maxvoltage" : 4.95,
         "driveChannel" : 19,
         "steerChannel" : 20,
         "resolverChannel" : 3,

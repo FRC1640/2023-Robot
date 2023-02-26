@@ -10,7 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class JoystickDriveCommand extends CommandBase {
-    final double SLOW_LINEAR_SPEED = 0.55;
+    final double SLOW_LINEAR_SPEED = 0.7;
     final double SLOW_ROTATIONAL_SPEED = 0.55;
 
     final double LOWER_DB = 0.15;
@@ -36,7 +36,9 @@ public class JoystickDriveCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() { }
+    public void initialize() {
+        
+    }
 
     @Override
     public void execute() {
@@ -68,14 +70,25 @@ public class JoystickDriveCommand extends CommandBase {
         ySpeed = joystickCleaner.getY();
 
         /* Apply rotational deadband */
-        rot = MathUtil.applyDeadband(rot, LOWER_DB, 1 - UPPER_DB);
+        rot = MathUtil.applyDeadband(rot, LOWER_DB);
 
         /* Increase rotational sensitivity */
         rot = Math.signum(rot) * Math.pow(Math.abs(rot), 1.0 / 3.0);
+        // if (xSpeed != 0 || ySpeed != 0){
+        //     if (Math.abs(xSpeed) >= Math.abs(ySpeed)){
+        //         xSpeed = Math.signum(xSpeed) * 0.5;
+        //         ySpeed = 0;
+        //     }
+        //     else{
+        //         ySpeed = Math.signum(ySpeed) * 0.5;
+        //         xSpeed = 0;
+        //     }
+        // }
+
 
         driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
+        
     }
-
     @Override
     public void end(boolean interrupted) { }
 

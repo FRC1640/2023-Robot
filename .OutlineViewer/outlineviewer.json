@@ -1,8 +1,20 @@
 {
+  "Clients": {
+    "open": true
+  },
   "Connections": {
     "open": true
   },
-  "Retained Values": {
-    "open": false
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "1640"
+  },
+  "transitory": {
+    "armSubsystem": {
+      "open": true
+    },
+    "robot": {
+      "open": true
+    }
   }
 }

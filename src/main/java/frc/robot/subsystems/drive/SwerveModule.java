@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 
 public class SwerveModule {
@@ -46,15 +47,20 @@ public class SwerveModule {
 		// driveMotor.burnFlash();
 		// steeringMotor.burnFlash();
 		driveEncoder = driveMotor.getEncoder();
-		steeringEncoder = new Resolver(cfg.getResolverChannel(), cfg.getMinVoltage(), cfg.getMaxVoltage(),
+		steeringEncoder = new Resolver(cfg.getResolverChannel(), cfg.getMinvoltage(), cfg.getMaxvoltage(),
 				cfg.getOffset(), cfg.isReverseAngle());
-
+		// System.out.println("Max: " + cfg.getOffset());
 		driveMotor.setInverted(cfg.isReverseDrive());
 		steeringMotor.setInverted(cfg.isReverseSteer());
 		turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+
+
+		// driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+		driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 200);
+		// driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
 		steeringMotor.burnFlash();
 	}
 
@@ -97,9 +103,9 @@ public class SwerveModule {
 
 	public void setDesiredState(SwerveModuleState state) {
 		desiredState = state;
-		if (cfg.getName() == PivotId.FL){
-			System.out.format("%.2f, %.2f\n", desiredState.angle.getDegrees(), steeringEncoder.getD());
-		}
+		// if (cfg.getName() == PivotId.FL){
+		// 	System.out.format("%.2f, %.2f\n", desiredState.angle.getDegrees(), steeringEncoder.getD());
+		// }
 		double dAngle = state.angle.getDegrees() - steeringEncoder.getD();
 		double dAngleAbs = Math.abs(dAngle) % 360;
 		boolean flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
