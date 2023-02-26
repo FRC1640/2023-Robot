@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -300,16 +301,26 @@ public class ArmSubsystem extends SubsystemBase {
         return group;
     }
 
-    public Command createArmProfileCommand(Preset preset){
-        Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+    public Command createArmProfileCommand(Preset preset) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                createArmProfileCommand(presetMap.get(preset).theta1Degrees, presetMap.get(preset).theta2Degrees)
+                    .schedule();
+            }
+        );
+    }
 
-        Command profile = createArmProfileCommand(presetMap.get(preset).theta1Degrees, presetMap.get(preset).theta2Degrees);
-        return profile;
+    public Command createEndEffectorProfileCommand(Preset preset) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                createEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y)
+                    .schedule();
+            }
+        );
     }
-    public Command createEndEffectorProfileCommand(Preset preset){ //1.09, 0.48
-        Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
-        return createEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y);
-    }
+
     public Command createEndEffectorProfileCommand(double x, double y) {
         ProfiledPIDController controller = createControllerEndEffector();
         Translation2d goalPose = new Translation2d(x, y);
@@ -326,10 +337,6 @@ public class ArmSubsystem extends SubsystemBase {
                 if (diff.getNorm() > 1e-5) {
                     diff = diff.times((speed + pid) / diff.getNorm());
                 }
-                // ArmMath math1 = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
-
-                // System.out.println("Velocity: " + )
-                // System.out.println("diff: " + diff + " goal: " + goalPose + " endEffector: " + getEndEffectorPosition());
                 math.setTheta1(Math.toRadians(getLowerPosition()));
                 math.setTheta2(Math.toRadians(getUpperPosition()));
                 math.setVx(diff.getX());

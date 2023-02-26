@@ -44,7 +44,6 @@ public class RobotContainer {
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
-  boolean cubeMode;
   Preset currentPreset;
   Command currentArmCommand;
 
@@ -162,10 +161,6 @@ public class RobotContainer {
     //An example command will be run in autonomous
     ChargeStation auto = new ChargeStation();
     return auto.loadAuto(gyro, driveSubsystem);
-  }
-
-  public void setMode(boolean m){
-    cubeMode = m;
   }
 
   public void setPreset(Preset preset, Command armCommand){
