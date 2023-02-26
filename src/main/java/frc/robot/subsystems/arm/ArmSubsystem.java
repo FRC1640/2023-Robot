@@ -8,7 +8,9 @@ import java.util.function.Supplier;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -48,6 +50,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     SimpleMotorFeedforward lowerFF = new SimpleMotorFeedforward(0.19825, 0.19542, 0.0080273);
     SimpleMotorFeedforward upperFF = new SimpleMotorFeedforward(0.12932, 0.16959, 0.0033965);
+    // ArmFeedforward upperFF = new ArmFeedforward(0.14961,0.075105,0.16904,0.0033585);
 
     Resolver lowerEncoder;
     Resolver upperEncoder;
@@ -56,7 +59,7 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerI = 0;
     final double lowerD = 0;
 
-    final double upperP = 0.2; //.0014772
+    final double upperP = 0.2; //0.0014182
     final double upperI = 0;
     final double upperD = 0;
 
@@ -94,16 +97,17 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean isInCubeMode = false;
 
-    
-
+    public double conePickupX = 0.319366;
+    public double conePickupY = 0.166689;
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.58, -0.12)),
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.28, 0.17)),
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)),
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.51, -0.05)),
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.03, 0.87)),
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.082306, 0.864651)),
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.59, 0.2)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.43, 1.23))
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(conePickupX, conePickupY)),
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.475807, 1.171830))
     ));
 
     private final Map<Preset, ArmState> cubeMap =
@@ -112,7 +116,7 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.19, 0.12)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.09, 0.48)),
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.5, 0.77)),
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.44, 0.23))
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070))
     ));
 
     public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
@@ -127,10 +131,33 @@ public class ArmSubsystem extends SubsystemBase {
         lowerArmMotor2.setIdleMode(IdleMode.kBrake);
         upperArmMotor1.setIdleMode(IdleMode.kBrake);
         upperArmMotor2.setIdleMode(IdleMode.kBrake);
+        lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 200);
+		lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
+		lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+        lowerArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 200);
+		lowerArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
+		lowerArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+        upperArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 200);
+		upperArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
+		upperArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+        upperArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 200);
+		upperArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 100);
+		upperArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+
+
+        lowerArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 500);
+        lowerArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 500);
+        upperArmMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 500);
+        upperArmMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 500);
     }
 
     @Override
     public void periodic() {
+
+
+        // if (Units.metersToInches(getEndEffectorPosition().getX()) >= 30){
+        //     lowerArmVoltage = Math.min()
+        // }
         if (getLowerPosition() >= lowerArmMax){
             lowerArmVoltage = Math.max(lowerArmVoltage, 0);
         }
@@ -162,7 +189,7 @@ public class ArmSubsystem extends SubsystemBase {
         // else{
         //     currentStopFlag = false;
         // }
-        
+        System.out.println(getEndEffectorPosition());
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
         
@@ -299,7 +326,10 @@ public class ArmSubsystem extends SubsystemBase {
                 if (diff.getNorm() > 1e-5) {
                     diff = diff.times((speed + pid) / diff.getNorm());
                 }
-                System.out.println("diff: " + diff + " goal: " + goalPose + " endEffector: " + getEndEffectorPosition());
+                // ArmMath math1 = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
+
+                // System.out.println("Velocity: " + )
+                // System.out.println("diff: " + diff + " goal: " + goalPose + " endEffector: " + getEndEffectorPosition());
                 math.setTheta1(Math.toRadians(getLowerPosition()));
                 math.setTheta2(Math.toRadians(getUpperPosition()));
                 math.setVx(diff.getX());
@@ -342,7 +372,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private ProfiledPIDController createControllerEndEffector() {
-        ProfiledPIDController controller = new ProfiledPIDController(0.35, 0, 0, new TrapezoidProfile.Constraints(1.1, 0.4));
+        ProfiledPIDController controller = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(2.2, 0.7));
         controller.setTolerance(0.02);
         return controller;
     }

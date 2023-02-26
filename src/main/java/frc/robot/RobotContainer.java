@@ -89,10 +89,10 @@ public class RobotContainer {
     new Trigger(() -> operatorController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
     
-    new Trigger(() -> presetBoard.povIsUpwards() || operatorController.getYButtonPressed())
+    new Trigger(() -> presetBoard.povIsUpwards())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)));
 
-    new Trigger(() -> presetBoard.povIsDownwards() || operatorController.getXButtonPressed())
+    new Trigger(() -> presetBoard.povIsDownwards())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(true)));
 
     new Trigger(() -> operatorController.getAButtonPressed())
@@ -120,8 +120,11 @@ public class RobotContainer {
     new Trigger(() -> presetBoard.getRawButtonPressed(PresetBoard.Button.kRB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground)));
     
-      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis))
+      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButtonPressed())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Pickup)));
+
+      new Trigger(() -> operatorController.getYButtonPressed())
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel)));
   }
 
   public void firstEnabled(){

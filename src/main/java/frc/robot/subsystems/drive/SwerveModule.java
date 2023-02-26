@@ -56,6 +56,11 @@ public class SwerveModule {
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+
+
+		// driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+		driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 200);
+		// driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
 		steeringMotor.burnFlash();
 	}
 

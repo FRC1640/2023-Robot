@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.arm.ArmKinematics;
 import frc.robot.subsystems.arm.ArmMath;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
@@ -11,6 +12,7 @@ public class ArmEndEffectorCommand extends CommandBase{
     ArmSubsystem armSubsystem;
     XboxController controller;
     ArmMath math = new ArmMath(Units.inchesToMeters(39), Units.inchesToMeters(35.4));
+    ArmKinematics kinematics = new ArmKinematics(Units.inchesToMeters(39), Units.inchesToMeters(35.4));
     public ArmEndEffectorCommand(ArmSubsystem armSubsystem, XboxController controller) {
         this.armSubsystem = armSubsystem;
         this.controller = controller;
@@ -30,8 +32,17 @@ public class ArmEndEffectorCommand extends CommandBase{
         math.setTheta2(Math.toRadians(armSubsystem.getUpperPosition()));
         
         math.inverseKinematics();
-        armSubsystem.setLowerVoltage(math.getOmega1() * 12);
-        armSubsystem.setUpperVoltage(math.getOmega2() * 12);
+        // kinematics.setLowerAngle(Math.toRadians(armSubsystem.getLowerPosition()));
+        // kinematics.setUpperAngle(Math.toRadians(armSubsystem.getUpperPosition()));
+        // kinematics.fowardKinematics();
+        double uVoltage = math.getOmega2() * 12;
+        double lVoltage = math.getOmega1() * 12;
+        // if (Units.metersToInches(kinematics.getX()) >= 47){
+        //     uVoltage = Math.min(0, uVoltage);
+        //     lVoltage = Math.min(0, lVoltage);
+        // }
+        armSubsystem.setLowerVoltage(lVoltage);
+        armSubsystem.setUpperVoltage(uVoltage);
     }
 
     @Override
