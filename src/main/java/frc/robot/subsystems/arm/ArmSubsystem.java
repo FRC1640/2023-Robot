@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,7 +26,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.Constants;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
@@ -355,6 +359,83 @@ public class ArmSubsystem extends SubsystemBase {
         ).until(
             () -> controller.atGoal()
         );
+    }
+
+    public Command createEndEffectorPlusCommand(Preset preset) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                createEndEffectorPlusCommand(presetMap.get(preset).x, presetMap.get(preset).y)
+                    .schedule();
+            }
+        );
+    }
+
+    public Command createEndEffectorPlusCommand(double x, double y) {
+        return new InstantCommand(() -> {
+            Translation2d startPos = getEndEffectorPosition();
+            Translation2d goalPos = new Translation2d(x, y);
+            TrapezoidProfile.State startState = new TrapezoidProfile.State(startPos.getX(), startPos.getY());
+            TrapezoidProfile.State goalState = new TrapezoidProfile.State(x, y);
+
+            Translation2d diff = goalPos.minus(startPos);
+            if (diff.getNorm() > 1e-5) {
+                diff.times(1 / diff.getNorm());
+            }
+
+            PIDController horizontalController = new PIDController(0.2, 0, 0);
+            horizontalController.setTolerance(0.02);
+            PIDController verticalController = new PIDController(0.2, 0, 0);
+            verticalController.setTolerance(0.02);
+
+            ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
+
+            new SequentialCommandGroup(
+                new TrapezoidProfileCommand(
+                    new TrapezoidProfile(
+                        new TrapezoidProfile.Constraints(2.2, 2),
+                        goalState,
+                        startState),
+                    (nextState) -> {
+                        Translation2d currentPos = getEndEffectorPosition();
+                        Translation2d targetPos = diff.times(nextState.position);
+                        Translation2d targetVel = diff.times(nextState.velocity);
+
+                        double pidHorizontal = horizontalController.calculate(currentPos.getX(), targetPos.getX());
+                        double pidVertical = verticalController.calculate(currentPos.getY(), targetPos.getY());
+
+                        math.setTheta1(Math.toRadians(getLowerPosition()));
+                        math.setTheta2(Math.toRadians(getUpperPosition()));
+                        math.setVx(targetVel.getX() + pidHorizontal);
+                        math.setVy(targetVel.getY() + pidVertical);
+                        math.inverseKinematics();
+                        setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                    },
+                    this
+                ),
+                new RunCommand(
+                    () -> {
+                        Translation2d currentPos = getEndEffectorPosition();
+
+                        double pidHorizontal = horizontalController.calculate(currentPos.getX(), goalPos.getX());
+                        double pidVertical = verticalController.calculate(currentPos.getY(), goalPos.getY());
+
+                        math.setTheta1(Math.toRadians(getLowerPosition()));
+                        math.setTheta2(Math.toRadians(getUpperPosition()));
+                        math.setVx(pidHorizontal);
+                        math.setVy(pidVertical);
+                        math.inverseKinematics();
+                        setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                    },
+                    this
+                ).until(() -> horizontalController.atSetpoint() && verticalController.atSetpoint())
+            ).handleInterrupt(() -> {
+                horizontalController.close();
+                verticalController.close();
+            }).schedule();
+        });
     }
 
     // public Command createTripleMoveCommand(double lowerPos, double upperPos) {
