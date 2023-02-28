@@ -77,7 +77,7 @@ public class SwerveModule {
 	}
 	public SwerveModulePosition getPosition() {
 		return new SwerveModulePosition(
-			((driveEncoder.getPosition() / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get()));
+			((driveEncoder.getPosition() / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get() + (Math.PI / 2)));
 	  }
 	public double getPositionY() {
 		return (driveEncoder.getPosition()) * kWheelRadius * 0.10472 * 0.12 * Math.cos(steeringEncoder.get());
@@ -126,7 +126,7 @@ public class SwerveModule {
 	public void setDesiredStateAuto(SwerveModuleState state) {
 		desiredState = state;
 
-		double dAngle = state.angle.getDegrees() - steeringEncoder.getD();
+		double dAngle = state.angle.getDegrees() - (steeringEncoder.getD() + (90));
 		double dAngleAbs = Math.abs(dAngle) % 360;
 		boolean flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
 		double sin = Math.sin(dAngle * Math.PI / 180.0);
@@ -139,8 +139,8 @@ public class SwerveModule {
 			turnOutput = 0;
 		}
 
-		double driveFeedForward = -driveFeedforward.calculate(targetSpeed);
-		double driveOutput = -drivePIDController.calculate(getVelocity(), targetSpeed);
+		double driveFeedForward = driveFeedforward.calculate(targetSpeed);
+		double driveOutput = drivePIDController.calculate(getVelocity(), targetSpeed);
 
 		driveMotor.setVoltage(driveFeedForward + driveOutput);
 		steeringMotor.set(turnOutput);

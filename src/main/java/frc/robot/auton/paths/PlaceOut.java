@@ -64,7 +64,7 @@ public class PlaceOut {
 
     PPSwerveControllerCommand placePathController = new PPSwerveControllerCommand(placePath,
         swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.3, 0.0, 0.0), new PIDController(0.3, 0.0, 0.0), new PIDController(0.5, 0, 0),
+        kDriveKinematics, new PIDController(0.006, 0.0, 0.0001), new PIDController(0.006, 0.0, 0.0001), new PIDController(0.005, 0, 0),
         swerve::setModuleStates, true, swerve);
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
