@@ -35,22 +35,22 @@ public class PlaceOut {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
-  public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(y, x),new Translation2d(y, -x), new Translation2d(-y, x), new Translation2d(-y, -x));
+  public static SwerveDriveKinematics kDriveKinematics;
 
   
-  PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out", new PathConstraints(0.1, 0.1));
+  PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out", new PathConstraints(2, 2));
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
     placeState = placePath.getInitialState();
     gyro.resetGyro();
     gyro.setOffset(180);
-    
+    kDriveKinematics = swerve.createKinematics();
     Pose2d placePose = new Pose2d(placeState.poseMeters.getTranslation(), placeState.holonomicRotation);
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.HighPlacing);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(1), place);
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(0.75));
     Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
@@ -68,7 +68,7 @@ public class PlaceOut {
         swerve::setModuleStates, true, swerve);
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
-    return Commands.sequence(resetOdo, group);
-    // return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group);// , place, group
+    // return Commands.sequence(resetOdo, group);
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group);// , place, group
   }
 }

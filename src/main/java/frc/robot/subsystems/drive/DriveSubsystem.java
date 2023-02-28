@@ -48,6 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Field2d field = new Field2d();
   
+  
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
@@ -108,6 +109,11 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredStateAuto(desiredStates[1]);
     backLeft.setDesiredStateAuto(desiredStates[2]);
     backRight.setDesiredStateAuto(desiredStates[3]);
+  }
+
+  public SwerveDriveKinematics createKinematics(){
+    return new SwerveDriveKinematics(
+          frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
   }
   
   public void pointWheels(double angle) {
