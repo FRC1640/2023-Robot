@@ -196,7 +196,7 @@ public class ArmSubsystem extends SubsystemBase {
         // else{
         //     currentStopFlag = false;
         // }
-        System.out.println(getEndEffectorPosition());
+        // System.out.println(getEndEffectorPosition());
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
         
@@ -325,6 +325,10 @@ public class ArmSubsystem extends SubsystemBase {
                     .schedule();
             }
         );
+    }
+    public Command createEndEffectorProfileCommandNoInstant(Preset preset) {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                return createEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y);
     }
 
     public Command createEndEffectorProfileCommand(double x, double y) {

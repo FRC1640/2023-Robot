@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.auton.paths.ChargeStation;
+import frc.robot.auton.paths.PlaceOut;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.Resolver;
@@ -159,8 +160,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     //An example command will be run in autonomous
-    ChargeStation auto = new ChargeStation();
-    return auto.loadAuto(gyro, driveSubsystem);
+    PlaceOut auto = new PlaceOut();
+    return auto.loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem);
   }
 
   public void setPreset(Preset preset, Command armCommand){

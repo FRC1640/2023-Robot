@@ -3,24 +3,20 @@ package frc.robot.subsystems.grabber.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 
-public class SetGrabCommand extends CommandBase{
+public class UnGrab extends CommandBase{
     private GrabberSubsystem grabberSubsystem;
-    boolean set;
-    double initTime;
-    public SetGrabCommand(GrabberSubsystem grabberSubsystem, boolean set){
+    public UnGrab(GrabberSubsystem grabberSubsystem){
         this.grabberSubsystem = grabberSubsystem;
-        this.set = set;
         addRequirements(grabberSubsystem);
     }
 
     @Override
     public void initialize(){
-        initTime = System.currentTimeMillis();
     }
 
     @Override
     public void execute() {
-        grabberSubsystem.setClamped(set);
+        grabberSubsystem.setClamped(false);
     }
 
     @Override 
@@ -29,7 +25,7 @@ public class SetGrabCommand extends CommandBase{
 
     @Override
     public boolean isFinished(){
-        return false;
+        return true;
     }
 
 }

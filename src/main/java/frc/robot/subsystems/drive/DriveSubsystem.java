@@ -17,6 +17,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,6 +55,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveDriveOdometry odometry;
     public DriveSubsystem(Gyro gyro) {
       this.gyro = gyro;
+      setupNetworkTables();
       odometry = new SwerveDriveOdometry(
           kinematics,
           gyro.getRotation2d(),
@@ -61,6 +65,7 @@ public class DriveSubsystem extends SubsystemBase {
               backLeft.getPosition(),
               backRight.getPosition()
           });
+          
     }
 
   public void resetOdometry(Pose2d pose) {
@@ -143,5 +148,24 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     updateOdometry();
+    updateNetworkTables();
+  }
+  NetworkTableInstance nt;
+  NetworkTable table;
+  DoublePublisher xPub, yPub;
+
+  private void setupNetworkTables() {
+      nt = NetworkTableInstance.getDefault();
+      table = nt.getTable("odometry");
+      xPub = table.getDoubleTopic("x").publish();
+      yPub = table.getDoubleTopic("y").publish();
+  }
+
+  private void updateNetworkTables() {
+      double x = getPose().getX();
+      double y = getPose().getY();
+
+      xPub.set(x);
+      yPub.set(y);
   }
 }
