@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.JoystickCleaner;
+import frc.robot.subsystems.foot.FootSubsystem;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
@@ -20,6 +21,8 @@ public class JoystickDriveCommand extends CommandBase {
     Gyro gyro;
     XboxController driverController;
 
+    FootSubsystem footSubsystem;
+
     JoystickCleaner joystickCleaner = new JoystickCleaner();
 
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
@@ -27,11 +30,13 @@ public class JoystickDriveCommand extends CommandBase {
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
     private boolean fieldRelative = true;
 
-    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController) {
+    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController, FootSubsystem footSubsystem) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
         this.gyro = gyro;
         this.driverController = driveController;
+        this.footSubsystem = footSubsystem;
+
         addRequirements(driveSubsystem);
     }
 
@@ -45,6 +50,10 @@ public class JoystickDriveCommand extends CommandBase {
         double xSpeed;
         double ySpeed;
         double rot;
+        boolean isLimitSwitch = false;
+        isLimitSwitch = footSubsystem.getLimitSwitch();
+
+        
 
         if (driverController.getBackButtonPressed()) {
             fieldRelative = !fieldRelative;
@@ -85,8 +94,12 @@ public class JoystickDriveCommand extends CommandBase {
         //     }
         // }
 
-
-        driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
+        if (! isLimitSwitch) {
+            driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
+        } 
+        else {
+            driveSubsystem.drive(0, 0, 0, fieldRelative);
+        }
         
     }
     @Override
