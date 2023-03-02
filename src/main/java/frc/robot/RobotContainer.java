@@ -67,7 +67,7 @@ public class RobotContainer {
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
     armStopCommand  = new ArmStopCommand(armSubsystem);
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
-    driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController));
+    driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
