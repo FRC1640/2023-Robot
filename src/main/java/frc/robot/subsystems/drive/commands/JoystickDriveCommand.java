@@ -94,7 +94,7 @@ public class JoystickDriveCommand extends CommandBase {
         //     }
         // }
 
-        if (!isLimitSwitch) {
+        if (!isLimitSwitch && footSubsystem.getFootDown()) {
             driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
         } 
         else {

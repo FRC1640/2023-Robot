@@ -15,6 +15,9 @@ public class FootSubsystem extends SubsystemBase{
     public FootSubsystem(){
         footSolenoid.set(Value.kForward);
     }
+    public boolean getFootDown(){
+        return footSolenoid.get() == Value.kReverse;
+    }
 
     public boolean getLimitSwitch(){
         return footLimitSwitch.get();
