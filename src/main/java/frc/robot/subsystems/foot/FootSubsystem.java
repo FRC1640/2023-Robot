@@ -17,8 +17,6 @@ public class FootSubsystem extends SubsystemBase{
     }
 
     public void toggleClamped() {
-        if (! footLimitSwitch.get()){ // if limit switch not tripped
-            footSolenoid.toggle();
-        }
+        footSolenoid.toggle();
     }
 }
