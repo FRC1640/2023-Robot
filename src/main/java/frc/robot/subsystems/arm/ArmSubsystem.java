@@ -117,7 +117,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.165677, 0.094516)), 
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.163411, 0.111188)), 
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817)),
