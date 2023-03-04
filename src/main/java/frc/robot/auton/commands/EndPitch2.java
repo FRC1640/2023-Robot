@@ -27,7 +27,7 @@ public class EndPitch2 extends CommandBase {
           initTime = System.currentTimeMillis();
           setTime = false;
         }
-        if (!setTime && System.currentTimeMillis() - initTime > 2){
+        if (!setTime && System.currentTimeMillis() - initTime > 2000){
           if (!two && Math.abs(gyro.getGyroPitch()) >= 13){
             two = true;
             initTime2 = System.currentTimeMillis();

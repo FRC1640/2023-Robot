@@ -94,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = kinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot,
-                new Rotation2d(gyro.getRotation2d().getRadians()))
+                new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(gyro.getOffset())))
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     frontLeft.setDesiredState(swerveModuleStates[0]);

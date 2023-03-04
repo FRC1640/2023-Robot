@@ -11,7 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class JoystickDriveCommand extends CommandBase {
-    final double SLOW_LINEAR_SPEED = 0.7;
+    final double SLOW_LINEAR_SPEED = 0.6;
     final double SLOW_ROTATIONAL_SPEED = 0.55;
 
     final double LOWER_DB = 0.15;
@@ -61,7 +61,7 @@ public class JoystickDriveCommand extends CommandBase {
 
         Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
-        if(leftTrigger.getAsBoolean()) {
+        if(!leftTrigger.getAsBoolean()) {
             xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
             ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
             rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
@@ -94,12 +94,12 @@ public class JoystickDriveCommand extends CommandBase {
         //     }
         // }
 
-        if (!isLimitSwitch && footSubsystem.getFootDown()) {
-            driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
-        } 
-        else {
-            driveSubsystem.drive(0, 0, 0, fieldRelative);
-        }
+        // if (!isLimitSwitch && footSubsystem.getFootDown()) {
+        driveSubsystem.drive(xSpeed, ySpeed, rot, fieldRelative);
+        // } 
+        // else {
+        //     driveSubsystem.drive(0, 0, 0, fieldRelative);
+        // }
         
     }
     @Override

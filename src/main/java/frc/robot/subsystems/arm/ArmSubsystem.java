@@ -104,22 +104,22 @@ public class ArmSubsystem extends SubsystemBase {
     public double conePickupY = 0.160471; // 0.166689
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.58, -0.12)), //todo prime
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.554883, -0.117704)),
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)),
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.51, -0.05)), //todo prime
-        Map.entry(Preset.Substation, ArmState.fromEndEffector(1, 1)), //todo prime
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
+        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
-        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.530794, 0.167146)), //0.59, 0.2
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.530794, 0.167146)), 
         Map.entry(Preset.Travel, ArmState.fromEndEffector(conePickupX, conePickupY)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.447384, 1.206384))
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.447432, 1.202866))
     ));
 
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.56, -0.12)), //todo prime
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.165677, 0.094516)), 
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
-        Map.entry(Preset.Substation, ArmState.fromEndEffector(1, 1)), //todo prime
+        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817)),
         Map.entry(Preset.Start, ArmState.fromEndEffector(0.165677, 0.094516)),
         Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)) 

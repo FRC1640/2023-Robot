@@ -39,7 +39,7 @@ public class PlaceCharge {
   public static SwerveDriveKinematics kDriveKinematics;
 
   
-  PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out - charge", new PathConstraints(2, 2));
+  PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out - charge", new PathConstraints(1.5, 2));
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
@@ -51,7 +51,7 @@ public class PlaceCharge {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.HighPlacing);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1.3));
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1));
     Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
@@ -70,6 +70,6 @@ public class PlaceCharge {
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, new EndPitch2(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, new EndPitch(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
   }
 }

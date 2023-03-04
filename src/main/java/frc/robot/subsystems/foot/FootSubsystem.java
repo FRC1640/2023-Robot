@@ -10,17 +10,17 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class FootSubsystem extends SubsystemBase{
    DoubleSolenoid footSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
-   DigitalInput footLimitSwitch = new DigitalInput(9999); // uh unknown channel
+   DigitalInput footLimitSwitch = new DigitalInput(1); // uh unknown channel
 
     public FootSubsystem(){
         footSolenoid.set(Value.kForward);
     }
     public boolean getFootDown(){
-        return footSolenoid.get() == Value.kReverse;
+        return footSolenoid.get() == Value.kForward;
     }
 
     public boolean getLimitSwitch(){
-        return footLimitSwitch.get();
+        return !footLimitSwitch.get();
     }
 
     public void toggleClamped() {

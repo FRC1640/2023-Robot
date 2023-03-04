@@ -21,7 +21,7 @@ public class DashboardInit {
         sChooser = new SendableChooser<Command>();
         sChooser.addOption("Place out", new PlaceOut().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Null", null);
+        // sChooser.addOption("Null", null);
         autonTab.add(sChooser).withSize(5, 5).withPosition(0, 0);
         driveTab.addString("Preset", () -> robotContainer.getCurrentPreset().name());
         driveTab.addBoolean("IsInCubeMode", () -> armSubsystem.getCubeMode()); //use .withProperties for color
