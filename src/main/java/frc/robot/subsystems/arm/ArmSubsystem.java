@@ -109,7 +109,7 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
-        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.530794, 0.167146)), 
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.528659, 0.385064)), 
         Map.entry(Preset.Travel, ArmState.fromEndEffector(conePickupX, conePickupY)),
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.447432, 1.202866))
     ));
