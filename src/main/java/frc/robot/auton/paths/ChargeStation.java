@@ -34,7 +34,7 @@ public class ChargeStation {
   public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(y, x),new Translation2d(y, -x), new Translation2d(-y, x), new Translation2d(-y, -x));
 
   
-  PathPlannerTrajectory chargePath = PathPlanner.loadPath("Charge Station", new PathConstraints(2, 2));
+  PathPlannerTrajectory chargePath = PathPlanner.loadPath("charge", new PathConstraints(2, 2));
   PathPlannerState chargeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve) { 

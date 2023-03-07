@@ -9,11 +9,11 @@
     "mode": "Client (NT4)",
     "serverTeam": "1640"
   },
+  "Server": {
+    "open": true
+  },
   "transitory": {
     "armSubsystem": {
-      "open": true
-    },
-    "robot": {
       "open": true
     }
   }

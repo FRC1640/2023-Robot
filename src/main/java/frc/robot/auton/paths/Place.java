@@ -31,7 +31,7 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.subsystems.grabber.commands.UnGrab;
 
-public class PlaceOut {
+public class Place {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
@@ -67,8 +67,8 @@ public class PlaceOut {
         kDriveKinematics, new PIDController(0.006, 0.0, 0.0001), new PIDController(0.006, 0.0, 0.0001), new PIDController(0.005, 0, 0),
         swerve::setModuleStates, true, swerve);
     
-    ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
+    // ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group);// , place, group
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, new WaitCommand(1), safe);// , place, group
   }
 }

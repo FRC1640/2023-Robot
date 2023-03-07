@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -98,27 +100,29 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean isInCubeMode = false;
 
-    public double conePickupX = 0.319366;
-    public double conePickupY = 0.166689;
+    public double conePickupX = 0.251209; // 0.319366
+    public double conePickupY = 0.160471; // 0.166689
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.58, -0.12)),
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.554883, -0.117704)),
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)),
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.51, -0.05)),
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.082306, 0.864651)),
-        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.59, 0.2)),
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
+        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.528659, 0.385064)), 
         Map.entry(Preset.Travel, ArmState.fromEndEffector(conePickupX, conePickupY)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.475807, 1.171830))
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.447432, 1.202866))
     ));
 
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.56, -0.12)),
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.19, 0.12)),
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(1.09, 0.48)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.5, 0.77)),
-        Map.entry(Preset.Start, ArmState.fromEndEffector(0.19, 0.12)),
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070))
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.163411, 0.111188)), 
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
+        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817)),
+        Map.entry(Preset.Start, ArmState.fromEndEffector(0.165677, 0.094516)),
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)) 
     ));
 
     public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
@@ -196,7 +200,7 @@ public class ArmSubsystem extends SubsystemBase {
         // else{
         //     currentStopFlag = false;
         // }
-        System.out.println(getEndEffectorPosition());
+        // System.out.println(getEndEffectorPosition());
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
         
@@ -272,6 +276,9 @@ public class ArmSubsystem extends SubsystemBase {
     public void setIsInCubeMode(boolean isInCubeMode) {
         this.isInCubeMode = isInCubeMode;
     }
+    public boolean getCubeMode(){
+        return isInCubeMode;
+    }
 
     public double calcLowerFFVoltage(double velocity, double accel){
         return lowerFF.calculate(velocity, accel);
@@ -325,6 +332,10 @@ public class ArmSubsystem extends SubsystemBase {
                     .schedule();
             }
         );
+    }
+    public Command createEndEffectorProfileCommandNoInstant(Preset preset) {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                return createEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y);
     }
 
     public Command createEndEffectorProfileCommand(double x, double y) {
