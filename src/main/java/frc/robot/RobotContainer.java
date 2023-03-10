@@ -114,8 +114,8 @@ public class RobotContainer {
       .onTrue(new InstantCommand(
         () -> currentArmCommand.schedule()));
 
-    // new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
-    //   .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
+    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
     
     new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
       .whileTrue(armStopCommand);
