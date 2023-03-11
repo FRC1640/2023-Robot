@@ -33,14 +33,18 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.subsystems.grabber.commands.UnGrab;
 
-public class RightPlaceOutPickup {
+public class PlaceOutPickup {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
+  public static String path;
 
+  public PlaceOutPickup(String Path){
+    path = Path;
+  }
   
-  PathPlannerTrajectory placePath = PathPlanner.loadPath("Right = place - out - pickup", new PathConstraints(2, 2));
+  PathPlannerTrajectory placePath = PathPlanner.loadPath(path, new PathConstraints(2, 2));
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
