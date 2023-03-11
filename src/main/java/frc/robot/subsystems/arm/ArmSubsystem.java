@@ -409,6 +409,10 @@ public class ArmSubsystem extends SubsystemBase {
         xController.setTolerance(0.02);
         yController.setTolerance(0.02);
 
+        Translation2d startPos = getEndEffectorPosition();
+        xController.reset(startPos.getX());
+        yController.reset(startPos.getY());
+
         Translation2d goalPose = new Translation2d(x, y);
         ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
 
