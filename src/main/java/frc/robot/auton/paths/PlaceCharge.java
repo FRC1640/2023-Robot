@@ -69,6 +69,6 @@ public class PlaceCharge {
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, new EndPitch(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, new EndPitch2(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
   }
 }

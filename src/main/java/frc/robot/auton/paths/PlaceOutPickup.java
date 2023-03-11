@@ -57,13 +57,16 @@ public class PlaceOutPickup {
 
     Command place = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.HighPlacing);
     SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1.3));
-    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
+    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+    Command newSafe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+    Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     
 
     Command grab = new SetGrabCommand(grabberSubsystem, true);
+    Command grabCone = new SetGrabCommand(grabberSubsystem, true);
     ParallelDeadlineGroup grabGroup = new ParallelDeadlineGroup(placeWait, placeWait, grab);
     Command setConeMode = new InstantCommand(() -> armSubsystem.setIsInCubeMode(false));
     Command unGrab = new UnGrab(grabberSubsystem);
@@ -75,6 +78,6 @@ public class PlaceOutPickup {
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, grabGroup);
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, uprightCone, grabCone, newSafe);
   }
 }
