@@ -78,6 +78,6 @@ public class PlaceOutPickup {
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, uprightCone, grabCone, newSafe);
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, uprightCone, grabCone, new WaitCommand(0.5), newSafe);
   }
 }

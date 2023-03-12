@@ -162,7 +162,6 @@ public class RobotContainer {
     if (wasEnabled){
       return;
     }
-    gyro.resetGyro();
     wasEnabled = true;
     DataLogManager.log("Robot was enabled for the first time.");
   }
