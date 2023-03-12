@@ -24,13 +24,14 @@ public class Gyro {
       return gyro.getPitch();
     }
     public Rotation2d getRotation2d(){
-      return new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(offset));
+      return new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(getOffset()));
     }
     public Rotation2d getRaw(){
       return gyro.getRotation2d();
     }
     public void setOffset(double value) {
       offset = value;
+      
     }
   
     public double getOffset() {

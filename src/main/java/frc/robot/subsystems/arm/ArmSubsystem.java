@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,7 +28,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.Constants;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
@@ -95,29 +99,30 @@ public class ArmSubsystem extends SubsystemBase {
         LowPlacing,
         Travel,
         Start,
+
         Substation;
     }
 
     private boolean isInCubeMode = false;
 
-    public double conePickupX = 0.251209; // 0.319366
-    public double conePickupY = 0.160471; // 0.166689
+    public double conePickupX = 0.148951; // 0.319366
+    public double conePickupY = 0.142843; // 0.166689
     private final Map<Preset, ArmState> coneMap =
-    new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.554883, -0.117704)),
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)),
+    new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.592344, -0.122320)),
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), //
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.528659, 0.385064)), 
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(conePickupX, conePickupY)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.447432, 1.202866))
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.230516, 0.311670)),
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.471229, 1.166890)) // 1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.163411, 0.111188)), 
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.160508, 0.115695)), 
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817)),
@@ -361,6 +366,7 @@ public class ArmSubsystem extends SubsystemBase {
                 math.inverseKinematics();
                 setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
                 setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
             },
             this // add ArmSubsystem requirement
         ).until(
@@ -395,7 +401,7 @@ public class ArmSubsystem extends SubsystemBase {
         return controller;
     }
 
-    private ProfiledPIDController createControllerEndEffector() {
+    private ProfiledPIDController  createControllerEndEffector() {
         ProfiledPIDController controller = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(2.2, 0.7));
         controller.setTolerance(0.02);
         return controller;
@@ -422,6 +428,151 @@ public class ArmSubsystem extends SubsystemBase {
                 cubeMap.put(preset, value);
             }
         }
+    }
+    public Command createEndEffectorPlusCommand(Preset preset) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                createEndEffectorPlusCommand(presetMap.get(preset).x, presetMap.get(preset).y)
+                    .schedule();
+            }
+        );
+    }
+    public Command createStraight2dEndEffectorProfileCommand(Preset preset, double maxVel, double maxAcc) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                createStraight2dEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y, maxVel, maxAcc)
+                    .schedule();
+            }
+        );
+    }
+
+    public Command createStraight2dEndEffectorProfileCommand(double x, double y, double maxVel, double maxAcc) {
+        Translation2d diff = new Translation2d(x, y).minus(getEndEffectorPosition());
+
+        double xVel = maxVel * diff.getX() / diff.getNorm();
+        double yVel = maxVel * diff.getY() / diff.getNorm();
+        double xAcc = maxAcc * diff.getX() / diff.getNorm();
+        double yAcc = maxAcc * diff.getY() / diff.getNorm();
+
+        return create2dEndEffectorProfileCommand(x, y, xVel, yVel, xAcc, yAcc);
+    }
+
+    public Command create2dEndEffectorProfileCommand(Preset preset, double xVel, double yVel, double xAcc, double yAcc) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                create2dEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y, xVel, yVel, xAcc, yAcc)
+                    .schedule();
+            }
+        );
+    }
+
+    public Command create2dEndEffectorProfileCommand(double x, double y, double xVel, double yVel, double xAcc, double yAcc) {
+        final double kP = 4;
+        final double kI = 0.0;
+        final double kD = 0.0;
+
+        ProfiledPIDController xController = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(xVel, xAcc));
+        ProfiledPIDController yController = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(yVel, yAcc));
+        xController.setTolerance(0.05);
+        yController.setTolerance(0.05);
+
+        Translation2d startPos = getEndEffectorPosition();
+        xController.reset(startPos.getX());
+        yController.reset(startPos.getY());
+
+        Translation2d goalPose = new Translation2d(x, y);
+        ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
+
+        return new RunCommand(() -> {
+            Translation2d measurement = getEndEffectorPosition();
+            double xPid = xController.calculate(measurement.getX(), goalPose.getX());
+            double yPid = yController.calculate(measurement.getY(), goalPose.getY());
+
+            double xSpeed = xController.getSetpoint().velocity;
+            double ySpeed = yController.getSetpoint().velocity;
+
+            math.setTheta1(Math.toRadians(getLowerPosition()));
+            math.setTheta2(Math.toRadians(getUpperPosition()));
+            math.setVx(xSpeed + xPid);
+            math.setVy(ySpeed + yPid);
+            math.inverseKinematics();
+            setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+            setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+        }, this)
+        .until(() -> xController.atGoal() && yController.atGoal());
+    }
+
+
+
+    public Command createEndEffectorPlusCommand(double x, double y) {
+        return new InstantCommand(() -> {
+            Translation2d startPos = getEndEffectorPosition();
+            Translation2d goalPos = new Translation2d(x, y);
+            TrapezoidProfile.State startState = new TrapezoidProfile.State(startPos.getX(), startPos.getY());
+            TrapezoidProfile.State goalState = new TrapezoidProfile.State(x, y);
+
+            Translation2d diff = goalPos.minus(startPos);
+            if (diff.getNorm() > 1e-5) {
+                diff.times(1 / diff.getNorm());
+            }
+
+            PIDController horizontalController = new PIDController(0.6, 0, 0);
+            horizontalController.setTolerance(0.02);
+            PIDController verticalController = new PIDController(0.6, 0, 0);
+            verticalController.setTolerance(0.02);
+
+            ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
+            new SequentialCommandGroup(
+                new TrapezoidProfileCommand(
+                    new TrapezoidProfile(
+                        new TrapezoidProfile.Constraints(0.001, 0.001),
+                        goalState,
+                        startState),
+                    (nextState) -> {
+                        Translation2d currentPos = getEndEffectorPosition();
+                        Translation2d targetPos = diff.times(nextState.position);
+                        Translation2d targetVel = diff.times(nextState.velocity);
+
+                        double pidHorizontal = horizontalController.calculate(currentPos.getX(), targetPos.getX());
+                        double pidVertical = verticalController.calculate(currentPos.getY(), targetPos.getY());
+
+                        math.setTheta1(Math.toRadians(getLowerPosition()));
+                        math.setTheta2(Math.toRadians(getUpperPosition()));
+                        math.setVx(targetVel.getX() + pidHorizontal);
+                        math.setVy(targetVel.getY() + pidVertical);
+                        math.inverseKinematics();
+                        setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                        System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        System.out.println("Pos: " + getEndEffectorPosition() + " Target: " + new Translation2d(x, y) + " Vel: " + targetVel);
+                    },
+                    this
+                ),
+                new RunCommand(
+                    () -> {
+                        Translation2d currentPos = getEndEffectorPosition();
+
+                        double pidHorizontal = horizontalController.calculate(currentPos.getX(), goalPos.getX());
+                        double pidVertical = verticalController.calculate(currentPos.getY(), goalPos.getY());
+
+                        math.setTheta1(Math.toRadians(getLowerPosition()));
+                        math.setTheta2(Math.toRadians(getUpperPosition()));
+                        math.setVx(pidHorizontal);
+                        math.setVy(pidVertical);
+                        math.inverseKinematics();
+                        setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                    },
+                    this
+                ).until(() -> horizontalController.atSetpoint() && verticalController.atSetpoint())
+            ).handleInterrupt(() -> {
+                horizontalController.close();
+                verticalController.close();
+            }).schedule();
+        });
     }
 
     /* NetworkTables */
