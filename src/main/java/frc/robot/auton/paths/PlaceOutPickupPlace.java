@@ -1,5 +1,7 @@
 package frc.robot.auton.paths;
 
+import javax.print.event.PrintJobListener;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -22,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auton.commands.Balance;
 import frc.robot.auton.commands.EndPitch;
-import frc.robot.auton.commands.EndPitch2;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
@@ -32,17 +33,26 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.subsystems.grabber.commands.UnGrab;
 
-public class PlaceCharge {
+public class PlaceOutPickupPlace {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
+  public static String path1;
+  public static String path2;
 
-  PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out - charge", new PathConstraints(1.5, 2));
+  public PlaceOutPickupPlace(String Path1, String Path2){
+    path1 = Path1;
+    path2 = Path2;
+  }
+  
+  PathPlannerTrajectory placePath1 = PathPlanner.loadPath(path1, new PathConstraints(2, 2));
+  PathPlannerTrajectory placePath2 = PathPlanner.loadPath(path2, new PathConstraints(2, 2));
+
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
-    placeState = placePath.getInitialState();
+    placeState = placePath1.getInitialState();
     gyro.resetGyro();
     gyro.setOffset(180);
     kDriveKinematics = swerve.createKinematics();
@@ -50,25 +60,36 @@ public class PlaceCharge {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.HighPlacing);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1));
-    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
+    Command lowPlace = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1.3));
+    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+    Command newSafe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+    Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     
 
     Command grab = new SetGrabCommand(grabberSubsystem, true);
+    Command grabCone = new SetGrabCommand(grabberSubsystem, true);
     ParallelDeadlineGroup grabGroup = new ParallelDeadlineGroup(placeWait, placeWait, grab);
     Command setConeMode = new InstantCommand(() -> armSubsystem.setIsInCubeMode(false));
     Command unGrab = new UnGrab(grabberSubsystem);
 
-    PPSwerveControllerCommand placePathController = new PPSwerveControllerCommand(placePath,
+    PPSwerveControllerCommand placePathController1 = new PPSwerveControllerCommand(placePath1,
+        swerve::getPose, // Functional interface to feed supplier
+        kDriveKinematics, new PIDController(0.006, 0.0, 0.0001), new PIDController(0.006, 0.0, 0.0001), new PIDController(0.005, 0, 0),
+        swerve::setModuleStates, true, swerve);
+
+        PPSwerveControllerCommand placePathController2 = new PPSwerveControllerCommand(placePath2,
         swerve::getPose, // Functional interface to feed supplier
         kDriveKinematics, new PIDController(0.006, 0.0, 0.0001), new PIDController(0.006, 0.0, 0.0001), new PIDController(0.005, 0, 0),
         swerve::setModuleStates, true, swerve);
     
-    ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
+    ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController1);
+    ParallelCommandGroup newGroup = new ParallelCommandGroup(newSafe, placePathController2);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, new EndPitch2(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, uprightCone, grabCone, newGroup, lowPlace);
   }
 }

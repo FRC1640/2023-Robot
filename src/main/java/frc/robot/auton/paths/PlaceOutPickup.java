@@ -1,5 +1,7 @@
 package frc.robot.auton.paths;
 
+import javax.print.event.PrintJobListener;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -22,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.auton.commands.Balance;
 import frc.robot.auton.commands.EndPitch;
-import frc.robot.auton.commands.EndPitch2;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
@@ -32,13 +33,18 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.subsystems.grabber.commands.UnGrab;
 
-public class PlaceCharge {
+public class PlaceOutPickup {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
+  public static String path;
 
-  PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out - charge", new PathConstraints(1.5, 2));
+  public PlaceOutPickup(String Path){
+    path = Path;
+  }
+  
+  PathPlannerTrajectory placePath = PathPlanner.loadPath(path, new PathConstraints(2, 2));
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
@@ -50,14 +56,17 @@ public class PlaceCharge {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.HighPlacing);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1));
-    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1.3));
+    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+    Command newSafe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+    Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     
 
     Command grab = new SetGrabCommand(grabberSubsystem, true);
+    Command grabCone = new SetGrabCommand(grabberSubsystem, true);
     ParallelDeadlineGroup grabGroup = new ParallelDeadlineGroup(placeWait, placeWait, grab);
     Command setConeMode = new InstantCommand(() -> armSubsystem.setIsInCubeMode(false));
     Command unGrab = new UnGrab(grabberSubsystem);
@@ -69,6 +78,6 @@ public class PlaceCharge {
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, new EndPitch2(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
+    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, group, uprightCone, grabCone, newSafe);
   }
 }
