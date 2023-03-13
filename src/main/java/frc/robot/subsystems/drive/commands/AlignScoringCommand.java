@@ -1,4 +1,6 @@
 package frc.robot.subsystems.drive.commands;
+import java.sql.Array;
+
 // import all of the path planner stuff <3
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -38,16 +40,51 @@ public class AlignScoringCommand extends CommandBase{
     double tagIndex;
     Pose2d robotPos;
 
-    // should be the constant coords (x and y) of the left, right, and center pos on the "robot in april space"
-    double leftConeX; 
-    double leftConeY;
-    double rightConeX;  
-    double rightConeY; 
-    double middleX;
-    double middleY; 
+    // should be the constant coords (x and y) of the left, right, and center pos on the  xxxxx"robot in april space"
+
+    // Blue Side - left tag (ID 6)
+    double blueX = 2; // distance to pole???
+    double blueLeftTagLeftConeY = 4.9; // 4.9 plus 8??
+    double blueLeftTagRightConeY = 3.9; 
+    double blueLeftTagMiddleY = 4.45; 
+
+    Translation2d tag6Coords = new Translation2d(blueX, blueLeftTagMiddleY);
+
+
+    //  Blue Side - middle tag (ID 7)
+
+    double blueMiddleTagLeftConeY = 3.2; 
+    double blueMiddleTagRightConeY = 2.25; 
+    double blueMiddleTagMiddleY = 2.75; 
+
+    Translation2d tag7Coords = new Translation2d(blueX, blueMiddleTagMiddleY);
+
+
+
+    //  Blue Side - right tag (ID 8)
+    double blueRightTagMiddleY = 1.1;
+    double blueRightTagLeftConeY = 1.7;
+    double blueRightTagRightConeY = 0.5;
+
+    Translation2d tag8Coords = new Translation2d(blueX, blueRightTagMiddleY);
+
+    // Red Side Tags
+    Translation2d tag1Coords= new Translation2d(100, 100); 
+    Translation2d tag2Coords= new Translation2d(100, 100); 
+    Translation2d tag3Coords= new Translation2d(100, 100); 
+
+
+
+    Translation2d[] tagCoordinates = {tag1Coords, tag2Coords, tag3Coords, tag6Coords, tag7Coords, tag8Coords};
+
+    
 
     double targetX;
     double targetY;
+
+    double distToTag;
+    Translation2d closestTagCoords;
+    int closestTagIndex;
 
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
     public static final double x = Units.inchesToMeters(10.375); // 10.375"
@@ -73,26 +110,71 @@ public class AlignScoringCommand extends CommandBase{
     public void execute() {
 
         dpadPos = opController.getPOV();
-        robotPos = limelight.getRobotInAprilTagSpace();
-        
-        //swerve.resetOdometry(new Pose2d(new Translation2d(limelight.getBotPose().getX() + 8, limelight.getBotPose().getY() + 4), limelight.getBotPose().getRotation()));
+        //tagIndex = limelight.getAprilTagIndex();
+
+        gyro.resetGyro();
+        //robotPos = limelight.getRobotInAprilTagSpace();
+        robotPos = limelight.getBotPose();
+        gyro.setOffset(-limelight.getBotPose().getRotation().getDegrees());
+                
+        driveSubsystem.resetOdometry(new Pose2d(new Translation2d(limelight.getBotPose().getX() + 8, limelight.getBotPose().getY() + 4), limelight.getBotPose().getRotation()));
         Translation2d robotCoords = robotPos.getTranslation(); // x and y from x y and rotation
+        
+        distToTag = 0.0;
+        double minDist = 0.0;
+        for (int i = 0; i < tagCoordinates.length; i++){
+            distToTag = robotCoords.getDistance(tagCoordinates[i]);
 
-        // setting the endpoint target coords given dpad input
-        if (dpadPos == 270){ // IF LEFT ON THE DPAD
-           targetX = leftConeX;
-           targetY = leftConeY;   
-        }
-        else if (dpadPos == 270){ // IF RIGHT ON THE DPAD
-            targetX = rightConeX;
-            targetY = rightConeY; 
-        }
-        else if(dpadPos == 0){ //IF UP ON THE DPAD
-            targetX = middleX;
-            targetY = middleY;
-            
+            if (distToTag < minDist){
+                minDist = distToTag;
+                closestTagCoords = tagCoordinates[i];
+                if (i < 3){
+                    closestTagIndex = i + 1;
+                }
+                else{
+                    closestTagIndex = i+3;
+                }
+            }
         }
 
+
+        if (closestTagIndex == 6){ // tag 6 is blue left 
+            targetX = blueX;
+             // setting the endpoint target coords given dpad input
+            if (dpadPos == 270){ // IF LEFT ON THE DPAD      
+                targetY = blueLeftTagLeftConeY;   
+            }
+            else if (dpadPos == 270){ // IF RIGHT ON THE DPAD
+                targetY = blueLeftTagRightConeY; 
+            }
+            else if(dpadPos == 0){ //IF UP ON THE DPAD
+                targetY = blueLeftTagMiddleY; 
+            }
+        else if(closestTagIndex == 7){ // tag 7 is blue middle
+            targetX = blueX;
+            if (dpadPos == 270){ // IF LEFT ON THE DPAD      
+                targetY = blueMiddleTagLeftConeY;   
+            }
+            else if (dpadPos == 270){ // IF RIGHT ON THE DPAD
+                targetY = blueMiddleTagRightConeY; 
+            }
+            else if(dpadPos == 0){ //IF UP ON THE DPAD
+                targetY = blueMiddleTagMiddleY; 
+            }
+        }
+        else if(closestTagIndex == 8){ // tag 8 is blue right
+            targetX = blueX;
+            if (dpadPos == 270){ // IF LEFT ON THE DPAD      
+                targetY = blueRightTagLeftConeY;   
+            }
+            else if (dpadPos == 270){ // IF RIGHT ON THE DPAD
+                targetY = blueRightTagRightConeY; 
+            }
+            else if(dpadPos == 0){ //IF UP ON THE DPAD
+                targetY = blueRightTagMiddleY; 
+            }
+        }
+        
         // making the path eek
         PathPlannerTrajectory alignWithGrid = PathPlanner.generatePath(
             new PathConstraints(2, 1),
@@ -105,12 +187,17 @@ public class AlignScoringCommand extends CommandBase{
         ()-> robotPos, // Functional interface to feed supplier
         kDriveKinematics, new PIDController(0.4, 0.0, 0.0), new PIDController(0.4, 0.0, 0.0), new PIDController(0.5, 0, 0),
         driveSubsystem::setModuleStates, false, driveSubsystem);
+
+        path.schedule();
+
+    }
         
 
 
 
         
     }
+
 
     public void end(boolean interrupted) {}
 
