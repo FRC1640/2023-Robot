@@ -22,7 +22,7 @@ import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 
 public class SwerveModule {
-	private static final double kWheelRadius = 0.054; //0.0508 
+	private static final double kWheelRadius = 0.053975; //0.0508 
 
 	private final CANSparkMax driveMotor;
 	private final CANSparkMax steeringMotor;
@@ -30,11 +30,11 @@ public class SwerveModule {
 	private RelativeEncoder driveEncoder;
 	public Resolver steeringEncoder;
 
-	private final PIDController drivePIDController = new PIDController(2.2019, 0.0, 0.0);
+	private final PIDController drivePIDController = new PIDController(0.59818, 0.0, 0.0);
 
 	private final PIDController turningPIDController = new PIDController(0.725, 0.0, 0.005);
 
-	private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.20979, 3.0986); //0.19263, 0.016349
+	private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.14388, 2.9772, 0.24096); //0.19263, 0.016349
 	private PivotConfig cfg;
 	public double targetSpeedAuto;
 	public SwerveModule(PivotConfig cfg) {

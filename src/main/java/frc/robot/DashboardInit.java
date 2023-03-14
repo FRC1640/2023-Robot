@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.auton.paths.DriveTest;
 import frc.robot.auton.paths.Place;
 import frc.robot.auton.paths.PlaceCharge;
 import frc.robot.auton.paths.PlaceOut;
@@ -24,6 +25,7 @@ public class DashboardInit {
         sChooser.addOption("Place", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place Pickup Left", new PlaceOutPickup("left place - out - pickup").loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place Pickup Right", new PlaceOutPickup("right place - out - pickup").loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Test", new DriveTest().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("Null", null);
         autonTab.add(sChooser).withSize(5, 5).withPosition(0, 0);
         driveTab.addString("Preset", () -> robotContainer.getCurrentPreset().name());

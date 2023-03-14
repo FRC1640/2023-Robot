@@ -26,8 +26,8 @@ public class ArmEndEffectorCommand extends CommandBase{
 
     @Override
     public void execute() {
-        math.setVx(MathUtil.applyDeadband(controller.getRightX(), 0.15) * 1);
-        math.setVy(MathUtil.applyDeadband(controller.getRightY(), 0.15) * 1);
+        math.setVx(MathUtil.applyDeadband(controller.getRightX(), 0.15) * 0.4);
+        math.setVy(MathUtil.applyDeadband(controller.getRightY(), 0.15) * 0.4);
         math.setTheta1(Math.toRadians(armSubsystem.getLowerPosition()));
         math.setTheta2(Math.toRadians(armSubsystem.getUpperPosition()));
         

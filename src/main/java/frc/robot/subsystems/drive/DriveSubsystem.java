@@ -144,6 +144,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
   }
   public Pose2d getPose() {
+    System.out.println("x: " + odometry.getPoseMeters().getX() + " y: " + odometry.getPoseMeters().getY() + " Gyro: " + gyro.getGyroAngleDegrees());
     return odometry.getPoseMeters();
   }
 

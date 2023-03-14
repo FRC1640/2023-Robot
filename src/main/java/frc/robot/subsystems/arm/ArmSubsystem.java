@@ -105,8 +105,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean isInCubeMode = false;
 
-    public double conePickupX = 0.148951; // 0.319366
-    public double conePickupY = 0.142843; // 0.166689
+    public double conePickupX = 0.139841; // 0.319366
+    public double conePickupY = 0.127643; // 0.166689
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.592344, -0.122320)),
@@ -122,7 +122,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.160508, 0.115695)), 
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.162017, 0.100438)), 
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817)),
@@ -467,6 +467,10 @@ public class ArmSubsystem extends SubsystemBase {
                     .schedule();
             }
         );
+    }
+    public Command create2dEndEffectorProfileCommandNoInstant(Preset preset, double xVel, double yVel, double xAcc, double yAcc){
+        Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+        return create2dEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y, xVel, yVel, xAcc, yAcc);
     }
 
     public Command create2dEndEffectorProfileCommand(double x, double y, double xVel, double yVel, double xAcc, double yAcc) {
