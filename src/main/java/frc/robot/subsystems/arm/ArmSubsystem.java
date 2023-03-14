@@ -204,7 +204,7 @@ public class ArmSubsystem extends SubsystemBase {
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
         
-        System.out.println(getLowerPosition());
+        //System.out.println(getLowerPosition());
         
         /* NetworkTables */
         updateNetworkTables();

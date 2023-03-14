@@ -3,13 +3,20 @@ package frc.robot.sensors;
 import edu.wpi.first.wpilibj.AnalogInput;
 
 public class PixyCam {
-    AnalogInput pixyCam = new AnalogInput(6);//TODO: set ID
+    double[] three = {0.0, 0.0, 0.0};
+    AnalogInput pixyCam = new AnalogInput(6);
+
     public void getHPint(){
-        if(pixyCam.getVoltage()>1.2 && pixyCam.getVoltage()<1.8){
-            System.out.println("Green");
+        three[2] = three[1];
+        three[1] = three[0];
+        three[0] = pixyCam.getVoltage();
+        double avg = (three[2] + three[1] + three[0])/3.0;
+        if(avg>1.5 && avg<2.3){
+            System.out.print("Green");
         } else {
-            System.out.println("Red");
+            System.out.print("Red");
         }
+        System.out.println(avg);
         //return (int)Math.round(pixyCam.getVoltage());
     }
     public double getHPposition(){
