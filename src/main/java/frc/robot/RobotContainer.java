@@ -9,6 +9,7 @@ import frc.robot.auton.paths.PlaceOut;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.LED;
 import frc.robot.sensors.Limelight;
+import frc.robot.sensors.PixyCam;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
@@ -22,6 +23,7 @@ import frc.robot.subsystems.drive.commands.Stop;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.utilities.PresetBoard;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -37,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
+  PixyCam pixyCam = new PixyCam();
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
@@ -67,7 +70,7 @@ public class RobotContainer {
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
     armStopCommand  = new ArmStopCommand(armSubsystem);
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
-    driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem));
+    driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
@@ -82,6 +85,7 @@ public class RobotContainer {
       // () -> System.out.println("POV: " + presetBoard.getPOV())
       // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
     )).ignoringDisable(true).schedule();
+    CameraServer.startAutomaticCapture();
   }
 
   private void configureBindings() {
