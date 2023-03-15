@@ -142,7 +142,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void print(){
-    // System.out.println("module pos: " + frontLeft.getPosition().distanceMeters + ", " + frontRight.getPosition().distanceMeters + ", " + backLeft.getPosition().distanceMeters + ", " + backRight.getPosition().distanceMeters);
+    // System.out.println("Gyro: " + gyro.getGyroAngleDegrees());
   }
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {

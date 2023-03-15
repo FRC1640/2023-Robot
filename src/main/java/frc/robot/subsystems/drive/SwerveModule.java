@@ -82,16 +82,9 @@ public class SwerveModule {
 	// 	return driveEncoder.getPosition() * kWheelRadius * 0.10472 * 0.12 * Math.sin(steeringEncoder.get());
 	// }
 	public SwerveModulePosition getPosition() {
-		double diff = -driveEncoder.getPosition() - previousPosition;
-		boolean negate = (diff > 0 && flipDrive) || (diff < 0 && !flipDrive);
-		currentPosition += (diff)* (flipDrive ? -1 : 1);
-		if (cfg.getDriveChannel() == 3){
-			System.out.format("%.2f, %.2f, %.2f, %.2f, %b, %.2f\n", currentPosition, previousPosition, diff, driveEncoder.getPosition(), flipDrive, ((currentPosition / 7.73) * kWheelRadius * 2 * Math.PI));
-		}
-		previousPosition = -driveEncoder.getPosition();
 		
 		SwerveModulePosition pos = new SwerveModulePosition(
-			((currentPosition / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get()));
+			((-driveEncoder.getPosition() / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get()));
 		return pos;
 	  }
 	// public double getPositionY() {

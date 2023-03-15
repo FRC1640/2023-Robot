@@ -1,6 +1,4 @@
 package frc.robot.sensors;
-
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 
 public class LED {
