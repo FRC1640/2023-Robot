@@ -70,6 +70,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
   public void resetOdometry(Pose2d pose) {
+    frontLeft.resetDriveEncoder();
+    frontRight.resetDriveEncoder();
+    backLeft.resetDriveEncoder();
+    backRight.resetDriveEncoder();
     odometry.resetPosition(
       gyro.getRotation2d(),
       new SwerveModulePosition[] {
@@ -137,6 +141,9 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setSpeed(speed);
   }
 
+  public void print(){
+    // System.out.println("module pos: " + frontLeft.getPosition().distanceMeters + ", " + frontRight.getPosition().distanceMeters + ", " + backLeft.getPosition().distanceMeters + ", " + backRight.getPosition().distanceMeters);
+  }
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     odometry.update(
@@ -144,7 +151,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
   }
   public Pose2d getPose() {
-    System.out.println("x: " + odometry.getPoseMeters().getX() + " y: " + odometry.getPoseMeters().getY() + " Gyro: " + gyro.getGyroAngleDegrees());
+    // System.out.println("x: " + odometry.getPoseMeters().getX() + " y: " + odometry.getPoseMeters().getY() + " Gyro: " + gyro.getGyroAngleDegrees());
     return odometry.getPoseMeters();
   }
 

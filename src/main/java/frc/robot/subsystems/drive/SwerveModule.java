@@ -27,6 +27,9 @@ public class SwerveModule {
 	private final CANSparkMax driveMotor;
 	private final CANSparkMax steeringMotor;
 
+	private double currentPosition;
+	private double previousPosition;
+
 	private RelativeEncoder driveEncoder;
 	public Resolver steeringEncoder;
 
@@ -36,6 +39,8 @@ public class SwerveModule {
 
 	private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.14388, 2.9772, 0.24096); //0.19263, 0.016349
 	private PivotConfig cfg;
+
+	boolean flipDrive = false;
 	public double targetSpeedAuto;
 	public SwerveModule(PivotConfig cfg) {
 		this.cfg = cfg;
@@ -56,6 +61,7 @@ public class SwerveModule {
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+		
 
 
 		// driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
@@ -72,15 +78,29 @@ public class SwerveModule {
 		driveEncoder.setPosition(0);
 	}
 
-	public double getPositionX() {
-		return driveEncoder.getPosition() * kWheelRadius * 0.10472 * 0.12 * Math.sin(steeringEncoder.get());
-	}
+	// public double getPositionX() {
+	// 	return driveEncoder.getPosition() * kWheelRadius * 0.10472 * 0.12 * Math.sin(steeringEncoder.get());
+	// }
 	public SwerveModulePosition getPosition() {
-		return new SwerveModulePosition(
-			((driveEncoder.getPosition() / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get() + (Math.PI / 2)));
+		double diff = -driveEncoder.getPosition() - previousPosition;
+		boolean negate = (diff > 0 && flipDrive) || (diff < 0 && !flipDrive);
+		currentPosition += (diff)* (flipDrive ? -1 : 1);
+		if (cfg.getDriveChannel() == 3){
+			System.out.format("%.2f, %.2f, %.2f, %.2f, %b, %.2f\n", currentPosition, previousPosition, diff, driveEncoder.getPosition(), flipDrive, ((currentPosition / 7.73) * kWheelRadius * 2 * Math.PI));
+		}
+		previousPosition = -driveEncoder.getPosition();
+		
+		SwerveModulePosition pos = new SwerveModulePosition(
+			((currentPosition / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get()));
+		return pos;
 	  }
-	public double getPositionY() {
-		return (driveEncoder.getPosition()) * kWheelRadius * 0.10472 * 0.12 * Math.cos(steeringEncoder.get());
+	// public double getPositionY() {
+	// 	return (driveEncoder.getPosition()) * kWheelRadius * 0.10472 * 0.12 * Math.cos(steeringEncoder.get());
+	// }
+	public void resetDriveEncoder(){
+		driveEncoder.setPosition(0);
+		currentPosition = 0;
+		previousPosition = 0;
 	}
 
 
@@ -108,12 +128,12 @@ public class SwerveModule {
 		// }
 		double dAngle = state.angle.getDegrees() - steeringEncoder.getD();
 		double dAngleAbs = Math.abs(dAngle) % 360;
-		boolean flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
+		boolean flipDriveTeleop = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
 		double sin = Math.sin(dAngle * Math.PI / 180.0);
-		sin = (flipDrive) ? -sin : sin;
+		sin = (flipDriveTeleop) ? -sin : sin;
 		double turnOutput = turningPIDController.calculate(sin, 0);
 
-		final double targetSpeed = flipDrive ? state.speedMetersPerSecond : -state.speedMetersPerSecond;
+		final double targetSpeed = flipDriveTeleop ? state.speedMetersPerSecond : -state.speedMetersPerSecond;
 
 		if (Math.abs(targetSpeed) < 0.1) {
 			turnOutput = 0;
@@ -128,12 +148,12 @@ public class SwerveModule {
 
 		double dAngle = state.angle.getDegrees() - (steeringEncoder.getD());
 		double dAngleAbs = Math.abs(dAngle) % 360;
-		boolean flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
+		flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
 		double sin = Math.sin(dAngle * Math.PI / 180.0);
 		sin = (flipDrive) ? -sin : sin;
 		double turnOutput = turningPIDController.calculate(sin, 0);
 
-		final double targetSpeed = flipDrive ? -state.speedMetersPerSecond : state.speedMetersPerSecond;
+		final double targetSpeed =flipDrive ? -state.speedMetersPerSecond : state.speedMetersPerSecond;
 		targetSpeedAuto=targetSpeed;
 		if (Math.abs(targetSpeed) < 0.1) {
 			turnOutput = 0;

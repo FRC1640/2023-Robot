@@ -11,7 +11,7 @@ public class Gyro {
     private final AHRS gyro = new AHRS(SPI.Port.kMXP);
     public void resetGyro() {
         offset = 0;
-        DataLogManager.log("Reset gyro");
+        // DataLogManager.log("Reset gyro");
         gyro.reset();
       }
     public Rotation2d getGyroAngle() {

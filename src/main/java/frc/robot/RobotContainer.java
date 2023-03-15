@@ -78,7 +78,8 @@ public class RobotContainer {
 
     // Prints (DO NOT DELETE, JUST COMMENT OUT THE PRINTS NOT BEING USED)
     new RepeatCommand(new InstantCommand(
-      () -> {} // do nothing
+      // () -> {} // do nothing
+      () -> driveSubsystem.print()
       // () -> System.out.println(currentPreset)
       // () -> System.out.println("POV: " + presetBoard.getPOV())
       // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
