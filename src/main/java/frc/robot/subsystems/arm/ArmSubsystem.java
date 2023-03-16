@@ -99,6 +99,7 @@ public class ArmSubsystem extends SubsystemBase {
         LowPlacing,
         Travel,
         Start,
+        AutonTravel,
 
         Substation;
     }
@@ -114,8 +115,9 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
-        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.528659, 0.385064)), 
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.230516, 0.311670)),
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), 
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.230516, 0.158040)),
+        Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.471229, 1.166890)) // 1.447432, 1.202866
     ));
 
@@ -403,7 +405,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     private ProfiledPIDController  createControllerEndEffector() {
         ProfiledPIDController controller = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(2.2, 0.7));
-        controller.setTolerance(0.02);
+        controller.setTolerance(0.06);
         return controller;
     }
 
