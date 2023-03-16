@@ -14,6 +14,9 @@ public class JoystickDriveCommand extends CommandBase {
     final double SLOW_LINEAR_SPEED = 0.6;
     final double SLOW_ROTATIONAL_SPEED = 0.55;
 
+    final double CHARGE_STATION_SLOW_LINEAR_SPEED = 0.35; // 58.3%
+    final double CHARGE_STATION_SLOW_ROTATIONAL_SPEED = 0.32;
+
     final double LOWER_DB = 0.15;
     final double UPPER_DB = 0.15;
 
@@ -61,11 +64,19 @@ public class JoystickDriveCommand extends CommandBase {
 
         Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
+        Trigger rightTrigger = new Trigger(() -> driverController.getRightTriggerAxis() > 0.1);
+
         if(!leftTrigger.getAsBoolean()) {
             xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
             ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
             rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
-        } else {
+        } 
+        else if(!rightTrigger.getAsBoolean()){
+            xSpeed = -driverController.getLeftY() * CHARGE_STATION_SLOW_LINEAR_SPEED;
+            ySpeed = -driverController.getLeftX() * CHARGE_STATION_SLOW_LINEAR_SPEED;
+            rot = -driverController.getRightX() * CHARGE_STATION_SLOW_ROTATIONAL_SPEED;
+        }
+        else {
             xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
             ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
             rot = -m_rotLimiter.calculate(driverController.getRightX());
