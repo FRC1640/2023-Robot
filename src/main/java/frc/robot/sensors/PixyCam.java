@@ -5,16 +5,16 @@ import edu.wpi.first.wpilibj.AnalogInput;
 public class PixyCam {
     double[] three = {0.0, 0.0, 0.0};
     AnalogInput pixyCam = new AnalogInput(6);
-
+    LED led = new LED();
     public void getHPint(){
         three[2] = three[1];
         three[1] = three[0];
         three[0] = pixyCam.getVoltage();
         double avg = (three[2] + three[1] + three[0])/3.0;
         if(avg>1.5 && avg<2.3){
-            System.out.print("Green ");
+            led.setHPGreen();
         } else {
-            System.out.print("Red   ");
+            led.setHPRed();
         }
         System.out.println(avg);
         //return (int)Math.round(pixyCam.getVoltage());
