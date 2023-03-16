@@ -75,16 +75,17 @@ public class JoystickDriveCommand extends CommandBase {
             ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
             rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
         } 
-        else if(!rightTrigger.getAsBoolean()){
-            xSpeed = -driverController.getLeftY() * CHARGE_STATION_SLOW_LINEAR_SPEED;
-            ySpeed = -driverController.getLeftX() * CHARGE_STATION_SLOW_LINEAR_SPEED;
-            rot = -driverController.getRightX() * CHARGE_STATION_SLOW_ROTATIONAL_SPEED;
-        }
         else {
             xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
             ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
             rot = -m_rotLimiter.calculate(driverController.getRightX());
         }
+        if(rightTrigger.getAsBoolean()){
+            xSpeed = -driverController.getLeftY() * CHARGE_STATION_SLOW_LINEAR_SPEED;
+            ySpeed = -driverController.getLeftX() * CHARGE_STATION_SLOW_LINEAR_SPEED;
+            rot = -driverController.getRightX() * CHARGE_STATION_SLOW_ROTATIONAL_SPEED;
+        }
+
 
         /* Apply linear deadband */
         joystickCleaner.setX(xSpeed);
