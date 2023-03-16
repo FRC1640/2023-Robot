@@ -12,9 +12,9 @@ public class PixyCam {
         three[0] = pixyCam.getVoltage();
         double avg = (three[2] + three[1] + three[0])/3.0;
         if(avg>1.5 && avg<2.3){
-            System.out.print("Green");
+            System.out.print("Green ");
         } else {
-            System.out.print("Red");
+            System.out.print("Red   ");
         }
         System.out.println(avg);
         //return (int)Math.round(pixyCam.getVoltage());
