@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.Gyro;
+import frc.robot.sensors.PixyCam;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.JoystickCleaner;
 import frc.robot.subsystems.foot.FootSubsystem;
@@ -25,17 +26,20 @@ public class JoystickDriveCommand extends CommandBase {
 
     JoystickCleaner joystickCleaner = new JoystickCleaner();
 
+    PixyCam pixyCam;
+
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
     private boolean fieldRelative = true;
 
-    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController, FootSubsystem footSubsystem) {
+    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController, FootSubsystem footSubsystem, PixyCam pixyCam) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
         this.gyro = gyro;
         this.driverController = driveController;
         this.footSubsystem = footSubsystem;
+        this.pixyCam = pixyCam;
 
         addRequirements(driveSubsystem);
     }
@@ -100,7 +104,10 @@ public class JoystickDriveCommand extends CommandBase {
         // else {
         //     driveSubsystem.drive(0, 0, 0, fieldRelative);
         // }
-        
+
+        //Testing pixycam
+        //TODO: delet this test.
+        pixyCam.getHPint();
     }
     @Override
     public void end(boolean interrupted) { }
