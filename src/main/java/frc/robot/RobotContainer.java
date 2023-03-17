@@ -40,7 +40,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
-  PixyCam pixyCam = new PixyCam();
+  
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
@@ -60,6 +60,7 @@ public class RobotContainer {
 
   Command armStopCommand;
   LED led = new LED();
+  PixyCam pixyCam = new PixyCam(led);
   DashboardInit dashboardInit;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
