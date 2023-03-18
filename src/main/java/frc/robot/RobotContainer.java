@@ -88,7 +88,8 @@ public class RobotContainer {
       // () -> System.out.println("POV: " + presetBoard.getPOV())
       // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
     )).ignoringDisable(true).schedule();
-    CameraServer.startAutomaticCapture();
+    
+
   }
 
   private void configureBindings() {
