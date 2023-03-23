@@ -43,8 +43,7 @@ public class DriveTest {
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
     placeState = placePath.getInitialState();
-    gyro.resetGyro();
-    gyro.setOffset(0);
+    
     kDriveKinematics = swerve.createKinematics();
     Pose2d placePose = new Pose2d(placeState.poseMeters.getTranslation(), placeState.holonomicRotation);
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
@@ -64,7 +63,7 @@ public class DriveTest {
 
     PPSwerveControllerCommand placePathController = new PPSwerveControllerCommand(placePath,
         swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.01, 0.0, 0), new PIDController(0.001, 0.0, 0), new PIDController(1.55, 0, 0),
+        kDriveKinematics, new PIDController(0.01, 0.0, 0), new PIDController(0.001, 0.0, 0), new PIDController(0.01, 0, 0),
         swerve::setModuleStates, true, swerve);
     
     // ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);

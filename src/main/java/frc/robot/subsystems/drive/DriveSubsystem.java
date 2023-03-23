@@ -33,8 +33,8 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 6; // 3 meters per second  
   public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second  
 
-  public static final double x = Units.inchesToMeters(10.375); // 10.375"
-  public static final double y = Units.inchesToMeters(12.375); // 12.375"
+  public static final double y = Units.inchesToMeters(10.375); // 10.375"
+  public static final double x = Units.inchesToMeters(12.375); // 12.375"
 
   private final Translation2d frontLeftLocation = new Translation2d(x, y);
   private final Translation2d frontRightLocation = new Translation2d(x, -y);
@@ -142,6 +142,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void print(){
+    // System.out.println("Pos: " + frontLeft.getPosition().distanceMeters + " " + frontRight.getPosition().distanceMeters + " " + backLeft.getPosition().distanceMeters + " " + backRight.getPosition().distanceMeters);
     // System.out.println("Gyro: " + gyro.getGyroAngleDegrees());
   }
   /** Updates the field relative position of the robot. */
@@ -151,7 +152,7 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
   }
   public Pose2d getPose() {
-    // System.out.println("x: " + odometry.getPoseMeters().getX() + " y: " + odometry.getPoseMeters().getY() + " Gyro: " + gyro.getGyroAngleDegrees());
+    System.out.println("x: " + odometry.getPoseMeters().getX() + " y: " + odometry.getPoseMeters().getY() + " Gyro: " + gyro.getGyroAngleDegrees());
     return odometry.getPoseMeters();
   }
 

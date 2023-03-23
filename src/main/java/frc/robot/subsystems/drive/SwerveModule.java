@@ -22,7 +22,8 @@ import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 
 public class SwerveModule {
-	private static final double kWheelRadius = 0.053975; //0.0508 
+	private static final double kWheelRadius = 0.053975; //0.0508 //0.05334
+	//0.339134926955
 
 	private final CANSparkMax driveMotor;
 	private final CANSparkMax steeringMotor;
@@ -37,7 +38,7 @@ public class SwerveModule {
 
 	private final PIDController turningPIDController = new PIDController(0.725, 0.0, 0.005);
 
-	private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.14388, 2.9772, 0.24096); //0.19263, 0.016349
+	private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.10346, 2.9321, 0.11125); //0.19263, 0.016349
 	private PivotConfig cfg;
 
 	boolean flipDrive = false;
@@ -47,6 +48,7 @@ public class SwerveModule {
 		driveMotor = new CANSparkMax(cfg.getDriveChannel(), MotorType.kBrushless);
 		steeringMotor = new CANSparkMax(cfg.getSteerChannel(), MotorType.kBrushless);
 		driveMotor.setSmartCurrentLimit(60);
+		steeringMotor.setIdleMode(IdleMode.kCoast);
 		steeringMotor.setSmartCurrentLimit(40);
 		driveMotor.setIdleMode(IdleMode.kCoast);
 		// driveMotor.burnFlash();
@@ -155,7 +157,7 @@ public class SwerveModule {
 		double driveFeedForward = -driveFeedforward.calculate(targetSpeed);
 		double driveOutput = -drivePIDController.calculate(getVelocity(), targetSpeed);
 
-		driveMotor.setVoltage(driveFeedForward + driveOutput);
+		driveMotor.setVoltage(driveFeedForward);
 		steeringMotor.set(turnOutput);
 	}
 	public void setAngleD(double angle) {

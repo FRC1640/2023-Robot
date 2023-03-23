@@ -39,8 +39,8 @@ import frc.robot.subsystems.grabber.commands.UnGrab;
 
 public class PlaceOutPickupRight {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
-  public static final double x = Units.inchesToMeters(10.375); // 10.375"
-  public static final double y = Units.inchesToMeters(12.375); // 12.375"
+  // public static final double x = Units.inchesToMeters(10.375); // 10.375"
+  // public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
   public static String path;
   public static String path1;
