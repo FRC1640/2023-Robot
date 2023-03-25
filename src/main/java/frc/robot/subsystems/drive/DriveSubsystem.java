@@ -46,6 +46,9 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backLeft = new SwerveModule(PivotConfig.getConfig(PivotId.BL));
   private final SwerveModule backRight = new SwerveModule(PivotConfig.getConfig(PivotId.BR));
 
+
+  private long last;
+
   public Field2d field = new Field2d();
   
   
@@ -70,10 +73,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
   public void resetOdometry(Pose2d pose) {
-    frontLeft.resetDriveEncoder();
-    frontRight.resetDriveEncoder();
-    backLeft.resetDriveEncoder();
-    backRight.resetDriveEncoder();
     odometry.resetPosition(
       gyro.getRotation2d(),
       new SwerveModulePosition[] {
@@ -142,17 +141,26 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void print(){
-    // System.out.println("Pos: " + frontLeft.getPosition().distanceMeters + " " + frontRight.getPosition().distanceMeters + " " + backLeft.getPosition().distanceMeters + " " + backRight.getPosition().distanceMeters);
-    // System.out.println("Gyro: " + gyro.getGyroAngleDegrees());
+    // System.out.println("Pos: " + backLeft.getPosition());
+    // System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
+    System.out.format("%.2f, %.2f | %.2f, %.1f, %.2f, %.1f, %.2f, %.1f, %.2f, %.1f | %.1f\n", 
+    odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), 
+    frontLeft.getPosition().distanceMeters, frontLeft.getPosition().angle.getDegrees(),
+    frontRight.getPosition().distanceMeters, frontRight.getPosition().angle.getDegrees(),
+    backLeft.getPosition().distanceMeters, backLeft.getPosition().angle.getDegrees(),
+    backRight.getPosition().distanceMeters, backRight.getPosition().angle.getDegrees(),
+    gyro.getRotation2d().getDegrees());
   }
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
+    // System.out.println("Time: " + (System.currentTimeMillis() - last));
+    last = System.currentTimeMillis();
     odometry.update(
         gyro.getRotation2d(),
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
   }
   public Pose2d getPose() {
-    System.out.println("x: " + odometry.getPoseMeters().getX() + " y: " + odometry.getPoseMeters().getY() + " Gyro: " + gyro.getGyroAngleDegrees());
+    // System.out.println("x: " + odometry.getPoseMeters().getX() * 3.28084 + " y: " + odometry.getPoseMeters().getY() * 3.28084 + " Gyro: " + gyro.getGyroAngleDegrees());
     return odometry.getPoseMeters();
   }
 

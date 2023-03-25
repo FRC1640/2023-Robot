@@ -19,11 +19,14 @@ import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
+import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.drive.commands.Stop;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.utilities.PresetBoard;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -109,7 +112,7 @@ public class RobotContainer {
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 2, 2, 2, 2))));
 
-    new Trigger(() -> operatorController.getRightBumper())
+    new Trigger(() -> operatorController.getRightBumper()||driverController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
     
     new Trigger(() -> presetBoard.povIsUpwards())
@@ -124,7 +127,7 @@ public class RobotContainer {
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
-    
+  
     new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
       .whileTrue(armStopCommand);
 
@@ -153,6 +156,9 @@ public class RobotContainer {
             .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
         )
       ));
+
+      new Trigger(() -> driverController.getLeftBumper())
+      .whileTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()))));
 
       new Trigger(() -> operatorController.getYButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0))));
