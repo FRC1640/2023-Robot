@@ -9,7 +9,7 @@ public class GrabberSubsystem extends SubsystemBase{
     Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     Servo cymbalServo = new Servo(0); //TODO: change channel
 
-    public static double CYMBAL_SERVO_TURNED_ANGLE = 90;
+    public static double CYMBAL_SERVO_TURNED_ANGLE = 180;
 
 
     public GrabberSubsystem(){
