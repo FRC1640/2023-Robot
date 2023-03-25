@@ -108,6 +108,7 @@ public class JoystickDriveCommand extends CommandBase {
         //Testing pixycam
         //TODO: delete this test.
         pixyCam.getHPboolean();
+
     }
     @Override
     public void end(boolean interrupted) { }

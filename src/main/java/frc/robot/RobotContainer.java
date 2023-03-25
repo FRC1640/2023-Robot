@@ -10,6 +10,7 @@ import frc.robot.sensors.Gyro;
 import frc.robot.sensors.LED;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.PixyCam;
+import frc.robot.sensors.Proximity;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
@@ -22,6 +23,8 @@ import frc.robot.subsystems.drive.commands.ResetGyroCommand;
 import frc.robot.subsystems.drive.commands.Stop;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
+import frc.robot.subsystems.grabber.commands.ChangeGrabState;
+import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.utilities.PresetBoard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
@@ -36,10 +39,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
   PixyCam pixyCam = new PixyCam();
+  Proximity c5sensor = new Proximity();
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
@@ -105,9 +111,15 @@ public class RobotContainer {
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(armStopCommand);
 
-    new Trigger(() -> operatorController.getRightBumper())
+    new Trigger(() -> operatorController.getRightBumper() || driverController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
-    
+
+    new Trigger(() -> c5sensor.getC5boolean() && driverController.getLeftBumper())
+      .onTrue(new SequentialCommandGroup(
+        new WaitCommand(0.25),
+        new ChangeGrabState(grabberSubsystem, true)));
+      //grabberSubsystem.toggleClamped()
+
     new Trigger(() -> presetBoard.povIsUpwards())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)).andThen(new InstantCommand(() -> led.setStateGreen())));//.andThen(new InstantCommand(() -> led.setStateGreen()))
 
