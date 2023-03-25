@@ -72,7 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
-    final double upperArmMin = 3; //10
+    final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
     final double upperArmMax = 180; //165
 
     final double lowerArmTolerance = 3;
@@ -176,6 +176,8 @@ public class ArmSubsystem extends SubsystemBase {
         // if (Units.metersToInches(getEndEffectorPosition().getX()) >= 30){
         //     lowerArmVoltage = Math.min()
         // }
+
+        System.out.println("CURRENT POS: " + Math.toDegrees(upperEncoder.get()));
         if (getLowerPosition() >= lowerArmMax){
             lowerArmVoltage = Math.max(lowerArmVoltage, 0);
         }
