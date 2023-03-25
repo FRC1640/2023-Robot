@@ -156,6 +156,8 @@ public class RobotContainer {
 
       new Trigger(() -> operatorController.getYButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0))));
+      new Trigger(() -> operatorController.getRightBumperPressed())
+      .whileTrue(new InstantCommand(() -> grabberSubsystem.setCymbalTurnedCommand(true)));
   }
 
   public void firstEnabled(){
