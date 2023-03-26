@@ -73,7 +73,7 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
     final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    final double upperArmMax = 180; //165
+    final double upperArmMax = 163; //165
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
@@ -106,24 +106,24 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean isInCubeMode = false;
 
-    public double conePickupX = 0.139; // 0.134429
-    public double conePickupY =0.1205; // 0.118863
+    public double conePickupX = 0.34; // 0.139 DEUX: 0.34
+    public double conePickupY = 0.25; // 0.1205 DEUX: 0.25
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.592344, -0.122320)),
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), //
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
-        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
-        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), 
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.290739, 0.354146)),
-        Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.432694,1.177668)) // 1.447432, 1.202866
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.75,  0.19)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), 
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.75, 0.19)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
+        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)), // PRIME: 0.585774,0.890549 DEUX:
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.67, 1.34)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), // PRIME: 0.505084, 0.195167 DEUX:
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.290739, 0.354146)),// PRIME:0.290739, 0.354146 DEUX:
+        Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),// PRIME:0.113324, 0.311670 DEUX:
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.432694,1.177668)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.75,  0.19)), // PRIME: 0.513291, -0.073329 DEUX: 0.75,  0.19
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.153788, 0.105571)), 
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
@@ -177,7 +177,7 @@ public class ArmSubsystem extends SubsystemBase {
         //     lowerArmVoltage = Math.min()
         // }
 
-        System.out.println("CURRENT POS: " + Math.toDegrees(upperEncoder.get()));
+        System.out.println("CURRENT POS: upper" + getUpperPosition()+ " lower " + getLowerPosition() + "current coords " + getEndEffectorPosition() );
         if (getLowerPosition() >= lowerArmMax){
             lowerArmVoltage = Math.max(lowerArmVoltage, 0);
         }
