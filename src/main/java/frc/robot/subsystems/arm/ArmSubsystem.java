@@ -73,7 +73,7 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
     final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    final double upperArmMax = 163; //165
+    final double upperArmMax = 173; //165
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
