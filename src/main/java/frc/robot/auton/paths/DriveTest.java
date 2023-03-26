@@ -26,6 +26,7 @@ import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.commands.GyroOffsetCommand;
 import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
@@ -43,7 +44,7 @@ public class DriveTest {
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
     placeState = placePath.getInitialState();
-    
+    GyroOffsetCommand gyroCommand = new GyroOffsetCommand(gyro, 0);
     kDriveKinematics = swerve.createKinematics();
     Pose2d placePose = new Pose2d(placeState.poseMeters.getTranslation(), placeState.holonomicRotation);
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
@@ -63,11 +64,11 @@ public class DriveTest {
 
     PPSwerveControllerCommand placePathController = new PPSwerveControllerCommand(placePath,
         swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.01, 0.0, 0), new PIDController(0.001, 0.0, 0), new PIDController(0.01, 0, 0),
+        kDriveKinematics, new PIDController(0.05, 0.0, 0), new PIDController(1, 0.0, 0), new PIDController(0.4, 0, 0),
         swerve::setModuleStates, true, swerve);
     
     // ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, placePathController);// , place, group
+    return Commands.sequence(gyroCommand, resetOdo, placePathController);// , place, group
   }
 }

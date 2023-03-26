@@ -171,8 +171,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-
+        System.out.println("lower arm: " + getLowerPosition());
         // if (Units.metersToInches(getEndEffectorPosition().getX()) >= 30){
         //     lowerArmVoltage = Math.min()
         // }

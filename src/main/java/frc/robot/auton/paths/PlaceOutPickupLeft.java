@@ -89,11 +89,11 @@ public class PlaceOutPickupLeft {
     Command unGrab1 = new UnGrab(grabberSubsystem);
     PPSwerveControllerCommand placePathController = new PPSwerveControllerCommand(placePath,
         swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.03, 0.0, 0), new PIDController(0.01, 0.0, 0), new PIDController(1.55, 0, 0),
+        kDriveKinematics, new PIDController(0.05, 0.0, 0), new PIDController(1, 0.0, 0), new PIDController(0.4, 0, 0),
         swerve::setModuleStates, true, swerve);
     PPSwerveControllerCommand backPathController = new PPSwerveControllerCommand(backPath,
       swerve::getPose, // Functional interface to feed supplier
-      kDriveKinematics, new PIDController(0.03, 0.0, 0), new PIDController(0.01, 0.0, 0), new PIDController(2, 0, 0),
+      kDriveKinematics, new PIDController(0.05, 0.0, 0), new PIDController(1, 0.0, 0), new PIDController(0.4, 0, 0),
       swerve::setModuleStates, true, swerve);
     
     ParallelCommandGroup group = new ParallelCommandGroup(placePathController, uprightCone);
