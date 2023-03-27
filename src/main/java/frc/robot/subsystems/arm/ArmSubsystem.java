@@ -77,6 +77,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
+
+    double softStop;
     boolean currentStopFlag = false;
     Timer currentTimer = new Timer();
     /* 
@@ -171,7 +173,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        System.out.println("lower arm: " + getLowerPosition());
+        // System.out.println("lower arm: " + getLowerPosition());
         // if (Units.metersToInches(getEndEffectorPosition().getX()) >= 30){
         //     lowerArmVoltage = Math.min()
         // }
@@ -187,6 +189,23 @@ public class ArmSubsystem extends SubsystemBase {
         }
         if (getUpperPosition() <= upperArmMin){
             upperArmVoltage = Math.min(upperArmVoltage, 0);
+        }
+
+
+
+        //soft stops
+        if (getLowerPosition() >= lowerArmMax - softStop){
+            lowerArmVoltage = Math.max(lowerArmVoltage, 0.1);
+        }
+        if (getLowerPosition() <= lowerArmMin + softStop){
+            lowerArmVoltage = Math.min(lowerArmVoltage, 0.1);
+        }
+        
+        if (getUpperPosition() >= upperArmMax - softStop){
+            upperArmVoltage = Math.max(upperArmVoltage, 0.1);
+        }
+        if (getUpperPosition() <= upperArmMin + softStop){
+            upperArmVoltage = Math.min(upperArmVoltage, 0.1);
         }
 
         /* Current Stop */

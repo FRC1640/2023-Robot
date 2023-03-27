@@ -99,9 +99,9 @@ public class PlaceOutPickupLeft {
     ParallelCommandGroup group = new ParallelCommandGroup(placePathController, uprightCone);
     // return Commands.sequence(resetOdo, group);
     return Commands.sequence(gyroCommand, resetOdo, setConeMode, 
-    pickup,
-    grabEnd, travel, placeWait, unGrab,
+    // pickup,
+    // grabEnd, travel, placeWait, unGrab,
      group.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), grabConeEnd
-     , new WaitCommand(0.5), newSafe, pickup1Group, pickup2, backPathController.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))));
+     , new WaitCommand(0.5), newSafe, backPathController.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))));
   }
 }

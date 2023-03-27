@@ -31,7 +31,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DataLogManager;
+// import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -169,7 +169,7 @@ public class RobotContainer {
       return;
     }
     wasEnabled = true;
-    DataLogManager.log("Robot was enabled for the first time.");
+    // DataLogManager.log("Robot was enabled for the first time.");
   }
 
   /**
