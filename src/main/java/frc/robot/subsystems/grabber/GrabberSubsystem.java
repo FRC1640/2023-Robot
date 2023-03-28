@@ -1,25 +1,40 @@
 package frc.robot.subsystems.grabber;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class GrabberSubsystem extends SubsystemBase{
-    Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+    DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1); //TODO not sure about these ports
     Servo cymbalServo = new Servo(0); 
     double servoOffset;
 
 
 
     public GrabberSubsystem(){
-
+        setClamped(false); //TODO make sure Value.kforward is the same as setting single solenoid to true.
     }
 
     public void setClamped(boolean clamped){
-        solenoid.set(clamped);
+        if (clamped){
+            solenoid.set(Value.kForward);
+        }
+        else{
+            solenoid.set(Value.kReverse);
+        }
+    }
+    public boolean getClamped(){
+        if (solenoid.get() == Value.kForward){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public void setServoTurned(boolean turned){
@@ -60,8 +75,8 @@ public class GrabberSubsystem extends SubsystemBase{
     }
 
     public void toggleClamped() {
-        boolean wasClamped = solenoid.get();
-        solenoid.set(!wasClamped);
+        boolean wasClamped = getClamped();
+        setClamped(!wasClamped);
         if (wasClamped) {
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); // reset servo after release
             servoOffset = Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE;
