@@ -84,7 +84,8 @@ public class RobotContainer {
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
-    grabberSubsystem.setServoTurned(false);
+    //grabberSubsystem.setServoTurned(false);
+    grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
 
 
     // Configure the trigger bindings
@@ -114,7 +115,7 @@ public class RobotContainer {
       .onTrue(new ResetGyroCommand(gyro));
 
     new Trigger(() -> (operatorController.getLeftTriggerAxis() > 0.7))
-    .whileTrue(new ArmManualCommand(armSubsystem, operatorController)); // TODO Fix hijacking hyjacking high jacking 
+    .whileTrue(new ArmManualCommand(armSubsystem, operatorController));  
 
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 2, 2, 2, 2))));
@@ -201,22 +202,24 @@ public class RobotContainer {
   public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
     currentArmCommand = armCommand;
-    if (currentPreset == Preset.Ground){
-      grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_GROUND_ANGLE); //TODO: make this the correct constant (is set to ground)
+/*     if (currentPreset == Preset.Pickup){
+      grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); //TODO: make this the correct constant (is set to ground)
 
     }
     else{
       grabberSubsystem.setServoOffset(0); //TODO is right?
-    }
+    } */
     presetPub.set(currentPreset.toString());
   }
 
   public void setServo(){
     if (currentPreset == Preset.MidPlacing){
-      grabberSubsystem.servoMove(-30); // TODO Constant
+      //grabberSubsystem.servoMove(-30); // TODO Constant
+      grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
     }
     else if (currentPreset == Preset.HighPlacing){
-      grabberSubsystem.servoMove(-90); //TODO fix constant
+      //grabberSubsystem.servoMove(-90); //TODO fix constant
+      grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
     }
 
   }

@@ -59,6 +59,12 @@ public class GrabberSubsystem extends SubsystemBase{
         return servoOffset;
     }
 
+    
+    public void setServoAngle(double newAngle){ // mar 17 changes
+        cymbalServo.setAngle(newAngle);
+    }
+
+
     public void toggleClamped() {
         boolean wasClamped = solenoid.get();
         solenoid.set(!wasClamped);
