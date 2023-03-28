@@ -77,6 +77,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
+
+    double softStop;
     boolean currentStopFlag = false;
     Timer currentTimer = new Timer();
     /* 
@@ -99,14 +101,15 @@ public class ArmSubsystem extends SubsystemBase {
         LowPlacing,
         Travel,
         Start,
+        AutonTravel,
 
         Substation;
     }
 
     private boolean isInCubeMode = false;
 
-    public double conePickupX = 0.148951; // 0.319366
-    public double conePickupY = 0.142843; // 0.166689
+    public double conePickupX = 0.139; // 0.134429
+    public double conePickupY =0.1205; // 0.118863
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.592344, -0.122320)),
@@ -114,15 +117,16 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
-        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.528659, 0.385064)), 
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.230516, 0.311670)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.471229, 1.166890)) // 1.447432, 1.202866
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), 
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.290739, 0.354146)),
+        Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.432694,1.177668)) // 1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.160508, 0.115695)), 
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.153788, 0.105571)), 
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817)),
@@ -169,8 +173,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-
+        // System.out.println("lower arm: " + getLowerPosition());
         // if (Units.metersToInches(getEndEffectorPosition().getX()) >= 30){
         //     lowerArmVoltage = Math.min()
         // }
@@ -186,6 +189,23 @@ public class ArmSubsystem extends SubsystemBase {
         }
         if (getUpperPosition() <= upperArmMin){
             upperArmVoltage = Math.min(upperArmVoltage, 0);
+        }
+
+
+
+        //soft stops
+        if (getLowerPosition() >= lowerArmMax - softStop){
+            lowerArmVoltage = Math.max(lowerArmVoltage, 0.1);
+        }
+        if (getLowerPosition() <= lowerArmMin + softStop){
+            lowerArmVoltage = Math.min(lowerArmVoltage, 0.1);
+        }
+        
+        if (getUpperPosition() >= upperArmMax - softStop){
+            upperArmVoltage = Math.max(upperArmVoltage, 0.1);
+        }
+        if (getUpperPosition() <= upperArmMin + softStop){
+            upperArmVoltage = Math.min(upperArmVoltage, 0.1);
         }
 
         /* Current Stop */
@@ -209,7 +229,8 @@ public class ArmSubsystem extends SubsystemBase {
         lowerArmMotor1.setVoltage(lowerArmVoltage);
         upperArmMotor1.setVoltage(upperArmVoltage);
         
-
+        //System.out.println(getLowerPosition());
+        
         /* NetworkTables */
         updateNetworkTables();
     }
@@ -403,7 +424,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     private ProfiledPIDController  createControllerEndEffector() {
         ProfiledPIDController controller = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(2.2, 0.7));
-        controller.setTolerance(0.02);
+        controller.setTolerance(0.06);
         return controller;
     }
 
@@ -467,6 +488,10 @@ public class ArmSubsystem extends SubsystemBase {
                     .schedule();
             }
         );
+    }
+    public Command create2dEndEffectorProfileCommandNoInstant(Preset preset, double xVel, double yVel, double xAcc, double yAcc){
+        Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+        return create2dEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y, xVel, yVel, xAcc, yAcc);
     }
 
     public Command create2dEndEffectorProfileCommand(double x, double y, double xVel, double yVel, double xAcc, double yAcc) {

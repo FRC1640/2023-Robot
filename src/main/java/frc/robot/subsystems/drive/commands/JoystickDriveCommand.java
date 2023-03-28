@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.Gyro;
+import frc.robot.sensors.PixyCam;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.JoystickCleaner;
 import frc.robot.subsystems.foot.FootSubsystem;
@@ -13,6 +14,9 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 public class JoystickDriveCommand extends CommandBase {
     final double SLOW_LINEAR_SPEED = 0.6;
     final double SLOW_ROTATIONAL_SPEED = 0.55;
+
+    final double CHARGE_STATION_SLOW_LINEAR_SPEED = 0.35; // 58.3%
+    final double CHARGE_STATION_SLOW_ROTATIONAL_SPEED = 0.32;
 
     final double LOWER_DB = 0.15;
     final double UPPER_DB = 0.15;
@@ -25,17 +29,20 @@ public class JoystickDriveCommand extends CommandBase {
 
     JoystickCleaner joystickCleaner = new JoystickCleaner();
 
+    PixyCam pixyCam;
+
     private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
     private boolean fieldRelative = true;
 
-    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController, FootSubsystem footSubsystem) {
+    public JoystickDriveCommand(DriveSubsystem driveSubsystem, boolean fieldRelative, Gyro gyro, XboxController driveController, FootSubsystem footSubsystem, PixyCam pixyCam) {
         this.fieldRelative = fieldRelative;
         this.driveSubsystem = driveSubsystem;
         this.gyro = gyro;
         this.driverController = driveController;
         this.footSubsystem = footSubsystem;
+        this.pixyCam = pixyCam;
 
         addRequirements(driveSubsystem);
     }
@@ -61,15 +68,24 @@ public class JoystickDriveCommand extends CommandBase {
 
         Trigger leftTrigger = new Trigger(() -> driverController.getLeftTriggerAxis() > 0.1);
 
+        Trigger rightTrigger = new Trigger(() -> driverController.getRightTriggerAxis() > 0.1);
+
         if(!leftTrigger.getAsBoolean()) {
             xSpeed = -driverController.getLeftY() * SLOW_LINEAR_SPEED;
             ySpeed = -driverController.getLeftX() * SLOW_LINEAR_SPEED;
             rot = -driverController.getRightX() * SLOW_ROTATIONAL_SPEED;
-        } else {
+        } 
+        else {
             xSpeed = -m_xspeedLimiter.calculate(driverController.getLeftY());
             ySpeed = -m_yspeedLimiter.calculate(driverController.getLeftX());
             rot = -m_rotLimiter.calculate(driverController.getRightX());
         }
+        if(rightTrigger.getAsBoolean()){
+            xSpeed = -driverController.getLeftY() * CHARGE_STATION_SLOW_LINEAR_SPEED;
+            ySpeed = -driverController.getLeftX() * CHARGE_STATION_SLOW_LINEAR_SPEED;
+            rot = -driverController.getRightX() * CHARGE_STATION_SLOW_ROTATIONAL_SPEED;
+        }
+
 
         /* Apply linear deadband */
         joystickCleaner.setX(xSpeed);
@@ -100,7 +116,10 @@ public class JoystickDriveCommand extends CommandBase {
         // else {
         //     driveSubsystem.drive(0, 0, 0, fieldRelative);
         // }
-        
+
+        //Testing pixycam
+        //TODO: delet this test.
+        pixyCam.getHPint();
     }
     @Override
     public void end(boolean interrupted) { }

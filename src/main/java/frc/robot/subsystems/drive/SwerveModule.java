@@ -22,26 +22,33 @@ import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 
 public class SwerveModule {
-	private static final double kWheelRadius = 0.054; //0.0508 
+	private static final double kWheelRadius = 0.053975; //0.0508 //0.05334
+	//0.339134926955
 
 	private final CANSparkMax driveMotor;
 	private final CANSparkMax steeringMotor;
 
+	private double currentPosition;
+	private double previousPosition;
+
 	private RelativeEncoder driveEncoder;
 	public Resolver steeringEncoder;
 
-	private final PIDController drivePIDController = new PIDController(2.2019, 0.0, 0.0);
+	private final PIDController drivePIDController = new PIDController(0.59818, 0.0, 0.0);
 
 	private final PIDController turningPIDController = new PIDController(0.725, 0.0, 0.005);
 
-	private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.20979, 3.0986); //0.19263, 0.016349
+	private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.10346, 2.9321, 0.11125); //0.19263, 0.016349
 	private PivotConfig cfg;
+
+	boolean flipDrive = false;
 	public double targetSpeedAuto;
 	public SwerveModule(PivotConfig cfg) {
 		this.cfg = cfg;
 		driveMotor = new CANSparkMax(cfg.getDriveChannel(), MotorType.kBrushless);
 		steeringMotor = new CANSparkMax(cfg.getSteerChannel(), MotorType.kBrushless);
 		driveMotor.setSmartCurrentLimit(60);
+		steeringMotor.setIdleMode(IdleMode.kCoast);
 		steeringMotor.setSmartCurrentLimit(40);
 		driveMotor.setIdleMode(IdleMode.kCoast);
 		// driveMotor.burnFlash();
@@ -56,6 +63,7 @@ public class SwerveModule {
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 		steeringMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+		
 
 
 		// driveMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
@@ -72,15 +80,22 @@ public class SwerveModule {
 		driveEncoder.setPosition(0);
 	}
 
-	public double getPositionX() {
-		return driveEncoder.getPosition() * kWheelRadius * 0.10472 * 0.12 * Math.sin(steeringEncoder.get());
-	}
+	// public double getPositionX() {
+	// 	return driveEncoder.getPosition() * kWheelRadius * 0.10472 * 0.12 * Math.sin(steeringEncoder.get());
+	// }
 	public SwerveModulePosition getPosition() {
-		return new SwerveModulePosition(
-			((driveEncoder.getPosition() / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get() + (Math.PI / 2)));
+		
+		SwerveModulePosition pos = new SwerveModulePosition(
+			((-driveEncoder.getPosition() / 7.73) * kWheelRadius * 2 * Math.PI), new Rotation2d(steeringEncoder.get()));
+		return pos;
 	  }
-	public double getPositionY() {
-		return (driveEncoder.getPosition()) * kWheelRadius * 0.10472 * 0.12 * Math.cos(steeringEncoder.get());
+	// public double getPositionY() {
+	// 	return (driveEncoder.getPosition()) * kWheelRadius * 0.10472 * 0.12 * Math.cos(steeringEncoder.get());
+	// }
+	public void resetDriveEncoder(){
+		driveEncoder.setPosition(0);
+		currentPosition = 0;
+		previousPosition = 0;
 	}
 
 
@@ -108,12 +123,12 @@ public class SwerveModule {
 		// }
 		double dAngle = state.angle.getDegrees() - steeringEncoder.getD();
 		double dAngleAbs = Math.abs(dAngle) % 360;
-		boolean flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
+		boolean flipDriveTeleop = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
 		double sin = Math.sin(dAngle * Math.PI / 180.0);
-		sin = (flipDrive) ? -sin : sin;
+		sin = (flipDriveTeleop) ? -sin : sin;
 		double turnOutput = turningPIDController.calculate(sin, 0);
 
-		final double targetSpeed = flipDrive ? state.speedMetersPerSecond : -state.speedMetersPerSecond;
+		final double targetSpeed = flipDriveTeleop ? state.speedMetersPerSecond : -state.speedMetersPerSecond;
 
 		if (Math.abs(targetSpeed) < 0.1) {
 			turnOutput = 0;
@@ -128,12 +143,12 @@ public class SwerveModule {
 
 		double dAngle = state.angle.getDegrees() - (steeringEncoder.getD());
 		double dAngleAbs = Math.abs(dAngle) % 360;
-		boolean flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
+		flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
 		double sin = Math.sin(dAngle * Math.PI / 180.0);
 		sin = (flipDrive) ? -sin : sin;
 		double turnOutput = turningPIDController.calculate(sin, 0);
 
-		final double targetSpeed = flipDrive ? -state.speedMetersPerSecond : state.speedMetersPerSecond;
+		final double targetSpeed =flipDrive ? -state.speedMetersPerSecond : state.speedMetersPerSecond;
 		targetSpeedAuto=targetSpeed;
 		if (Math.abs(targetSpeed) < 0.1) {
 			turnOutput = 0;
@@ -142,7 +157,7 @@ public class SwerveModule {
 		double driveFeedForward = -driveFeedforward.calculate(targetSpeed);
 		double driveOutput = -drivePIDController.calculate(getVelocity(), targetSpeed);
 
-		driveMotor.setVoltage(driveFeedForward + driveOutput);
+		driveMotor.setVoltage(driveFeedForward);
 		steeringMotor.set(turnOutput);
 	}
 	public void setAngleD(double angle) {

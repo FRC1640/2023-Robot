@@ -27,6 +27,7 @@ import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.commands.GyroOffsetCommand;
 import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
@@ -38,19 +39,17 @@ public class PlaceCharge {
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
 
-  
   PathPlannerTrajectory placePath = PathPlanner.loadPath("place - out - charge", new PathConstraints(1.5, 2));
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
     placeState = placePath.getInitialState();
-    gyro.resetGyro();
-    gyro.setOffset(180);
+    GyroOffsetCommand gyroCommand = new GyroOffsetCommand(gyro, 180);
     kDriveKinematics = swerve.createKinematics();
     Pose2d placePose = new Pose2d(placeState.poseMeters.getTranslation(), placeState.holonomicRotation);
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
-    Command place = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.HighPlacing);
+    Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
     SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1));
     Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
@@ -70,6 +69,6 @@ public class PlaceCharge {
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(resetOdo, setConeMode, pickup, grabGroup, unGrab, new EndPitch(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
+    return Commands.sequence(gyroCommand, resetOdo, setConeMode, pickup, grabGroup, unGrab, new EndPitch2(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
   }
 }

@@ -9,6 +9,7 @@ import frc.robot.auton.paths.PlaceOut;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.LED;
 import frc.robot.sensors.Limelight;
+import frc.robot.sensors.PixyCam;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
@@ -18,15 +19,19 @@ import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
+import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.drive.commands.Stop;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.utilities.PresetBoard;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DataLogManager;
+// import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
+  
   Gyro gyro;
   XboxController driverController = new XboxController(0);
   XboxController operatorController = new XboxController(1);
@@ -57,6 +63,7 @@ public class RobotContainer {
 
   Command armStopCommand;
   LED led = new LED();
+  PixyCam pixyCam = new PixyCam(led);
   DashboardInit dashboardInit;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -68,7 +75,7 @@ public class RobotContainer {
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
     armStopCommand  = new ArmStopCommand(armSubsystem);
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
-    driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem));
+    driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
@@ -78,11 +85,14 @@ public class RobotContainer {
 
     // Prints (DO NOT DELETE, JUST COMMENT OUT THE PRINTS NOT BEING USED)
     new RepeatCommand(new InstantCommand(
-      () -> {} // do nothing
+      // () -> {} // do nothing
+      () -> driveSubsystem.print()
       // () -> System.out.println(currentPreset)
       // () -> System.out.println("POV: " + presetBoard.getPOV())
       // () -> System.out.format("%s, %.2f, %.2f\n", armSubsystem.getEndEffectorPosition().toString(), armSubsystem.getLowerPosition(), armSubsystem.getUpperPosition())
     )).ignoringDisable(true).schedule();
+    
+
   }
 
   private void configureBindings() {
@@ -102,7 +112,7 @@ public class RobotContainer {
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 2, 2, 2, 2))));
 
-    new Trigger(() -> operatorController.getRightBumper())
+    new Trigger(() -> operatorController.getRightBumper()||driverController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
     
     new Trigger(() -> presetBoard.povIsUpwards())
@@ -117,7 +127,7 @@ public class RobotContainer {
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
-    
+  
     new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
       .whileTrue(armStopCommand);
 
@@ -147,6 +157,9 @@ public class RobotContainer {
         )
       ));
 
+      new Trigger(() -> driverController.getLeftBumper())
+      .whileTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()))));
+
       new Trigger(() -> operatorController.getYButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0))));
   }
@@ -155,9 +168,8 @@ public class RobotContainer {
     if (wasEnabled){
       return;
     }
-    gyro.resetGyro();
     wasEnabled = true;
-    DataLogManager.log("Robot was enabled for the first time.");
+    // DataLogManager.log("Robot was enabled for the first time.");
   }
 
   /**
