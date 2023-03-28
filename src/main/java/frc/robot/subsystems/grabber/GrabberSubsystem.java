@@ -23,7 +23,7 @@ public class GrabberSubsystem extends SubsystemBase{
     }
 
     public void setServoTurned(boolean turned){
-        System.out.println("PRE ANGLE: "+ cymbalServo.getAngle()+ " INPUT: "+ turned);
+        // System.out.println("PRE ANGLE: "+ cymbalServo.getAngle()+ " INPUT: "+ turned);
         if (turned == false){
             // cymbalServo.set(.5);
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);

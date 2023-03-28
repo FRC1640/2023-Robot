@@ -73,12 +73,13 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
     final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    final double upperArmMax = 163; //165 TODO Fix limit
+    final double upperArmMax = 170; //165 TODO Fix limit
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
 
-    double softStop;
+    double softStop = 8;
+    double softSpeed = 0.1;
     boolean currentStopFlag = false;
     Timer currentTimer = new Timer();
     /* 
@@ -178,7 +179,7 @@ public class ArmSubsystem extends SubsystemBase {
         //     lowerArmVoltage = Math.min()
         // }
 
-        System.out.println("CURRENT POS: upper" + getUpperPosition()+ " lower " + getLowerPosition() + "current coords " + getEndEffectorPosition() );
+        // System.out.println("upper " + getUpperPosition() + " lower " + getLowerPosition());
         if (getLowerPosition() >= lowerArmMax){
             lowerArmVoltage = Math.max(lowerArmVoltage, 0);
         }
@@ -197,17 +198,17 @@ public class ArmSubsystem extends SubsystemBase {
 
         //soft stops
         if (getLowerPosition() >= lowerArmMax - softStop){
-            lowerArmVoltage = Math.max(lowerArmVoltage, 0.1);
+            lowerArmVoltage = Math.max(lowerArmVoltage, softSpeed);
         }
         if (getLowerPosition() <= lowerArmMin + softStop){
-            lowerArmVoltage = Math.min(lowerArmVoltage, 0.1);
+            lowerArmVoltage = Math.min(lowerArmVoltage, softSpeed);
         }
         
         if (getUpperPosition() >= upperArmMax - softStop){
-            upperArmVoltage = Math.max(upperArmVoltage, 0.1);
+            upperArmVoltage = Math.max(upperArmVoltage, softSpeed);
         }
         if (getUpperPosition() <= upperArmMin + softStop){
-            upperArmVoltage = Math.min(upperArmVoltage, 0.1);
+            upperArmVoltage = Math.min(upperArmVoltage, softSpeed);
         }
 
         /* Current Stop */
