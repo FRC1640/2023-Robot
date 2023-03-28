@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class GrabberSubsystem extends SubsystemBase{
-    DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1); //TODO not sure about these ports
+    DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0); 
     Servo cymbalServo = new Servo(0); 
     double servoOffset;
 
@@ -56,7 +56,7 @@ public class GrabberSubsystem extends SubsystemBase{
         } else if (cymbalServo.getAngle() >= 45){ // if servo angle is 45 < angle < 67 (at mid) set high
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
         }
-        else{ // servo angle is is less than 45 (at high) set to low
+        else{ // servo angle is is less tha n 45 (at high) set to low
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
         }
 
