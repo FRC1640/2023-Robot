@@ -24,6 +24,8 @@ import frc.robot.subsystems.drive.commands.Stop;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.utilities.PresetBoard;
+
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -65,6 +67,9 @@ public class RobotContainer {
   LED led = new LED();
   PixyCam pixyCam = new PixyCam(led);
   DashboardInit dashboardInit;
+
+
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     setupNetworkTables();
@@ -79,6 +84,8 @@ public class RobotContainer {
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
 
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
+    grabberSubsystem.setServoTurned(false);
+
 
     // Configure the trigger bindings
     configureBindings();
@@ -107,13 +114,17 @@ public class RobotContainer {
       .onTrue(new ResetGyroCommand(gyro));
 
     new Trigger(() -> (operatorController.getLeftTriggerAxis() > 0.7))
-      .whileTrue(new ArmManualCommand(armSubsystem, operatorController));
+    .whileTrue(new ArmManualCommand(armSubsystem, operatorController)); // TODO Fix hijacking hyjacking high jacking 
 
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 2, 2, 2, 2))));
 
     new Trigger(() -> operatorController.getRightBumper()||driverController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
+
+    new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
+    new Trigger(()-> operatorController.getPOV() == 180).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoDown()));
+
     
     new Trigger(() -> presetBoard.povIsUpwards())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)).andThen(new InstantCommand(() -> led.setStateGreen())));//.andThen(new InstantCommand(() -> led.setStateGreen()))
@@ -123,7 +134,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()));
+        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -132,7 +143,7 @@ public class RobotContainer {
       .whileTrue(armStopCommand);
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kX))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing, armSubsystem.create2dEndEffectorProfileCommand(Preset.HighPlacing, 1.9, 4.3, 0.6, 2))));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.HighPlacing, armSubsystem.create2dEndEffectorProfileCommand(Preset.HighPlacing, 1.9, 4.3, 0.6, 2)))); //and then move servo to mid?
     
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kA))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing, armSubsystem.create2dEndEffectorProfileCommand(Preset.MidPlacing, 1.9, 4.3, 0.6, 2))));
@@ -152,16 +163,19 @@ public class RobotContainer {
           Preset.Pickup,
           new InstantCommand(
             () -> grabberSubsystem.setClamped(false)
+            )
+              .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
           )
-            .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
-        )
-      ));
+        ));
 
       new Trigger(() -> driverController.getLeftBumper())
       .whileTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()))));
 
       new Trigger(() -> operatorController.getYButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0))));
+      // new Trigger(() -> operatorController.getBButton())
+      //.onTrue(new InstantCommand(() -> grabberSubsystem.setServoTurned(true)))
+      //.onFalse(new InstantCommand(() -> grabberSubsystem.setServoTurned(false)));
   }
 
   public void firstEnabled(){
@@ -187,7 +201,24 @@ public class RobotContainer {
   public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
     currentArmCommand = armCommand;
+    if (currentPreset == Preset.Ground){
+      grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_GROUND_ANGLE); //TODO: make this the correct constant (is set to ground)
+
+    }
+    else{
+      grabberSubsystem.setServoOffset(0); //TODO is right?
+    }
     presetPub.set(currentPreset.toString());
+  }
+
+  public void setServo(){
+    if (currentPreset == Preset.MidPlacing){
+      grabberSubsystem.servoMove(-30); // TODO Constant
+    }
+    else if (currentPreset == Preset.HighPlacing){
+      grabberSubsystem.servoMove(-90); //TODO fix constant
+    }
+
   }
 
   public Preset getCurrentPreset(){
