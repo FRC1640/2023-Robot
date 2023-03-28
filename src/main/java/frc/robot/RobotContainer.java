@@ -119,8 +119,8 @@ public class RobotContainer {
     new Trigger(() -> operatorController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
 
-    new Trigger(()-> operatorController.povIsUpwards()).onTrue(grabberSubsystem.incramentServoUp());
-    new Trigger(()-> operatorController.povIsDownwards()).onTrue(grabberSubsystem.incramentServoDown());
+    new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
+    new Trigger(()-> operatorController.getPOV() == 180).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoDown()));
 
     
     new Trigger(() -> presetBoard.povIsUpwards())
@@ -159,14 +159,14 @@ public class RobotContainer {
         () -> setPreset(
           Preset.Pickup,
           new InstantCommand(
-            () -> grabberSubsystem.setClamped(false) )
-          ( .andThen(grabberSubsystem.setServoTurned(false)) // move servo to upright (60)
-          ) .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2)))));
+            () -> grabberSubsystem.setClamped(false)
+            )
+              .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
+          )
+        ));
 
       new Trigger(() -> operatorController.getYButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0))));
-      new Trigger(() -> operatorController.getBButton())
-      .onTrue(new InstantCommand(() -> grabberSubsystem.toggleServoTurned()));
       // new Trigger(() -> operatorController.getBButton())
       //.onTrue(new InstantCommand(() -> grabberSubsystem.setServoTurned(true)))
       //.onFalse(new InstantCommand(() -> grabberSubsystem.setServoTurned(false)));
