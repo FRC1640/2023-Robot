@@ -67,6 +67,8 @@ public class PlaceOutPickupRight {
     SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.5), place, new WaitCommand(1.3));
     Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
     Command safe1 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);//what
+    Command low = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);//what
+    Command low1 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);//what
     Command newSafe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
     Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
 
@@ -93,12 +95,14 @@ public class PlaceOutPickupRight {
       kDriveKinematics, new PIDController(0.03, 0.0, 0), new PIDController(0.01, 0.0, 0), new PIDController(2, 0, 0),
       swerve::setModuleStates, true, swerve);
     
-    ParallelCommandGroup group = new ParallelCommandGroup(placePathController);
+    ParallelCommandGroup group = new ParallelCommandGroup(placePathController, new SequentialCommandGroup(low, uprightCone));
+    ParallelCommandGroup group1 = new ParallelCommandGroup(backPathController, low1);
     // return Commands.sequence(resetOdo, group);
     return Commands.sequence(gyroCommand, resetOdo, setConeMode, 
     pickup, 
-    grabEnd, travel, placeWait, unGrab,
-     safe, group.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), safe1, uprightCone, grabConeEnd
+    grabEnd, placeWait, unGrab,
+     safe, group.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), grabConeEnd, new WaitCommand(0.2),
+     group1, unGrab1
      );
   }
 }

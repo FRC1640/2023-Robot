@@ -63,25 +63,17 @@ public class PlaceOutPickupLeft {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.5), place, new WaitCommand(1.3));
-    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
-    Command safe1 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);//what
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.4), place, new WaitCommand(1));
     Command newSafe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
     Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
     
-    Command pickup1 = armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.AutonTravel,1.9, 4.3, 0.6, 2);
-    Command pickup2 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
-    Command travel = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Travel);
-    WaitCommand wait3 = new WaitCommand(0.5);
-    ParallelDeadlineGroup pickup1Group = new ParallelDeadlineGroup(wait3, pickup1, wait3);
-    
 
     Command grab = new SetGrabCommand(grabberSubsystem, true);
     Command grabCone = new SetGrabCommand(grabberSubsystem, true);
-    WaitCommand wait = new WaitCommand(0.5);
-    WaitCommand wait1 = new WaitCommand(0.5);
+    WaitCommand wait = new WaitCommand(0.4);
+    WaitCommand wait1 = new WaitCommand(0.4);
     ParallelDeadlineGroup grabConeEnd = new ParallelDeadlineGroup(wait, grabCone, wait);
     ParallelDeadlineGroup grabEnd = new ParallelDeadlineGroup(wait1, grab, wait1);
     Command setConeMode = new InstantCommand(() -> armSubsystem.setIsInCubeMode(false));
@@ -97,11 +89,12 @@ public class PlaceOutPickupLeft {
       swerve::setModuleStates, true, swerve);
     
     ParallelCommandGroup group = new ParallelCommandGroup(placePathController, uprightCone);
+    ParallelCommandGroup group1 = new ParallelCommandGroup(backPathController, newSafe);
     // return Commands.sequence(resetOdo, group);
     return Commands.sequence(gyroCommand, resetOdo, setConeMode, 
-    // pickup,
-    // grabEnd, travel, placeWait, unGrab,
+    pickup,
+    grabEnd, placeWait, unGrab,
      group.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), grabConeEnd
-     , new WaitCommand(0.5), newSafe, backPathController.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))));
+     , new WaitCommand(0.2), group1.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), unGrab1);
   }
 }
