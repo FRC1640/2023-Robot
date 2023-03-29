@@ -106,7 +106,7 @@ public class ArmSubsystem extends SubsystemBase {
         Substation;
     }
 
-    private boolean isInCubeMode = false; // TODO Revert to prime presets
+    private boolean isInCubeMode = false; 
 
     public double conePickupX = 0.139; // 0.139 DEUX: 0.34
     public double conePickupY =  0.1205; // 0.1205 DEUX: 0.25
