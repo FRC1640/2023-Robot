@@ -68,6 +68,8 @@ public class RobotContainer {
   PixyCam pixyCam = new PixyCam(led);
   DashboardInit dashboardInit;
 
+  boolean wasGroundPickup = false;
+
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -203,24 +205,30 @@ public class RobotContainer {
     currentPreset = preset;
     currentArmCommand = armCommand;
      if (currentPreset == Preset.Pickup){
-      grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); //TODO: make this the correct constant (is set to ground)
+      wasGroundPickup = false;
+      //grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); //TODO: make this the correct constant (is set to ground)
 
     }
-    else{
-      grabberSubsystem.setServoOffset(0); //TODO is right?
-    } 
+    else if (currentPreset == Preset.Ground){
+      wasGroundPickup = true;
+    }
+    //else{
+     //grabberSubsystem.setServoOffset(0); //TODO is right?
+    //} 
     presetPub.set(currentPreset.toString());
   }
 
   public void setServo(){
-    if (currentPreset == Preset.MidPlacing){
-      grabberSubsystem.servoMove(-60); // TODO Constant
-      //grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
+    if (! wasGroundPickup){
+      if (currentPreset == Preset.MidPlacing){
+        //grabberSubsystem.servoMove(-60); // TODO Constant
+        grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
     }
     else if (currentPreset == Preset.HighPlacing){
-      grabberSubsystem.servoMove(-90); //TODO fix constant
-      //grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
+        //grabberSubsystem.servoMove(-90); //TODO fix constant
+        grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
     }
+  }
 
   }
 

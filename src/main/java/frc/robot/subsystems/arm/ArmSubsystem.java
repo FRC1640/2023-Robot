@@ -73,7 +73,7 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
     final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    final double upperArmMax = 170; //165 TODO Fix limit
+    final double upperArmMax = 172; //165 TODO Fix limit TEMP CHANGE
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
@@ -196,8 +196,8 @@ public class ArmSubsystem extends SubsystemBase {
 
 
 
-        //soft stops
-        if (getLowerPosition() >= lowerArmMax - softStop){
+        //soft stops TODO fix soft stops
+/*         if (getLowerPosition() >= lowerArmMax - softStop){
             lowerArmVoltage = Math.max(lowerArmVoltage, softSpeed);
         }
         if (getLowerPosition() <= lowerArmMin + softStop){
@@ -209,7 +209,7 @@ public class ArmSubsystem extends SubsystemBase {
         }
         if (getUpperPosition() <= upperArmMin + softStop){
             upperArmVoltage = Math.min(upperArmVoltage, softSpeed);
-        }
+        } */
 
         /* Current Stop */
         // if ((lowerArmMotor1.getOutputCurrent() >= 25 || upperArmMotor1.getOutputCurrent() >= 25)){
