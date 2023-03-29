@@ -17,19 +17,19 @@ public class GrabberSubsystem extends SubsystemBase{
 
 
     public GrabberSubsystem(){
-        setClamped(false); //TODO make sure Value.kforward is the same as setting single solenoid to true.
+        setClamped(true); 
     }
 
     public void setClamped(boolean clamped){
         if (clamped){
-            solenoid.set(Value.kForward);
+            solenoid.set(Value.kReverse);
         }
         else{
-            solenoid.set(Value.kReverse);
+            solenoid.set(Value.kForward);
         }
     }
     public boolean getClamped(){
-        if (solenoid.get() == Value.kForward){
+        if (solenoid.get() == Value.kReverse){
             return true;
         }
         else{
