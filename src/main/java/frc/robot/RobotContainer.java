@@ -202,24 +202,24 @@ public class RobotContainer {
   public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
     currentArmCommand = armCommand;
-/*     if (currentPreset == Preset.Pickup){
+     if (currentPreset == Preset.Pickup){
       grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); //TODO: make this the correct constant (is set to ground)
 
     }
     else{
       grabberSubsystem.setServoOffset(0); //TODO is right?
-    } */
+    } 
     presetPub.set(currentPreset.toString());
   }
 
   public void setServo(){
     if (currentPreset == Preset.MidPlacing){
-      //grabberSubsystem.servoMove(-30); // TODO Constant
-      grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
+      grabberSubsystem.servoMove(-60); // TODO Constant
+      //grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
     }
     else if (currentPreset == Preset.HighPlacing){
-      //grabberSubsystem.servoMove(-90); //TODO fix constant
-      grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
+      grabberSubsystem.servoMove(-90); //TODO fix constant
+      //grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
     }
 
   }
