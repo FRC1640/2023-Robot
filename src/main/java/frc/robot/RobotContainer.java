@@ -36,12 +36,14 @@ import edu.wpi.first.wpilibj.Compressor;
 // import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
@@ -69,6 +71,9 @@ public class RobotContainer {
   DashboardInit dashboardInit;
 
   boolean wasGroundPickup = false;
+
+  SequentialCommandGroup rumbleControllersCommand =new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))) ;
+  
 
 
 
@@ -230,6 +235,21 @@ public class RobotContainer {
     }
   }
 
+  }
+
+  public void setRumble(boolean on){
+    if (on){
+      driverController.setRumble(RumbleType.kLeftRumble, 1.0); 
+      driverController.setRumble(RumbleType.kRightRumble, 1.0); 
+      operatorController.setRumble(RumbleType.kLeftRumble, 1.0); 
+      operatorController.setRumble(RumbleType.kRightRumble, 1.0); 
+    }
+    else{
+      driverController.setRumble(RumbleType.kLeftRumble, 0); 
+      driverController.setRumble(RumbleType.kRightRumble, 0); 
+      operatorController.setRumble(RumbleType.kLeftRumble, 0); 
+      operatorController.setRumble(RumbleType.kRightRumble, 0); 
+    }
   }
 
   public Preset getCurrentPreset(){
