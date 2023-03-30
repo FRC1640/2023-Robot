@@ -122,7 +122,7 @@ public class RobotContainer {
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 2, 2, 2, 2))));
 
-    new Trigger(() -> operatorController.getRightBumper()||driverController.getRightBumper())
+    new Trigger(() -> driverController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
 
     new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
@@ -152,13 +152,13 @@ public class RobotContainer {
       .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing, armSubsystem.create2dEndEffectorProfileCommand(Preset.MidPlacing, 1.9, 4.3, 0.6, 2))));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kY))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround, armSubsystem.create2dEndEffectorProfileCommand(Preset.UprightConeGround, 4.3, 1.9, 2, 0.6))));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround, armSubsystem.create2dEndEffectorProfileCommand(Preset.UprightConeGround, 4.5, 1.5, 2.5, 0.4))));
     
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.LowPlacing))));
     
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kRB))
-    .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.create2dEndEffectorProfileCommand(Preset.Ground, 4.3, 1.9, 2, 0.6))));
+    .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.create2dEndEffectorProfileCommand(Preset.Ground, 4.5, 1.5, 2.5, 0.4))));
     
       new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButton())
       .whileTrue(new InstantCommand(
@@ -212,16 +212,16 @@ public class RobotContainer {
 
   public void setServo(){
     if (currentPreset == Preset.HighPlacing && !groundPickup){
-      grabberSubsystem.servoMove(0);
-    }
-    if (currentPreset == Preset.MidPlacing && !groundPickup){
-      grabberSubsystem.servoMove(0);
+      grabberSubsystem.servoMove(40);
     }
     if (currentPreset == Preset.HighPlacing && groundPickup){
-      grabberSubsystem.servoMove(60);
+      grabberSubsystem.servoMove(105);
+    }
+    if (currentPreset == Preset.MidPlacing && !groundPickup){
+      grabberSubsystem.servoMove(55);
     }
     if (currentPreset == Preset.MidPlacing && groundPickup){
-      grabberSubsystem.servoMove(90);
+      grabberSubsystem.servoMove(130);
     }
 
   }

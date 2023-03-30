@@ -117,11 +117,11 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), 
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.459462, -0.060112)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)), // PRIME: 0.585774,0.890549 DEUX:
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.86031)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.961176, 0.717501)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), // PRIME: 0.505084, 0.195167 DEUX:
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.290739, 0.354146)),// PRIME:0.290739, 0.354146 DEUX:
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)),// PRIME:0.290739, 0.354146 DEUX:
         Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),// PRIME:0.113324, 0.311670 DEUX:
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.432694,1.177668)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.359685,1.043887)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
@@ -180,6 +180,8 @@ public class ArmSubsystem extends SubsystemBase {
         // }
 
         // System.out.println("upper " + getUpperPosition() + " lower " + getLowerPosition());
+        //System.out.println("END EFFECTOR COODS" + getEndEffectorPosition());
+
         if (getLowerPosition() >= lowerArmMax){
             lowerArmVoltage = Math.max(lowerArmVoltage, 0);
         }
