@@ -73,12 +73,12 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
     final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    final double upperArmMax = 172; //165 TODO Fix limit TEMP CHANGE
+    final double upperArmMax = 175; //165 TODO Fix limit TEMP CHANGE
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
 
-    double softStop = 8;
+    double softStop = 1;
     double softSpeed = 0.1;
     boolean currentStopFlag = false;
     Timer currentTimer = new Timer();
@@ -109,13 +109,13 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean isInCubeMode = false; 
 
-    public double conePickupX = 0.139; // 0.139 DEUX: 0.34
-    public double conePickupY =  0.1205; // 0.1205 DEUX: 0.25
+    public double conePickupX = 0.106973; // 0.139 DEUX: 0.34
+    public double conePickupY =  0.092684; // 0.1205 DEUX: 0.25
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.592344, -0.122320)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.496410, -0.081078)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), 
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.459462, -0.060112)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)), // PRIME: 0.585774,0.890549 DEUX:
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.86031)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), // PRIME: 0.505084, 0.195167 DEUX:
@@ -197,7 +197,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
         //soft stops TODO fix soft stops
-/*         if (getLowerPosition() >= lowerArmMax - softStop){
+      if (getLowerPosition() >= lowerArmMax - softStop){
             lowerArmVoltage = Math.max(lowerArmVoltage, softSpeed);
         }
         if (getLowerPosition() <= lowerArmMin + softStop){
@@ -209,7 +209,7 @@ public class ArmSubsystem extends SubsystemBase {
         }
         if (getUpperPosition() <= upperArmMin + softStop){
             upperArmVoltage = Math.min(upperArmVoltage, softSpeed);
-        } */
+        } 
 
         /* Current Stop */
         // if ((lowerArmMotor1.getOutputCurrent() >= 25 || upperArmMotor1.getOutputCurrent() >= 25)){

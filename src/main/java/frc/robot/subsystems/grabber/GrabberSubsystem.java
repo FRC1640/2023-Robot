@@ -8,16 +8,21 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 
 public class GrabberSubsystem extends SubsystemBase{
     DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0); 
     Servo cymbalServo = new Servo(0); 
     double servoOffset;
+    RobotContainer robotContainer;
 
 
 
-    public GrabberSubsystem(){
+    public GrabberSubsystem(RobotContainer robotContainer){
         setClamped(true); 
+        this.robotContainer = robotContainer;
     }
 
     public void setClamped(boolean clamped){
@@ -63,7 +68,7 @@ public class GrabberSubsystem extends SubsystemBase{
     }
 
     public void servoMove(double angle){
-        cymbalServo.setAngle(servoOffset + angle);
+        cymbalServo.setAngle(angle);
     }
 
     public void setServoOffset(double newOffset){
@@ -86,6 +91,13 @@ public class GrabberSubsystem extends SubsystemBase{
         if (wasClamped) {
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); // reset servo after release
             servoOffset = Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE;
+            servoOffset = 0;
+            robotContainer.setGround(false);
+        }
+        else{
+            if (robotContainer.getCurrentPreset() == Preset.Ground){
+                robotContainer.setGround(true);
+            }
         }
     }
 

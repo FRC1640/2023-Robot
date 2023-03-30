@@ -55,7 +55,7 @@ public class RobotContainer {
   Limelight limelight = new Limelight();
   ArmSubsystem armSubsystem;
   Compressor pcmCompressor= new Compressor(0, PneumaticsModuleType.CTREPCM);
-  GrabberSubsystem grabberSubsystem = new GrabberSubsystem();
+  GrabberSubsystem grabberSubsystem = new GrabberSubsystem(this);
   FootSubsystem footSubsystem = new FootSubsystem();
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
@@ -68,7 +68,7 @@ public class RobotContainer {
   PixyCam pixyCam = new PixyCam(led);
   DashboardInit dashboardInit;
 
-  boolean wasGroundPickup = false;
+  boolean groundPickup = false;
 
 
 
@@ -204,14 +204,6 @@ public class RobotContainer {
   public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
     currentArmCommand = armCommand;
-     if (currentPreset == Preset.Pickup){
-      wasGroundPickup = false;
-      //grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); //TODO: make this the correct constant (is set to ground)
-
-    }
-    else if (currentPreset == Preset.Ground){
-      wasGroundPickup = true;
-    }
     //else{
      //grabberSubsystem.setServoOffset(0); //TODO is right?
     //} 
@@ -219,17 +211,22 @@ public class RobotContainer {
   }
 
   public void setServo(){
-    if (! wasGroundPickup){
-      if (currentPreset == Preset.MidPlacing){
-        //grabberSubsystem.servoMove(-60); // TODO Constant
-        grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
+    if (currentPreset == Preset.HighPlacing && !groundPickup){
+      grabberSubsystem.servoMove(0);
     }
-    else if (currentPreset == Preset.HighPlacing){
-        //grabberSubsystem.servoMove(-90); //TODO fix constant
-        grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
+    if (currentPreset == Preset.MidPlacing && !groundPickup){
+      grabberSubsystem.servoMove(0);
     }
-  }
+    if (currentPreset == Preset.HighPlacing && groundPickup){
+      grabberSubsystem.servoMove(60);
+    }
+    if (currentPreset == Preset.MidPlacing && groundPickup){
+      grabberSubsystem.servoMove(90);
+    }
 
+  }
+  public void setGround(boolean ground){
+    groundPickup = ground;
   }
 
   public Preset getCurrentPreset(){
