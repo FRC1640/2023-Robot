@@ -39,41 +39,48 @@ public class PlaceCharge2 {
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
 
-  PathPlannerTrajectory placePath = PathPlanner.loadPath("charge forward", new PathConstraints(1.5, 2));
+  PathPlannerTrajectory chargeForward = PathPlanner.loadPath("charge forward", new PathConstraints(1.5, 2));
+  
+  PathPlannerTrajectory chargeBackward = PathPlanner.loadPath("charge backward", new PathConstraints(2, 2));
   PathPlannerState placeState = new PathPlannerState();
   /** Example static factory for an autonomous command. */
   public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
-    placeState = placePath.getInitialState();
+    placeState = chargeForward.getInitialState();
     GyroOffsetCommand gyroCommand = new GyroOffsetCommand(gyro, 180);
     kDriveKinematics = swerve.createKinematics();
     Pose2d placePose = new Pose2d(placeState.poseMeters.getTranslation(), placeState.holonomicRotation);
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(place);
-    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new InstantCommand(() -> grabberSubsystem.servoMove(25))));
+    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
+    Command safe1 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     
-
+    WaitCommand wait = new WaitCommand(0.4);
     Command grab = new SetGrabCommand(grabberSubsystem, true);
+    Command grabEnd = new ParallelDeadlineGroup(wait, grab, wait);
     Command setConeMode = new InstantCommand(() -> armSubsystem.setIsInCubeMode(false));
     Command unGrab = new UnGrab(grabberSubsystem);
+    Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
 
-    PPSwerveControllerCommand placePathController = new PPSwerveControllerCommand(placePath,
+    PPSwerveControllerCommand chargeForwardController = new PPSwerveControllerCommand(chargeForward,
         swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.006, 0.0, 0.0001), new PIDController(0.006, 0.0, 0.0001), new PIDController(0.005, 0, 0),
+        kDriveKinematics,  new PIDController(0.05, 0.0, 0), new PIDController(1, 0.0, 0), new PIDController(0.4, 0, 0),
         swerve::setModuleStates, true, swerve);
 
-    PPSwerveControllerCommand placePathController1 = new PPSwerveControllerCommand(placePath,
+    PPSwerveControllerCommand chargeBackwardController = new PPSwerveControllerCommand(chargeBackward,
         swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.006, 0.0, 0.0001), new PIDController(0.006, 0.0, 0.0001), new PIDController(0.005, 0, 0),
+        kDriveKinematics, new PIDController(0.05, 0.0, 0), new PIDController(1, 0.0, 0), new PIDController(0.4, 0, 0),
         swerve::setModuleStates, true, swerve);
     
-    ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
-    ParallelCommandGroup group1 = new ParallelCommandGroup(safe, placePathController1);
+    ParallelCommandGroup group = new ParallelCommandGroup(uprightCone, chargeForwardController);
+    ParallelCommandGroup group1 = new ParallelCommandGroup(safe1, chargeBackwardController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(gyroCommand, resetOdo, setConeMode, placeWait, unGrab, group, new EndPitch(swerve, gyro).deadlineWith(group1), new Balance(swerve, gyro));// , place, group
+    return Commands.sequence(gyroCommand, resetOdo, setConeMode, 
+    placeWait, unGrab, group.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), grabEnd,
+     new EndPitch(swerve, gyro).deadlineWith(group1), new Balance(swerve, gyro));// , place, group
   }
 }

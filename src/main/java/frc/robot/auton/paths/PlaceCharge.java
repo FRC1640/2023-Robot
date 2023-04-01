@@ -50,7 +50,7 @@ public class PlaceCharge {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(place);
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new InstantCommand(() -> grabberSubsystem.servoMove(25))));
     Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);

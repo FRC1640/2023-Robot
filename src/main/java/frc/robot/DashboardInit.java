@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.auton.paths.DriveTest;
 import frc.robot.auton.paths.Place;
 import frc.robot.auton.paths.PlaceCharge;
+import frc.robot.auton.paths.PlaceCharge2;
 import frc.robot.auton.paths.PlaceOut;
 import frc.robot.auton.paths.PlaceOutPickupLeft;
 import frc.robot.auton.paths.PlaceOutPickupRight;
@@ -24,6 +25,7 @@ public class DashboardInit {
         sChooser = new SendableChooser<Command>();
         sChooser.addOption("Place out", new PlaceOut().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Charge Pickup", new PlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place Pickup Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place Pickup Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
