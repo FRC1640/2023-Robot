@@ -1,7 +1,4 @@
 {
-  "Clients": {
-    "open": true
-  },
   "Connections": {
     "open": true
   },
@@ -9,11 +6,17 @@
     "mode": "Client (NT4)",
     "serverTeam": "1640"
   },
+  "Persistent Values": {
+    "open": false
+  },
   "Server": {
     "open": true
   },
   "transitory": {
     "armSubsystem": {
+      "open": true
+    },
+    "robot": {
       "open": true
     }
   }

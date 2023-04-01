@@ -5,11 +5,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.sensors.Gyro;
 import frc.robot.utilities.Logger;
 
-public class ResetGyroCommand extends CommandBase {
+public class GyroOffsetCommand extends CommandBase {
 
     private Gyro gyro;
-    public ResetGyroCommand (Gyro gyro) {
+    private double offset;
+    public GyroOffsetCommand(Gyro gyro, double offset) {
         this.gyro = gyro;
+        this.offset = offset;
     }
     
     @Override
@@ -18,7 +20,7 @@ public class ResetGyroCommand extends CommandBase {
     @Override
     public void execute() {
         gyro.resetGyro();
-        gyro.setOffset(0);
+        gyro.setOffset(offset);
     }
 
     @Override

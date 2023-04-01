@@ -33,8 +33,8 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 6; // 3 meters per second  
   public static final double kMaxAngularSpeed = 2 * Math.PI; // 1/2 rotation per second  
 
-  public static final double x = Units.inchesToMeters(10.375); // 10.375"
-  public static final double y = Units.inchesToMeters(12.375); // 12.375"
+  public static final double y = Units.inchesToMeters(10.375); // 10.375"
+  public static final double x = Units.inchesToMeters(12.375); // 12.375"
 
   private final Translation2d frontLeftLocation = new Translation2d(x, y);
   private final Translation2d frontRightLocation = new Translation2d(x, -y);
@@ -45,6 +45,9 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule frontRight = new SwerveModule(PivotConfig.getConfig(PivotId.FR));
   private final SwerveModule backLeft = new SwerveModule(PivotConfig.getConfig(PivotId.BL));
   private final SwerveModule backRight = new SwerveModule(PivotConfig.getConfig(PivotId.BR));
+
+
+  private long last;
 
   public Field2d field = new Field2d();
   
@@ -94,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = kinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot,
-                new Rotation2d(gyro.getRotation2d().getRadians() - Math.toRadians(gyro.getOffset())))
+                new Rotation2d(gyro.getRotation2d().getRadians()))
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -137,13 +140,27 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setSpeed(speed);
   }
 
+  public void print(){
+    // System.out.println("Pos: " + backLeft.getPosition());
+    // System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
+    // System.out.format("%.2f, %.2f | %.2f, %.1f, %.2f, %.1f, %.2f, %.1f, %.2f, %.1f | %.1f\n", 
+    // odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), 
+    // frontLeft.getPosition().distanceMeters, frontLeft.getPosition().angle.getDegrees(),
+    // frontRight.getPosition().distanceMeters, frontRight.getPosition().angle.getDegrees(),
+    // backLeft.getPosition().distanceMeters, backLeft.getPosition().angle.getDegrees(),
+    // backRight.getPosition().distanceMeters, backRight.getPosition().angle.getDegrees(),
+    // gyro.getRotation2d().getDegrees());
+  }
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
+    // System.out.println("Time: " + (System.currentTimeMillis() - last));
+    last = System.currentTimeMillis();
     odometry.update(
         gyro.getRotation2d(),
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
   }
   public Pose2d getPose() {
+    // System.out.println("x: " + odometry.getPoseMeters().getX() * 3.28084 + " y: " + odometry.getPoseMeters().getY() * 3.28084 + " Gyro: " + gyro.getGyroAngleDegrees());
     return odometry.getPoseMeters();
   }
 

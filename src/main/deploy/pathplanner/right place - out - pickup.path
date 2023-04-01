@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.9097798879358443,
-        "y": 2.1924802823964624
+        "x": 1.921199056073326,
+        "y": 0.47960506177422585
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7551068999361514,
-        "y": 2.1924802823964624
+        "x": 2.6291874805971833,
+        "y": 0.5823775750115614
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -24,16 +24,16 @@
     },
     {
       "anchorPoint": {
-        "x": 6.180548771353953,
-        "y": 2.19
+        "x": 4.501931055144162,
+        "y": 0.7194075926613387
       },
       "prevControl": {
-        "x": 6.854376457127639,
-        "y": 2.19
+        "x": 4.068002665919862,
+        "y": 0.6965692563863752
       },
       "nextControl": {
-        "x": 5.734616000129501,
-        "y": 2.19
+        "x": 4.863094193140562,
+        "y": 0.7384161788716758
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -49,15 +49,40 @@
     },
     {
       "anchorPoint": {
-        "x": 3.9766493208200093,
-        "y": 2.19
+        "x": 5.666686205167282,
+        "y": 0.7879226014862292
       },
       "prevControl": {
-        "x": 3.4965007970450572,
-        "y": 2.19
+        "x": 5.324111161042834,
+        "y": 0.7650842652112656
+      },
+      "nextControl": {
+        "x": 6.045679766120508,
+        "y": 0.8131888388831113
+      },
+      "holonomicAngle": 90.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 7.082663054214997,
+        "y": 1.061982636785786
+      },
+      "prevControl": {
+        "x": 6.6258963287157355,
+        "y": 1.0734018049232668
       },
       "nextControl": null,
-      "holonomicAngle": 180.0,
+      "holonomicAngle": -0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,

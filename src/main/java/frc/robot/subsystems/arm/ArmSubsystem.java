@@ -13,6 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -27,7 +28,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.Constants;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
@@ -68,11 +72,14 @@ public class ArmSubsystem extends SubsystemBase {
 
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
-    final double upperArmMin = 3; //10
-    final double upperArmMax = 180; //165
+    final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
+    final double upperArmMax = 175; //165 TODO Fix limit TEMP CHANGE
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
+
+    double softStop = 1;
+    double softSpeed = 0.1;
     boolean currentStopFlag = false;
     Timer currentTimer = new Timer();
     /* 
@@ -95,29 +102,32 @@ public class ArmSubsystem extends SubsystemBase {
         LowPlacing,
         Travel,
         Start,
+        AutonTravel,
+
         Substation;
     }
 
-    private boolean isInCubeMode = false;
+    private boolean isInCubeMode = false; 
 
-    public double conePickupX = 0.251209; // 0.319366
-    public double conePickupY = 0.160471; // 0.166689
+    public double conePickupX = 0.106973; // 0.139 DEUX: 0.34
+    public double conePickupY =  0.092684; // 0.1205 DEUX: 0.25
     private final Map<Preset, ArmState> coneMap =
-    new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.554883, -0.117704)),
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)),
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), 
-        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)),
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.860316)),
-        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.528659, 0.385064)), 
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(conePickupX, conePickupY)),
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.447432, 1.202866))
+    new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.496410, -0.081078)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), 
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.459462, -0.060112)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
+        Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)), // PRIME: 0.585774,0.890549 DEUX:
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.961176, 0.717501)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
+        Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), // PRIME: 0.505084, 0.195167 DEUX:
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)),// PRIME:0.290739, 0.354146 DEUX:
+        Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),// PRIME:0.113324, 0.311670 DEUX:
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.359685,1.043887)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), 
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.163411, 0.111188)), 
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329)), // PRIME: 0.513291, -0.073329 DEUX: 0.75,  0.19
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.153788, 0.105571)), 
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882)), 
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817)),
@@ -164,11 +174,14 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-
+        // System.out.println("lower arm: " + getLowerPosition());
         // if (Units.metersToInches(getEndEffectorPosition().getX()) >= 30){
         //     lowerArmVoltage = Math.min()
         // }
+
+        // System.out.println("upper " + getUpperPosition() + " lower " + getLowerPosition());
+        //System.out.println("END EFFECTOR COODS" + getEndEffectorPosition());
+
         if (getLowerPosition() >= lowerArmMax){
             lowerArmVoltage = Math.max(lowerArmVoltage, 0);
         }
@@ -182,6 +195,23 @@ public class ArmSubsystem extends SubsystemBase {
         if (getUpperPosition() <= upperArmMin){
             upperArmVoltage = Math.min(upperArmVoltage, 0);
         }
+
+
+
+        //soft stops TODO fix soft stops
+      if (getLowerPosition() >= lowerArmMax - softStop){
+            lowerArmVoltage = Math.max(lowerArmVoltage, softSpeed);
+        }
+        if (getLowerPosition() <= lowerArmMin + softStop){
+            lowerArmVoltage = Math.min(lowerArmVoltage, softSpeed);
+        }
+        
+        if (getUpperPosition() >= upperArmMax - softStop){
+            upperArmVoltage = Math.max(upperArmVoltage, softSpeed);
+        }
+        if (getUpperPosition() <= upperArmMin + softStop){
+            upperArmVoltage = Math.min(upperArmVoltage, softSpeed);
+        } 
 
         /* Current Stop */
         // if ((lowerArmMotor1.getOutputCurrent() >= 25 || upperArmMotor1.getOutputCurrent() >= 25)){
@@ -362,6 +392,7 @@ public class ArmSubsystem extends SubsystemBase {
                 math.inverseKinematics();
                 setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
                 setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
             },
             this // add ArmSubsystem requirement
         ).until(
@@ -396,9 +427,9 @@ public class ArmSubsystem extends SubsystemBase {
         return controller;
     }
 
-    private ProfiledPIDController createControllerEndEffector() {
+    private ProfiledPIDController  createControllerEndEffector() {
         ProfiledPIDController controller = new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(2.2, 0.7));
-        controller.setTolerance(0.02);
+        controller.setTolerance(0.06);
         return controller;
     }
 
@@ -423,6 +454,155 @@ public class ArmSubsystem extends SubsystemBase {
                 cubeMap.put(preset, value);
             }
         }
+    }
+    public Command createEndEffectorPlusCommand(Preset preset) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                createEndEffectorPlusCommand(presetMap.get(preset).x, presetMap.get(preset).y)
+                    .schedule();
+            }
+        );
+    }
+    public Command createStraight2dEndEffectorProfileCommand(Preset preset, double maxVel, double maxAcc) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                createStraight2dEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y, maxVel, maxAcc)
+                    .schedule();
+            }
+        );
+    }
+
+    public Command createStraight2dEndEffectorProfileCommand(double x, double y, double maxVel, double maxAcc) {
+        Translation2d diff = new Translation2d(x, y).minus(getEndEffectorPosition());
+
+        double xVel = maxVel * diff.getX() / diff.getNorm();
+        double yVel = maxVel * diff.getY() / diff.getNorm();
+        double xAcc = maxAcc * diff.getX() / diff.getNorm();
+        double yAcc = maxAcc * diff.getY() / diff.getNorm();
+
+        return create2dEndEffectorProfileCommand(x, y, xVel, yVel, xAcc, yAcc);
+    }
+
+    public Command create2dEndEffectorProfileCommand(Preset preset, double xVel, double yVel, double xAcc, double yAcc) {
+        return new InstantCommand(
+            () -> {
+                Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+                create2dEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y, xVel, yVel, xAcc, yAcc)
+                    .schedule();
+            }
+        );
+    }
+    public Command create2dEndEffectorProfileCommandNoInstant(Preset preset, double xVel, double yVel, double xAcc, double yAcc){
+        Map<Preset, ArmState> presetMap = isInCubeMode ? cubeMap : coneMap;
+        return create2dEndEffectorProfileCommand(presetMap.get(preset).x, presetMap.get(preset).y, xVel, yVel, xAcc, yAcc);
+    }
+
+    public Command create2dEndEffectorProfileCommand(double x, double y, double xVel, double yVel, double xAcc, double yAcc) {
+        final double kP = 4;
+        final double kI = 0.0;
+        final double kD = 0.0;
+
+        ProfiledPIDController xController = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(xVel, xAcc));
+        ProfiledPIDController yController = new ProfiledPIDController(kP, kI, kD, new TrapezoidProfile.Constraints(yVel, yAcc));
+        xController.setTolerance(0.05);
+        yController.setTolerance(0.05);
+
+        Translation2d startPos = getEndEffectorPosition();
+        xController.reset(startPos.getX());
+        yController.reset(startPos.getY());
+
+        Translation2d goalPose = new Translation2d(x, y);
+        ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
+
+        return new RunCommand(() -> {
+            Translation2d measurement = getEndEffectorPosition();
+            double xPid = xController.calculate(measurement.getX(), goalPose.getX());
+            double yPid = yController.calculate(measurement.getY(), goalPose.getY());
+
+            double xSpeed = xController.getSetpoint().velocity;
+            double ySpeed = yController.getSetpoint().velocity;
+
+            math.setTheta1(Math.toRadians(getLowerPosition()));
+            math.setTheta2(Math.toRadians(getUpperPosition()));
+            math.setVx(xSpeed + xPid);
+            math.setVy(ySpeed + yPid);
+            math.inverseKinematics();
+            setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+            setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+        }, this)
+        .until(() -> xController.atGoal() && yController.atGoal());
+    }
+
+
+
+    public Command createEndEffectorPlusCommand(double x, double y) {
+        return new InstantCommand(() -> {
+            Translation2d startPos = getEndEffectorPosition();
+            Translation2d goalPos = new Translation2d(x, y);
+            TrapezoidProfile.State startState = new TrapezoidProfile.State(startPos.getX(), startPos.getY());
+            TrapezoidProfile.State goalState = new TrapezoidProfile.State(x, y);
+
+            Translation2d diff = goalPos.minus(startPos);
+            if (diff.getNorm() > 1e-5) {
+                diff.times(1 / diff.getNorm());
+            }
+
+            PIDController horizontalController = new PIDController(0.6, 0, 0);
+            horizontalController.setTolerance(0.02);
+            PIDController verticalController = new PIDController(0.6, 0, 0);
+            verticalController.setTolerance(0.02);
+
+            ArmMath math = new ArmMath(Constants.PhysicalDimensions.kLowerArmLength, Constants.PhysicalDimensions.kUpperArmLength);
+            new SequentialCommandGroup(
+                new TrapezoidProfileCommand(
+                    new TrapezoidProfile(
+                        new TrapezoidProfile.Constraints(0.001, 0.001),
+                        goalState,
+                        startState),
+                    (nextState) -> {
+                        Translation2d currentPos = getEndEffectorPosition();
+                        Translation2d targetPos = diff.times(nextState.position);
+                        Translation2d targetVel = diff.times(nextState.velocity);
+
+                        double pidHorizontal = horizontalController.calculate(currentPos.getX(), targetPos.getX());
+                        double pidVertical = verticalController.calculate(currentPos.getY(), targetPos.getY());
+
+                        math.setTheta1(Math.toRadians(getLowerPosition()));
+                        math.setTheta2(Math.toRadians(getUpperPosition()));
+                        math.setVx(targetVel.getX() + pidHorizontal);
+                        math.setVy(targetVel.getY() + pidVertical);
+                        math.inverseKinematics();
+                        setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                        System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        System.out.println("Pos: " + getEndEffectorPosition() + " Target: " + new Translation2d(x, y) + " Vel: " + targetVel);
+                    },
+                    this
+                ),
+                new RunCommand(
+                    () -> {
+                        Translation2d currentPos = getEndEffectorPosition();
+
+                        double pidHorizontal = horizontalController.calculate(currentPos.getX(), goalPos.getX());
+                        double pidVertical = verticalController.calculate(currentPos.getY(), goalPos.getY());
+
+                        math.setTheta1(Math.toRadians(getLowerPosition()));
+                        math.setTheta2(Math.toRadians(getUpperPosition()));
+                        math.setVx(pidHorizontal);
+                        math.setVy(pidVertical);
+                        math.inverseKinematics();
+                        setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
+                    },
+                    this
+                ).until(() -> horizontalController.atSetpoint() && verticalController.atSetpoint())
+            ).handleInterrupt(() -> {
+                horizontalController.close();
+                verticalController.close();
+            }).schedule();
+        });
     }
 
     /* NetworkTables */

@@ -23,4 +23,11 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class ServoSmasAngles {
+    public static double CYMBAL_SERVO_HIGH_ANGLE = 0;
+    public static double CYMBAL_SERVO_MID_ANGLE = 30;
+    public static double CYMBAL_SERVO_UPRIGHT_ANGLE = 90; 
+    // public static double CYMBAL_SERVO_GROUND_ANGLE  = 120; // UNNECESSARY because we dont need to spin if we do ground pickup
+  }
 }

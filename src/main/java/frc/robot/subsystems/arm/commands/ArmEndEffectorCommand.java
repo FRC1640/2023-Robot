@@ -43,6 +43,7 @@ public class ArmEndEffectorCommand extends CommandBase{
         // }
         armSubsystem.setLowerVoltage(lVoltage);
         armSubsystem.setUpperVoltage(uVoltage);
+        
     }
 
     @Override
