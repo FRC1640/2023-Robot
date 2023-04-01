@@ -42,16 +42,12 @@ public class PlaceOutPickupLeft {
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
-  public static String path;
-  public static String path1;
-  PathPlannerTrajectory placePath;
-  PathPlannerTrajectory backPath;
+  PathPlannerTrajectory placePath = PathPlanner.loadPath("left place - out - pickup", new PathConstraints(2, 2));
+  PathPlannerTrajectory backPath = PathPlanner.loadPath("back - left", new PathConstraints(2, 2));
+  PathPlannerTrajectory backPathNew = PathPlanner.loadPath("back new left", new PathConstraints(2, 2));
   PathPlannerState placeState = new PathPlannerState();
-  public PlaceOutPickupLeft(String Path, String Path1){
-    path = Path;
-    path1 = Path1;
-    placePath = PathPlanner.loadPath(path, new PathConstraints(2, 2));
-    backPath = PathPlanner.loadPath(path1, new PathConstraints(2, 2));
+  public PlaceOutPickupLeft(){
+
   }
 
   /** Example static factory for an autonomous command. */
@@ -63,12 +59,12 @@ public class PlaceOutPickupLeft {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.4), place, new WaitCommand(1));
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new InstantCommand(() -> grabberSubsystem.servoMove(25))));
     Command newSafe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
     Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
-    
+    Command unGrab2 = new UnGrab(grabberSubsystem);
 
     Command grab = new SetGrabCommand(grabberSubsystem, true);
     Command grabCone = new SetGrabCommand(grabberSubsystem, true);
@@ -88,13 +84,18 @@ public class PlaceOutPickupLeft {
       kDriveKinematics, new PIDController(0.05, 0.0, 0), new PIDController(1, 0.0, 0), new PIDController(0.4, 0, 0),
       swerve::setModuleStates, true, swerve);
     
+    PPSwerveControllerCommand backPathNewController = new PPSwerveControllerCommand(backPathNew,
+      swerve::getPose, // Functional interface to feed supplier
+      kDriveKinematics, new PIDController(0.05, 0.0, 0), new PIDController(1, 0.0, 0), new PIDController(0.4, 0, 0),
+      swerve::setModuleStates, true, swerve);
+    
     ParallelCommandGroup group = new ParallelCommandGroup(placePathController, uprightCone);
     ParallelCommandGroup group1 = new ParallelCommandGroup(backPathController, newSafe);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(gyroCommand, resetOdo, setConeMode, 
-    pickup,
-    grabEnd, placeWait, unGrab,
+    return Commands.sequence(gyroCommand, resetOdo, setConeMode,
+    placeWait, unGrab,
      group.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), grabConeEnd
-     , new WaitCommand(0.2), group1.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), unGrab1);
+     , new WaitCommand(0.2), group1.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))), unGrab1, 
+     backPathNewController.andThen(new InstantCommand(() -> swerve.drive(0, 0, 0, false))));
   }
 }

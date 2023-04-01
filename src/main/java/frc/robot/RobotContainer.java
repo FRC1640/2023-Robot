@@ -212,10 +212,10 @@ public class RobotContainer {
 
   public void setServo(){
     if (currentPreset == Preset.HighPlacing && !groundPickup){
-      grabberSubsystem.servoMove(40);
+      grabberSubsystem.servoMove(25);
     }
     if (currentPreset == Preset.HighPlacing && groundPickup){
-      grabberSubsystem.servoMove(105);
+      grabberSubsystem.servoMove(90);
     }
     if (currentPreset == Preset.MidPlacing && !groundPickup){
       grabberSubsystem.servoMove(55);

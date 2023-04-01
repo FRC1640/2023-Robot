@@ -25,8 +25,8 @@ public class DashboardInit {
         sChooser.addOption("Place out", new PlaceOut().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Place", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Place Pickup Left", new PlaceOutPickupLeft("left place - out - pickup", "back - left").loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Place Pickup Right", new PlaceOutPickupRight("right place - out - pickup", "back - right").loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Place Pickup Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Place Pickup Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Test", new DriveTest().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("Null", null);
         autonTab.add(sChooser).withSize(5, 5).withPosition(0, 0);
