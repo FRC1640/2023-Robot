@@ -171,8 +171,8 @@ public class RobotContainer {
           )
         ));
 
-      new Trigger(() -> driverController.getLeftBumper())
-      .whileTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()))));
+      // new Trigger(() -> driverController.getLeftBumper())
+      // .whileTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()))));
 
       new Trigger(() -> operatorController.getYButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0))));
