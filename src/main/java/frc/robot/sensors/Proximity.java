@@ -3,7 +3,7 @@ package frc.robot.sensors;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Proximity {
-    DigitalInput proximitySensor = new DigitalInput(5);
+    DigitalInput proximitySensor = new DigitalInput(0);
     Boolean c5status = false;
     Boolean lastRead = false;
     Boolean seesNew = false;

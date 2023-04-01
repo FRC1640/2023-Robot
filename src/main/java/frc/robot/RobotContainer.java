@@ -49,7 +49,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
-  PixyCam pixyCam = new PixyCam();
   Proximity c5sensor = new Proximity();
   Gyro gyro;
   XboxController driverController = new XboxController(0);
@@ -130,7 +129,14 @@ public class RobotContainer {
 
     new Trigger(() -> c5sensor.getC5boolean() && driverController.getLeftBumper())
       .onTrue(new SequentialCommandGroup(
-        new WaitCommand(0.25),
+        new InstantCommand(
+        () -> setPreset(
+          Preset.Pickup,
+          armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2)
+          )
+        ),
+        new InstantCommand(() -> currentArmCommand.schedule()),
+        new WaitCommand(0.7),
         new ChangeGrabState(grabberSubsystem, true)));
       //grabberSubsystem.toggleClamped()
     new Trigger(() -> driverController.getRightBumper())
