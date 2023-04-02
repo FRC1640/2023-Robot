@@ -24,6 +24,8 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType; // rumble
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -32,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand; // rumble 
 import frc.robot.Constants;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
@@ -61,6 +64,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     Resolver lowerEncoder;
     Resolver upperEncoder;
+
+    XboxController operatorController;
+    XboxController driverController;
 
     final double lowerP = 0.2;//0.016826
     final double lowerI = 0;
@@ -135,7 +141,7 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)) 
     ));
 
-    public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
+    public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder, XboxController operatorController, XboxController driverController) {
         fixPresetMaps();
         setupNetworkTables();
 
@@ -143,6 +149,8 @@ public class ArmSubsystem extends SubsystemBase {
         upperArmMotor2.follow(upperArmMotor1);
         this.lowerEncoder = lowerEncoder;
         this.upperEncoder = upperEncoder;
+        this.operatorController = operatorController; //rumble
+        this.driverController = driverController; //rumble
         lowerArmMotor1.setIdleMode(IdleMode.kBrake);
         lowerArmMotor2.setIdleMode(IdleMode.kBrake);
         upperArmMotor1.setIdleMode(IdleMode.kBrake);
@@ -530,7 +538,8 @@ public class ArmSubsystem extends SubsystemBase {
             setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
             setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
         }, this)
-        .until(() -> xController.atGoal() && yController.atGoal());
+        .until(() -> xController.atGoal() && yController.atGoal()).andThen(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), 
+        new WaitCommand(0.5), new InstantCommand(() -> setRumble(false)))); //here????
     }
 
 
@@ -595,7 +604,7 @@ public class ArmSubsystem extends SubsystemBase {
                         setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
                     },
                     this
-                ).until(() -> horizontalController.atSetpoint() && verticalController.atSetpoint())
+                ).until(() -> horizontalController.atSetpoint() && verticalController.atSetpoint()) 
             ).handleInterrupt(() -> {
                 horizontalController.close();
                 verticalController.close();
@@ -637,4 +646,19 @@ public class ArmSubsystem extends SubsystemBase {
         theta2Pub.set(getUpperPosition());
         isInCubeModePub.set(isInCubeMode);
     }
+
+    public void setRumble(boolean on){
+        if (on){
+          driverController.setRumble(RumbleType.kLeftRumble, 1.0); 
+          driverController.setRumble(RumbleType.kRightRumble, 1.0); 
+          operatorController.setRumble(RumbleType.kLeftRumble, 1.0); 
+          operatorController.setRumble(RumbleType.kRightRumble, 1.0); 
+        }
+        else{
+          driverController.setRumble(RumbleType.kLeftRumble, 0); 
+          driverController.setRumble(RumbleType.kRightRumble, 0); 
+          operatorController.setRumble(RumbleType.kLeftRumble, 0); 
+          operatorController.setRumble(RumbleType.kRightRumble, 0); 
+        }
+      }
 }

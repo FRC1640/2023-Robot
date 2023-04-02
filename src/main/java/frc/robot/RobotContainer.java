@@ -84,7 +84,7 @@ public class RobotContainer {
     gyro = new Gyro();
     driveSubsystem = new DriveSubsystem(gyro);
     
-    armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
+    armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder, operatorController, driverController);
     armStopCommand  = new ArmStopCommand(armSubsystem);
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
@@ -142,8 +142,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand
-        .alongWith(new InstantCommand(() -> setServo())).schedule()));
+        () -> currentArmCommand.alongWith(new InstantCommand(() -> setServo()))));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -209,8 +208,7 @@ public class RobotContainer {
 
   public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
-    currentArmCommand = armCommand.andThen(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), 
-    new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))));
+    currentArmCommand = armCommand;
      if (currentPreset == Preset.Pickup){
       wasGroundPickup = false;
       //grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); //TODO: make this the correct constant (is set to ground)
