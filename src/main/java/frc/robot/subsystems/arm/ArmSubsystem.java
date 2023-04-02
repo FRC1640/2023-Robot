@@ -392,7 +392,7 @@ public class ArmSubsystem extends SubsystemBase {
                 math.inverseKinematics();
                 setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
                 setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
-                System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                // System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
             },
             this // add ArmSubsystem requirement
         ).until(
@@ -576,8 +576,8 @@ public class ArmSubsystem extends SubsystemBase {
                         math.inverseKinematics();
                         setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
                         setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
-                        System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
-                        System.out.println("Pos: " + getEndEffectorPosition() + " Target: " + new Translation2d(x, y) + " Vel: " + targetVel);
+                        // System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        // System.out.println("Pos: " + getEndEffectorPosition() + " Target: " + new Translation2d(x, y) + " Vel: " + targetVel);
                     },
                     this
                 ),

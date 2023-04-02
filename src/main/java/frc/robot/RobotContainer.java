@@ -128,7 +128,7 @@ public class RobotContainer {
 
 
     new Trigger(() -> c5sensor.getC5boolean() && driverController.getLeftBumper())
-      .onTrue(autoGrabCommand());
+      .onTrue(new InstantCommand(() -> autoGrabCommand().schedule()));
       //grabberSubsystem.toggleClamped()
     new Trigger(() -> driverController.getRightBumper())
       .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
@@ -240,16 +240,22 @@ public class RobotContainer {
   }
 
   public Command autoGrabCommand(){
-    return new SequentialCommandGroup(
-      new InstantCommand(
-      () -> setPreset(
-        Preset.Pickup,
-        armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2)
-        )
-      ),
-      new InstantCommand(() -> currentArmCommand.schedule()),
-      new WaitCommand(0.7),
-      new ChangeGrabState(grabberSubsystem, true));
+    System.out.println(currentPreset);
+    if (currentPreset == Preset.Ground){
+      System.out.println("we9ugwui");
+      return new SequentialCommandGroup(
+        new WaitCommand(0.5),
+        new ChangeGrabState(grabberSubsystem, true),
+        new WaitCommand(0.3),
+        armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0));
+    }
+    else{
+      return new SequentialCommandGroup(
+        armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2),
+        new WaitCommand(0.6),
+        new ChangeGrabState(grabberSubsystem, true));
+    }
+
   }
 
   NetworkTableInstance nt;

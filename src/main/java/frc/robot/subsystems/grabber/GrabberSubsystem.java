@@ -53,7 +53,7 @@ public class GrabberSubsystem extends SubsystemBase{
         } else{
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
         }
-        System.out.println("POST ANGLE: " + cymbalServo.getAngle());
+        // System.out.println("POST ANGLE: " + cymbalServo.getAngle());
     }
    
     public void toggleServoTurned(){
@@ -118,7 +118,7 @@ public class GrabberSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        System.out.println(cymbalServo.getAngle());
+        // System.out.println(cymbalServo.getAngle());
     }
 
 

@@ -10,7 +10,7 @@ public class Proximity {
 
     public boolean getC5boolean(){
         c5status = proximitySensor.get();
-        System.out.println(c5status);
+        // System.out.println(c5status);
         if(!lastRead && c5status){
             seesNew = true;
         } else {
