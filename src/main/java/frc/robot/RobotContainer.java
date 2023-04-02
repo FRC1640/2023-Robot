@@ -142,7 +142,8 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())).andThen(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false)))));
+        () -> currentArmCommand
+        .alongWith(new InstantCommand(() -> setServo())).schedule()));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -208,7 +209,8 @@ public class RobotContainer {
 
   public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
-    currentArmCommand = armCommand;
+    currentArmCommand = armCommand.andThen(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), 
+    new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))));
      if (currentPreset == Preset.Pickup){
       wasGroundPickup = false;
       //grabberSubsystem.setServoOffset(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); //TODO: make this the correct constant (is set to ground)
