@@ -65,8 +65,6 @@ public class ArmSubsystem extends SubsystemBase {
     Resolver lowerEncoder;
     Resolver upperEncoder;
 
-    XboxController operatorController;
-    XboxController driverController;
 
     final double lowerP = 0.2;//0.016826
     final double lowerI = 0;
@@ -141,7 +139,7 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)) 
     ));
 
-    public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder, XboxController operatorController, XboxController driverController) {
+    public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
         fixPresetMaps();
         setupNetworkTables();
 
@@ -149,8 +147,6 @@ public class ArmSubsystem extends SubsystemBase {
         upperArmMotor2.follow(upperArmMotor1);
         this.lowerEncoder = lowerEncoder;
         this.upperEncoder = upperEncoder;
-        this.operatorController = operatorController; //rumble
-        this.driverController = driverController; //rumble
         lowerArmMotor1.setIdleMode(IdleMode.kBrake);
         lowerArmMotor2.setIdleMode(IdleMode.kBrake);
         upperArmMotor1.setIdleMode(IdleMode.kBrake);
@@ -538,8 +534,7 @@ public class ArmSubsystem extends SubsystemBase {
             setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
             setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
         }, this)
-        .until(() -> xController.atGoal() && yController.atGoal()).andThen(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), 
-        new WaitCommand(0.5), new InstantCommand(() -> setRumble(false)))); //here????
+        .until(() -> xController.atGoal() && yController.atGoal()); 
     }
 
 
@@ -647,18 +642,4 @@ public class ArmSubsystem extends SubsystemBase {
         isInCubeModePub.set(isInCubeMode);
     }
 
-    public void setRumble(boolean on){
-        if (on){
-          driverController.setRumble(RumbleType.kLeftRumble, 1.0); 
-          driverController.setRumble(RumbleType.kRightRumble, 1.0); 
-          operatorController.setRumble(RumbleType.kLeftRumble, 1.0); 
-          operatorController.setRumble(RumbleType.kRightRumble, 1.0); 
-        }
-        else{
-          driverController.setRumble(RumbleType.kLeftRumble, 0); 
-          driverController.setRumble(RumbleType.kRightRumble, 0); 
-          operatorController.setRumble(RumbleType.kLeftRumble, 0); 
-          operatorController.setRumble(RumbleType.kRightRumble, 0); 
-        }
-      }
 }
