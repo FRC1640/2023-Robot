@@ -142,7 +142,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())));
+        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())).andThen(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false)))));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
