@@ -11,6 +11,7 @@ import frc.robot.sensors.LED;
 import frc.robot.sensors.Limelight;
 import frc.robot.sensors.PixyCam;
 import frc.robot.sensors.Resolver;
+import frc.robot.subsystems.arm.ArmState;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.arm.commands.ArmEndEffectorCommand;
@@ -71,6 +72,8 @@ public class RobotContainer {
   DashboardInit dashboardInit;
 
   boolean wasGroundPickup = false;
+
+  double rumbleTolerance = 0.05;
 
   SequentialCommandGroup rumbleControllersCommand =new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))) ;
   
@@ -142,7 +145,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())).andThen(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false)))));
+        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -165,17 +168,16 @@ public class RobotContainer {
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kRB))
     .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.create2dEndEffectorProfileCommand(Preset.Ground, 4.3, 1.9, 2, 0.6))));
     
-      new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButton())
-      .whileTrue(new InstantCommand(
-        () -> setPreset(
-          Preset.Pickup,
-          new InstantCommand(
-            () -> grabberSubsystem.setClamped(false)
-            )
-              .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
+    new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButton())
+    .whileTrue(new InstantCommand(
+      () -> setPreset(
+        Preset.Pickup,
+        new InstantCommand(
+          () -> grabberSubsystem.setClamped(false)
           )
-        ));
-
+            .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
+        )
+      ));
       new Trigger(() -> driverController.getLeftBumper())
       .whileTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()))));
 
@@ -184,6 +186,8 @@ public class RobotContainer {
       // new Trigger(() -> operatorController.getBButton())
       //.onTrue(new InstantCommand(() -> grabberSubsystem.setServoTurned(true)))
       //.onFalse(new InstantCommand(() -> grabberSubsystem.setServoTurned(false)));
+
+      new Trigger(() -> endEffectorisAtGoal()).onTrue(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false)))) ;
   }
 
   public void firstEnabled(){
@@ -253,7 +257,22 @@ public class RobotContainer {
   }
 
   public Preset getCurrentPreset(){
-    return currentPreset;
+    return currentPreset; 
+  }
+
+  public boolean endEffectorisAtGoal(){
+    if (armSubsystem.getIsInCubeMode()){
+      if ((armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getCubePresetMap().get(currentPreset).x < rumbleTolerance) && (armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y < rumbleTolerance)){
+        return true;
+      }
+
+    } 
+    else{
+      if ((armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getCubePresetMap().get(currentPreset).x < rumbleTolerance) && (armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y < rumbleTolerance)){
+        return true;
+      }
+    }
+    return false;
   }
 
   NetworkTableInstance nt;
