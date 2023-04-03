@@ -35,6 +35,9 @@ public class Gyro {
       offset = value;
       
     }
+    public boolean isCalibrating(){
+      return gyro.isCalibrating();
+    }
   
     public double getOffset() {
       return offset;

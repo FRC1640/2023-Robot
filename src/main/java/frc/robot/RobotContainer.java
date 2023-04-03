@@ -143,7 +143,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())));
+        () -> currentArmCommand.schedule()).alongWith(new SequentialCommandGroup(new WaitCommand(0.5),new InstantCommand(() -> setServo()))));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -204,7 +204,7 @@ public class RobotContainer {
     Command autoCommand = dashboardInit.getAuton();
 
     // Run path following command, then stop at the end.
-    return autoCommand.andThen(() -> driveSubsystem.drive(0, 0, 0, false));
+    return autoCommand.andThen(() -> driveSubsystem.drive(0, 0, 0, false)).until(() -> gyro.isCalibrating());
   }
 
   public void setPreset(Preset preset, Command armCommand){
@@ -221,7 +221,7 @@ public class RobotContainer {
       grabberSubsystem.servoMove(25);
     }
     if (currentPreset == Preset.HighPlacing && groundPickup){
-      grabberSubsystem.servoMove(90);
+      grabberSubsystem.servoMove(85);
     }
     if (currentPreset == Preset.MidPlacing && !groundPickup){
       grabberSubsystem.servoMove(55);
@@ -241,7 +241,7 @@ public class RobotContainer {
 
   public Command autoGrabCommand(){
     System.out.println(currentPreset);
-    if (currentPreset == Preset.Ground){
+    if (currentPreset == Preset.Ground || currentPreset == Preset.UprightConeGround){
       System.out.println("we9ugwui");
       return new SequentialCommandGroup(
         new WaitCommand(0.5),

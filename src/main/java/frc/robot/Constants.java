@@ -25,7 +25,8 @@ public final class Constants {
   }
 
   public static class ServoSmasAngles {
-    public static double CYMBAL_SERVO_HIGH_ANGLE = 0;
+    public static double CYMBAL_SERVO_HIGH_ANGLE = 25;
+    public static double SERVO_WAIT = 0.5;
     public static double CYMBAL_SERVO_MID_ANGLE = 30;
     public static double CYMBAL_SERVO_UPRIGHT_ANGLE = 90; 
     // public static double CYMBAL_SERVO_GROUND_ANGLE  = 120; // UNNECESSARY because we dont need to spin if we do ground pickup

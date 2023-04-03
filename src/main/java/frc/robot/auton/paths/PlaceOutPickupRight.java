@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.auton.commands.Balance;
 import frc.robot.auton.commands.EndPitch;
 import frc.robot.sensors.Gyro;
@@ -59,8 +60,7 @@ public class PlaceOutPickupRight {
     
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new InstantCommand(() -> grabberSubsystem.servoMove(25))));
-    Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new SequentialCommandGroup(new WaitCommand(Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(() -> grabberSubsystem.servoMove(Constants.ServoSmasAngles.SERVO_WAIT)))));
     Command safe1 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);//what
     Command low = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);//what
     Command low1 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);//what

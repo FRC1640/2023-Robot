@@ -115,7 +115,7 @@ public class ArmSubsystem extends SubsystemBase {
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.496410, -0.081078)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), 
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.459462, -0.060112)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.429764, -0.062263)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)), // PRIME: 0.585774,0.890549 DEUX:
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.961176, 0.717501)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), // PRIME: 0.505084, 0.195167 DEUX:

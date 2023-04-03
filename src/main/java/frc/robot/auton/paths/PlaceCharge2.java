@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.auton.commands.Balance;
 import frc.robot.auton.commands.EndPitch;
 import frc.robot.auton.commands.EndPitch2;
@@ -52,7 +53,7 @@ public class PlaceCharge2 {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new InstantCommand(() -> grabberSubsystem.servoMove(25))));
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new SequentialCommandGroup(new WaitCommand(Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(() -> grabberSubsystem.servoMove(Constants.ServoSmasAngles.SERVO_WAIT)))));
     Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
     Command safe1 = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
 
