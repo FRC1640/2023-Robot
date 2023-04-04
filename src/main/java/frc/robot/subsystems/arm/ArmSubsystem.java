@@ -24,6 +24,8 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType; // rumble
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -32,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand; // rumble 
 import frc.robot.Constants;
 import frc.robot.sensors.Resolver;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
@@ -61,6 +64,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     Resolver lowerEncoder;
     Resolver upperEncoder;
+
 
     final double lowerP = 0.2;//0.016826
     final double lowerI = 0;
@@ -532,7 +536,7 @@ public class ArmSubsystem extends SubsystemBase {
             setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
             setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
         }, this)
-        .until(() -> xController.atGoal() && yController.atGoal());
+        .until(() -> xController.atGoal() && yController.atGoal()); 
     }
 
 
@@ -597,7 +601,7 @@ public class ArmSubsystem extends SubsystemBase {
                         setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
                     },
                     this
-                ).until(() -> horizontalController.atSetpoint() && verticalController.atSetpoint())
+                ).until(() -> horizontalController.atSetpoint() && verticalController.atSetpoint()) 
             ).handleInterrupt(() -> {
                 horizontalController.close();
                 verticalController.close();
@@ -639,4 +643,17 @@ public class ArmSubsystem extends SubsystemBase {
         theta2Pub.set(getUpperPosition());
         isInCubeModePub.set(isInCubeMode);
     }
+
+    public Map<Preset, ArmState> getCubePresetMap(){
+        return cubeMap;
+    }
+
+    public Map<Preset, ArmState> getConePresetMap(){
+        return coneMap;
+    }
+
+
+
+
+
 }
