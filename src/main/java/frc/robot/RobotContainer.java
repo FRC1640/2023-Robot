@@ -64,6 +64,7 @@ public class RobotContainer {
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
   Preset currentPreset;
+  boolean rumbled = true;
   Command currentArmCommand;
 
   Command armStopCommand;
@@ -73,7 +74,7 @@ public class RobotContainer {
 
   boolean wasGroundPickup = false;
 
-  double rumbleTolerance = 0.3;
+  double rumbleTolerance = 0.03;
 
   SequentialCommandGroup rumbleControllersCommand =new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))) ;
   
@@ -145,7 +146,8 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> setServo())));
+        () -> currentArmCommand.schedule())
+        .alongWith(new InstantCommand(() -> setServo())));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -212,8 +214,9 @@ public class RobotContainer {
     return autoCommand.andThen(() -> driveSubsystem.drive(0, 0, 0, false));
   }
 
-  public void setPreset(Preset preset, Command armCommand){
-    currentPreset = preset;
+  public void setPreset(Preset newPreset, Command armCommand){
+    currentPreset = newPreset;
+    rumbled = false;
     currentArmCommand = armCommand;
      if (currentPreset == Preset.Pickup){
       wasGroundPickup = false;
@@ -228,6 +231,7 @@ public class RobotContainer {
     //} 
     presetPub.set(currentPreset.toString());
   }
+
 
   public void setServo(){
     if (! wasGroundPickup){
@@ -263,17 +267,22 @@ public class RobotContainer {
   }
 
   public boolean endEffectorisAtGoal(){
-    if (armSubsystem.getIsInCubeMode()){
-      if ((armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getCubePresetMap().get(currentPreset).x < rumbleTolerance) && (armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y < rumbleTolerance)){
-        return true;
+    //if(oldPreset != currentPreset){
+      if (!rumbled){
+      if (armSubsystem.getIsInCubeMode()){
+        if ((Math.abs(armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getCubePresetMap().get(currentPreset).x) < rumbleTolerance) && (Math.abs(armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y) < rumbleTolerance)){
+          rumbled = true;
+          return true;
+        }
+      } 
+      else{
+        if ((Math.abs(armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getConePresetMap().get(currentPreset).x) < rumbleTolerance) && ((Math.abs(armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getConePresetMap().get(currentPreset).y) < rumbleTolerance))){
+          rumbled = true;
+          return true;
+        }
       }
-
-    } 
-    else{
-      if ((armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getConePresetMap().get(currentPreset).x < rumbleTolerance) && (armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y < rumbleTolerance)){
-        return true;
       }
-    }
+   // }
     return false;
   }
 
