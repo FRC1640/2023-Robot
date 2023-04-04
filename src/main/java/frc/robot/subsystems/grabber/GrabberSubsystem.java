@@ -62,7 +62,7 @@ public class GrabberSubsystem extends SubsystemBase{
             // cymbalServo.set(.5);
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_MID_ANGLE);
         } else if (cymbalServo.getAngle() >= 45){ // if servo angle is 45 < angle < 67 (at mid) set high
-            cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_HIGH_ANGLE);
+            cymbalServo.setAngle(Constants.ServoSmasAngles.HIGH_ANGLE);
         }
         else{ // servo angle is is less tha n 45 (at high) set to low
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);

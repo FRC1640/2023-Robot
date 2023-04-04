@@ -24,12 +24,11 @@ public class DashboardInit {
         ShuffleboardTab autonTab = Shuffleboard.getTab("Auton");
         sChooser = new SendableChooser<Command>();
         sChooser.addOption("Place out", new PlaceOut().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Place charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Charge Pickup", new PlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Place", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Place Pickup Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Place Pickup Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Test", new DriveTest().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Place only", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("2 Place Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("2 Place Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("Null", null);
         autonTab.add(sChooser).withSize(5, 5).withPosition(0, 0);
         driveTab.addString("Preset", () -> robotContainer.getCurrentPreset().name());

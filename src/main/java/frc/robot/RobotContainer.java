@@ -125,7 +125,18 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 2, 2, 2, 2))));
+    
 
+    // new Trigger(() -> driverController.getLeftBumper() && (currentPreset == Preset.Ground || currentPreset == Preset.UprightConeGround))
+    // .onTrue(new InstantCommand(
+    //   () -> currentArmCommand.schedule()));
+
+    // new Trigger(() -> !driverController.getLeftBumper())
+    // .onTrue(
+    //   new InstantCommand(() -> setPreset(currentPreset, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0)))
+    //   .andThen(new InstantCommand(
+    //     () -> currentArmCommand.schedule()))
+    // );
 
     new Trigger(() -> c5sensor.getC5boolean() && driverController.getLeftBumper())
       .onTrue(new InstantCommand(() -> autoGrabCommand().schedule()));
@@ -143,7 +154,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new SequentialCommandGroup(new WaitCommand(Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(() -> grabberSubsystem.servoMove(Constants.ServoSmasAngles.SERVO_WAIT)))));
+        () -> currentArmCommand.schedule()).alongWith(new SequentialCommandGroup(new WaitCommand(Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(() -> setServo()))));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -218,7 +229,7 @@ public class RobotContainer {
 
   public void setServo(){
     if (currentPreset == Preset.HighPlacing && !groundPickup){
-      grabberSubsystem.servoMove(25);
+      grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE);
     }
     if (currentPreset == Preset.HighPlacing && groundPickup){
       grabberSubsystem.servoMove(85);
