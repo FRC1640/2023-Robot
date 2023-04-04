@@ -50,7 +50,7 @@ public class PlaceCharge {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(new WaitCommand(0.75), place, new WaitCommand(1));
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new InstantCommand(() -> grabberSubsystem.servoMove(25))));
     Command safe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 
     Command pickup = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
@@ -58,7 +58,6 @@ public class PlaceCharge {
     
 
     Command grab = new SetGrabCommand(grabberSubsystem, true);
-    ParallelDeadlineGroup grabGroup = new ParallelDeadlineGroup(placeWait, placeWait, grab);
     Command setConeMode = new InstantCommand(() -> armSubsystem.setIsInCubeMode(false));
     Command unGrab = new UnGrab(grabberSubsystem);
 
@@ -69,6 +68,6 @@ public class PlaceCharge {
     
     ParallelCommandGroup group = new ParallelCommandGroup(safe, placePathController);
     // return Commands.sequence(resetOdo, group);
-    return Commands.sequence(gyroCommand, resetOdo, setConeMode, pickup, grabGroup, unGrab, new EndPitch2(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
+    return Commands.sequence(gyroCommand, resetOdo, setConeMode, placeWait, unGrab, new EndPitch2(swerve, gyro).deadlineWith(group), new Balance(swerve, gyro));// , place, group
   }
 }

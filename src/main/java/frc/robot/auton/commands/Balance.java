@@ -9,7 +9,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 public class Balance extends CommandBase{
     private final DriveSubsystem driveSubsystem;
     PIDController rotateController = new PIDController(0.0015, 0, 0.0);
-    PIDController driveController = new PIDController(0.007, 0, 0.003);
+    PIDController driveController = new PIDController(0.007, 0, 0.002);
     private Gyro gyro;
     public Balance(DriveSubsystem swerve, Gyro gyro) {
       this.gyro = gyro;

@@ -77,12 +77,12 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
     final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    final double upperArmMax = 172; //165 TODO Fix limit TEMP CHANGE
+    final double upperArmMax = 175; //165 TODO Fix limit TEMP CHANGE
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
 
-    double softStop = 8;
+    double softStop = 1;
     double softSpeed = 0.1;
     boolean currentStopFlag = false;
     Timer currentTimer = new Timer();
@@ -111,21 +111,21 @@ public class ArmSubsystem extends SubsystemBase {
         Substation;
     }
 
-    private boolean isInCubeMode = false; // TODO Revert to prime presets
+    private boolean isInCubeMode = false; 
 
-    public double conePickupX = 0.139; // 0.139 DEUX: 0.34
-    public double conePickupY =  0.1205; // 0.1205 DEUX: 0.25
+    public double conePickupX = 0.106973; // 0.139 DEUX: 0.34
+    public double conePickupY =  0.092684; // 0.1205 DEUX: 0.25
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.592344, -0.122320)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
+        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.496410, -0.081078)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), 
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.464790, -0.010481)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.429764, -0.062263)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)), // PRIME: 0.585774,0.890549 DEUX:
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.941967, 0.86031)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.961176, 0.717501)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), // PRIME: 0.505084, 0.195167 DEUX:
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.290739, 0.354146)),// PRIME:0.290739, 0.354146 DEUX:
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)),// PRIME:0.290739, 0.354146 DEUX:
         Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),// PRIME:0.113324, 0.311670 DEUX:
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.432694,1.177668)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.359685,1.043887)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
@@ -184,6 +184,8 @@ public class ArmSubsystem extends SubsystemBase {
         // }
 
         // System.out.println("upper " + getUpperPosition() + " lower " + getLowerPosition());
+        //System.out.println("END EFFECTOR COODS" + getEndEffectorPosition());
+
         if (getLowerPosition() >= lowerArmMax){
             lowerArmVoltage = Math.max(lowerArmVoltage, 0);
         }
@@ -201,7 +203,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
         //soft stops TODO fix soft stops
-/*         if (getLowerPosition() >= lowerArmMax - softStop){
+      if (getLowerPosition() >= lowerArmMax - softStop){
             lowerArmVoltage = Math.max(lowerArmVoltage, softSpeed);
         }
         if (getLowerPosition() <= lowerArmMin + softStop){
@@ -213,7 +215,7 @@ public class ArmSubsystem extends SubsystemBase {
         }
         if (getUpperPosition() <= upperArmMin + softStop){
             upperArmVoltage = Math.min(upperArmVoltage, softSpeed);
-        } */
+        } 
 
         /* Current Stop */
         // if ((lowerArmMotor1.getOutputCurrent() >= 25 || upperArmMotor1.getOutputCurrent() >= 25)){
@@ -394,7 +396,7 @@ public class ArmSubsystem extends SubsystemBase {
                 math.inverseKinematics();
                 setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
                 setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
-                System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                // System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
             },
             this // add ArmSubsystem requirement
         ).until(
@@ -578,8 +580,8 @@ public class ArmSubsystem extends SubsystemBase {
                         math.inverseKinematics();
                         setLowerVoltage(-calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
                         setUpperVoltage(-calcUpperFFVoltage(Math.toDegrees(math.getOmega2())));
-                        System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
-                        System.out.println("Pos: " + getEndEffectorPosition() + " Target: " + new Translation2d(x, y) + " Vel: " + targetVel);
+                        // System.out.println("Upper: " + -calcUpperFFVoltage(Math.toDegrees(math.getOmega2())) + " Lower: " + -calcLowerFFVoltage(Math.toDegrees(math.getOmega1())));
+                        // System.out.println("Pos: " + getEndEffectorPosition() + " Target: " + new Translation2d(x, y) + " Vel: " + targetVel);
                     },
                     this
                 ),
