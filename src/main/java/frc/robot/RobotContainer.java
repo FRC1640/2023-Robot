@@ -73,7 +73,7 @@ public class RobotContainer {
 
   boolean wasGroundPickup = false;
 
-  double rumbleTolerance = 0.05;
+  double rumbleTolerance = 0.3;
 
   SequentialCommandGroup rumbleControllersCommand =new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))) ;
   
@@ -187,7 +187,9 @@ public class RobotContainer {
       //.onTrue(new InstantCommand(() -> grabberSubsystem.setServoTurned(true)))
       //.onFalse(new InstantCommand(() -> grabberSubsystem.setServoTurned(false)));
 
-      new Trigger(() -> endEffectorisAtGoal()).onTrue(new SequentialCommandGroup(new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false)))) ;
+      new Trigger(() -> endEffectorisAtGoal())
+      .onTrue(new SequentialCommandGroup(
+        new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))));
   }
 
   public void firstEnabled(){
@@ -268,7 +270,7 @@ public class RobotContainer {
 
     } 
     else{
-      if ((armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getCubePresetMap().get(currentPreset).x < rumbleTolerance) && (armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y < rumbleTolerance)){
+      if ((armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getConePresetMap().get(currentPreset).x < rumbleTolerance) && (armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y < rumbleTolerance)){
         return true;
       }
     }

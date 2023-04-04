@@ -642,4 +642,16 @@ public class ArmSubsystem extends SubsystemBase {
         isInCubeModePub.set(isInCubeMode);
     }
 
+    public Map<Preset, ArmState> getCubePresetMap(){
+        return cubeMap;
+    }
+
+    public Map<Preset, ArmState> getConePresetMap(){
+        return coneMap;
+    }
+
+
+
+
+
 }
