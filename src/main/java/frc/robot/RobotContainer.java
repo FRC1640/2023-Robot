@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.Compressor;
 // import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -74,7 +75,8 @@ public class RobotContainer {
 
   boolean groundPickup = false;
 
-
+  boolean rumbled = true;
+  double rumbleTolerance = 0.03;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -196,6 +198,11 @@ public class RobotContainer {
       // new Trigger(() -> operatorController.getBButton())
       //.onTrue(new InstantCommand(() -> grabberSubsystem.setServoTurned(true)))
       //.onFalse(new InstantCommand(() -> grabberSubsystem.setServoTurned(false)));
+
+      new Trigger(() -> endEffectorisAtGoal())
+      .onTrue(new SequentialCommandGroup(
+        new InstantCommand(() -> setRumble(true)), new WaitCommand(0.5), new InstantCommand(() -> setRumble(false))));
+
   }
 
   public void firstEnabled(){
@@ -220,11 +227,27 @@ public class RobotContainer {
 
   public void setPreset(Preset preset, Command armCommand){
     currentPreset = preset;
+    rumbled = false;
     currentArmCommand = armCommand;
     //else{
      //grabberSubsystem.setServoOffset(0); //TODO is right?
     //} 
     presetPub.set(currentPreset.toString());
+  }
+
+  public void setRumble(boolean on){
+    if (on){
+      driverController.setRumble(RumbleType.kLeftRumble, 1.0);
+      driverController.setRumble(RumbleType.kRightRumble, 1.0);
+      operatorController.setRumble(RumbleType.kLeftRumble, 1.0);
+      operatorController.setRumble(RumbleType.kRightRumble, 1.0);
+    }
+    else{
+      driverController.setRumble(RumbleType.kLeftRumble, 0);
+      driverController.setRumble(RumbleType.kRightRumble, 0);
+      operatorController.setRumble(RumbleType.kLeftRumble, 0);
+      operatorController.setRumble(RumbleType.kRightRumble, 0);
+    }
   }
 
   public void setServo(){
@@ -268,6 +291,27 @@ public class RobotContainer {
     }
 
   }
+
+  public boolean endEffectorisAtGoal(){
+    //if(oldPreset != currentPreset){
+      if (!rumbled){
+      if (armSubsystem.getIsInCubeMode()){
+        if ((Math.abs(armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getCubePresetMap().get(currentPreset).x) < rumbleTolerance) && (Math.abs(armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getCubePresetMap().get(currentPreset).y) < rumbleTolerance)){
+          rumbled = true;
+          return true;
+        }
+      } 
+      else{
+        if ((Math.abs(armSubsystem.getEndEffectorPosition().getX()- armSubsystem.getConePresetMap().get(currentPreset).x) < rumbleTolerance) && ((Math.abs(armSubsystem.getEndEffectorPosition().getY()- armSubsystem.getConePresetMap().get(currentPreset).y) < rumbleTolerance))){
+          rumbled = true;
+          return true;
+        }
+      }
+      }
+   // }
+    return false;
+  }
+
 
   NetworkTableInstance nt;
   NetworkTable table;

@@ -605,6 +605,14 @@ public class ArmSubsystem extends SubsystemBase {
         });
     }
 
+    public Map<Preset, ArmState> getCubePresetMap(){
+        return cubeMap;
+    }
+
+    public Map<Preset, ArmState> getConePresetMap(){
+        return coneMap;
+    }
+
     /* NetworkTables */
 
     NetworkTableInstance nt;
