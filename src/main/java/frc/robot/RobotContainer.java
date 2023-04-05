@@ -237,22 +237,22 @@ public class RobotContainer {
       grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE);
     }
     if (currentPreset == Preset.HighPlacing && groundPickup == 1){
-      grabberSubsystem.servoMove(85);
+      grabberSubsystem.servoMove(70);
     }
     if (currentPreset == Preset.HighPlacing && groundPickup == 2){
-      grabberSubsystem.servoMove(45);
+      grabberSubsystem.servoMove(0);
     }
 
 
 
     if (currentPreset == Preset.MidPlacing && groundPickup == 0){
-      grabberSubsystem.servoMove(55);
+      grabberSubsystem.servoMove(30);
     }
     if (currentPreset == Preset.MidPlacing && groundPickup == 1){
       grabberSubsystem.servoMove(130);
     }
     if (currentPreset == Preset.MidPlacing && groundPickup == 2){
-      grabberSubsystem.servoMove(55);
+      grabberSubsystem.servoMove(20);
     }
 
   }
