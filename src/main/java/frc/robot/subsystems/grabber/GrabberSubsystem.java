@@ -32,7 +32,7 @@ public class GrabberSubsystem extends SubsystemBase{
         else{
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); // reset servo after release
             servoOffset = 0;
-            robotContainer.setGround(false);
+            robotContainer.setGround(0);
             solenoid.set(Value.kForward);
         }
     }
@@ -94,11 +94,14 @@ public class GrabberSubsystem extends SubsystemBase{
         if (wasClamped) {
             cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); // reset servo after release
             servoOffset = 0;
-            robotContainer.setGround(false);
+            robotContainer.setGround(0);
         }
         else{
             if (robotContainer.getCurrentPreset() == Preset.Ground){
-                robotContainer.setGround(true);
+                robotContainer.setGround(1);
+            }
+            if (robotContainer.getCurrentPreset() == Preset.UprightConeGround){
+                robotContainer.setGround(2);
             }
         }
     }

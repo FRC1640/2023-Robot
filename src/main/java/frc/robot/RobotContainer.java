@@ -72,7 +72,7 @@ public class RobotContainer {
   PixyCam pixyCam = new PixyCam(led);
   DashboardInit dashboardInit;
 
-  boolean groundPickup = false;
+  int groundPickup = 0;
 
 
 
@@ -228,21 +228,35 @@ public class RobotContainer {
   }
 
   public void setServo(){
-    if (currentPreset == Preset.HighPlacing && !groundPickup){
+    /*
+     * 0 - Hopper
+     * 1 - Ground
+     * 2 - Ground upright
+     */
+    if (currentPreset == Preset.HighPlacing && groundPickup == 0){
       grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE);
     }
-    if (currentPreset == Preset.HighPlacing && groundPickup){
+    if (currentPreset == Preset.HighPlacing && groundPickup == 1){
       grabberSubsystem.servoMove(85);
     }
-    if (currentPreset == Preset.MidPlacing && !groundPickup){
+    if (currentPreset == Preset.HighPlacing && groundPickup == 2){
+      grabberSubsystem.servoMove(45);
+    }
+
+
+
+    if (currentPreset == Preset.MidPlacing && groundPickup == 0){
       grabberSubsystem.servoMove(55);
     }
-    if (currentPreset == Preset.MidPlacing && groundPickup){
+    if (currentPreset == Preset.MidPlacing && groundPickup == 1){
       grabberSubsystem.servoMove(130);
+    }
+    if (currentPreset == Preset.MidPlacing && groundPickup == 2){
+      grabberSubsystem.servoMove(55);
     }
 
   }
-  public void setGround(boolean ground){
+  public void setGround(int ground){
     groundPickup = ground;
   }
 
@@ -263,7 +277,7 @@ public class RobotContainer {
     else{
       return new SequentialCommandGroup(
         armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2),
-        new WaitCommand(0.6),
+        new WaitCommand(0.5),
         new ChangeGrabState(grabberSubsystem, true));
     }
 
