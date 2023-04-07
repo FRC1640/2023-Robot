@@ -12,6 +12,8 @@ import frc.robot.auton.paths.PlaceCharge2;
 import frc.robot.auton.paths.PlaceOut;
 import frc.robot.auton.paths.PlaceOutPickupLeft;
 import frc.robot.auton.paths.PlaceOutPickupRight;
+import frc.robot.auton.paths.RedPlaceCharge2;
+import frc.robot.auton.paths.RedPlaceOutPickupLeft;
 import frc.robot.auton.paths.RedPlaceOutPickupRight;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.arm.ArmSubsystem;
@@ -32,6 +34,9 @@ public class DashboardInit {
         sChooser.addOption("2 Place Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         
         sChooser.addOption("RED 2 Place Right", new RedPlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("RED 2 Place Left", new RedPlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("RED Charge Pickup", new RedPlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+
 
         // sChooser.addOption("Null", null);
         autonTab.add(sChooser).withSize(5, 5).withPosition(0, 0);
