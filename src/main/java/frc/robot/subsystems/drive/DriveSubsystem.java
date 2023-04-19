@@ -141,7 +141,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void print(){
-    // System.out.println("Pos: " + backLeft.getPosition());
+    // System.out.println("Pos: " + frontRight.getPosition());
     // System.out.println("Gyro: " + gyro.getGyroPitch());
     // System.out.format("%.2f, %.2f | %.2f, %.1f, %.2f, %.1f, %.2f, %.1f, %.2f, %.1f | %.1f\n", 
     // odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), 
