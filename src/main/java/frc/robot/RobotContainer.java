@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import frc.robot.auton.paths.ChargeStation;
-import frc.robot.auton.paths.PlaceOut;
+import frc.robot.auton.paths.OldPaths.ChargeStation;
+import frc.robot.auton.paths.OldPaths.PlaceOut;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.LED;
 import frc.robot.sensors.Limelight;

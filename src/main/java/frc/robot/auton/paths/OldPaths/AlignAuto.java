@@ -1,4 +1,4 @@
-package frc.robot.auton.paths;
+package frc.robot.auton.paths.OldPaths;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
