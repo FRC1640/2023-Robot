@@ -182,9 +182,8 @@ public class AlignScoringCommand extends CommandBase{
             new PathPoint(new Translation2d(targetX, targetY), new Rotation2d(0), new Rotation2d(0))
           );
 
-
         PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithGrid, 
-        ()-> robotPos, // Functional interface to feed supplier
+        () -> driveSubsystem.getPose(), // Functional interface to feed supplier
         kDriveKinematics, new PIDController(0.4, 0.0, 0.0), new PIDController(0.4, 0.0, 0.0), new PIDController(0.5, 0, 0),
         driveSubsystem::setModuleStates, false, driveSubsystem);
 
