@@ -41,16 +41,12 @@ public class AlignScoringAprilTagSpaceCommand extends CommandBase{
     Pose2d robotPos;
 
     // should be the constant coords (x and y) of the left, right, and center pos on the "robot in april space"
-    double leftConeX; 
-    double leftConeY;
-    double rightConeX;  
-    double rightConeY; 
-    double middleX;
-    double middleY; 
+    double targetY= 0.8; 
 
+    double sideConeX = 0.5;   
+    double middleX = 0;
     double targetX;
-    double targetY;
-
+   
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
     public static final double x = Units.inchesToMeters(10.375); // 10.375"
     public static final double y = Units.inchesToMeters(12.375); // 12.375"
@@ -87,16 +83,13 @@ public class AlignScoringAprilTagSpaceCommand extends CommandBase{
 
 
         if (dpadPos == 270){ // IF LEFT ON THE DPAD      
-            targetX = leftConeX;
-            targetY = leftConeY; 
+            targetX = robotCoords.getX() - sideConeX; 
         }
         else if (dpadPos == 270){ // IF RIGHT ON THE DPAD
-            targetX = rightConeX;
-            targetY = rightConeY;  
+            targetX = Math.abs(robotCoords.getX()) - sideConeX;
         }
         else if(dpadPos == 0){ //IF UP ON THE DPAD
-            targetX = middleX;
-            targetY = middleY;
+            targetX = middleX; 
         }
 
         PathPlannerTrajectory alignWithGrid = PathPlanner.generatePath(
