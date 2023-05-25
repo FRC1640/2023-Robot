@@ -121,7 +121,7 @@ public class AlignWithTagCommand extends CommandBase{
         driveSubsystem.resetOdometry(new Pose2d(new Translation2d(limelight.getBotPose().getX() + 8, limelight.getBotPose().getY() + 4), limelight.getBotPose().getRotation()));
         Translation2d robotCoords = robotPos.getTranslation(); // x and y from x y and rotation
         
-
+        
         if (tagIndex == 6){ // tag 6 is blue left 
             targetX = blueX;
             targetY = blueLeftTagMiddleY;
@@ -137,19 +137,19 @@ public class AlignWithTagCommand extends CommandBase{
             
         
         // making the path eek
-        PathPlannerTrajectory alignWithGrid = PathPlanner.generatePath(
+/*         PathPlannerTrajectory alignWithGrid = PathPlanner.generatePath(
             new PathConstraints(2, 1),
             new PathPoint(robotCoords, new Rotation2d(0), new Rotation2d(robotPos.getRotation().getRadians())),
             new PathPoint(new Translation2d(targetX, targetY), new Rotation2d(0), new Rotation2d(0))
-          );
+          ); */
 
-        PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithGrid, 
-        () -> driveSubsystem.getPose(), // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.4, 0.0, 0.0), new PIDController(0.4, 0.0, 0.0), new PIDController(0.5, 0, 0),
-        driveSubsystem::setModuleStates, false, driveSubsystem);
+        // PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithGrid, 
+        // () -> driveSubsystem.getPose(), // Functional interface to feed supplier
+        // kDriveKinematics, new PIDController(0.4, 0.0, 0.0), new PIDController(0.4, 0.0, 0.0), new PIDController(0.5, 0, 0),
+        // driveSubsystem::setModuleStates, false, driveSubsystem);
 
-        path.schedule();
-
+        // path.schedule();
+// 
     }
         
 
