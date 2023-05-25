@@ -20,6 +20,7 @@ import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
+import frc.robot.subsystems.drive.commands.AlignWithTagCommand;
 import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.drive.commands.Stop;
 import frc.robot.subsystems.foot.FootSubsystem;
@@ -113,6 +114,9 @@ public class RobotContainer {
 
     new Trigger(() -> driverController.getYButton())
     .whileTrue(new Stop(driveSubsystem));
+    
+    new Trigger(() -> driverController.getAButton())
+    .onTrue(new AlignWithTagCommand(driveSubsystem, gyro, limelight));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
