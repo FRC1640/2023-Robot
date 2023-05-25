@@ -93,11 +93,11 @@ public class AlignWithTagCommand extends CommandBase{
    
 
 
-    public AlignWithTagCommand(DriveSubsystem driveSubsystem, XboxController opController, Gyro gyro, Limelight limelight ){
+    public AlignWithTagCommand(DriveSubsystem driveSubsystem,  Gyro gyro, Limelight limelight ){ //XboxController opController,
         
         this.driveSubsystem = driveSubsystem;
         this.gyro = gyro;
-        this.opController = opController;
+        // this.opController = opController;
         this.limelight = limelight;
 
     }
