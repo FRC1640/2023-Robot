@@ -13,10 +13,11 @@ public class EndPitch2 extends CommandBase {
     private Gyro gyro;
     boolean two = false;
     double initTime2;
-    public EndPitch2(DriveSubsystem swerve, Gyro gyro) {
+    int delay2;
+    public EndPitch2(DriveSubsystem swerve, Gyro gyro, int delay2) {
         this.gyro = gyro;
         driveSubsystem = swerve;
-    
+        this.delay2 = delay2;
       }
       @Override
       public void initialize() {
@@ -27,7 +28,7 @@ public class EndPitch2 extends CommandBase {
           initTime = System.currentTimeMillis();
           setTime = false;
         }
-        if (!setTime && System.currentTimeMillis() - initTime > 2100){
+        if (!setTime && System.currentTimeMillis() - initTime > delay2){
           if (!two && Math.abs(gyro.getGyroPitch()) >= 13){
             two = true;
             initTime2 = System.currentTimeMillis();

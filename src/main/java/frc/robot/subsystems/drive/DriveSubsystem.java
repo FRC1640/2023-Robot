@@ -141,15 +141,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void print(){
-    // System.out.println("Pos: " + backLeft.getPosition());
-    // System.out.println("Gyro: " + gyro.getRotation2d().getDegrees());
-    System.out.format("%.2f, %.2f | %.2f, %.1f, %.2f, %.1f, %.2f, %.1f, %.2f, %.1f | %.1f\n", 
-    odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), 
-    frontLeft.getPosition().distanceMeters, frontLeft.getPosition().angle.getDegrees(),
-    frontRight.getPosition().distanceMeters, frontRight.getPosition().angle.getDegrees(),
-    backLeft.getPosition().distanceMeters, backLeft.getPosition().angle.getDegrees(),
-    backRight.getPosition().distanceMeters, backRight.getPosition().angle.getDegrees(),
-    gyro.getRotation2d().getDegrees());
+    // System.out.println("Pos: " + frontRight.getPosition());
+    // System.out.println("Gyro: " + gyro.getGyroPitch());
+    // System.out.format("%.2f, %.2f | %.2f, %.1f, %.2f, %.1f, %.2f, %.1f, %.2f, %.1f | %.1f\n", 
+    // odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), 
+    // frontLeft.getPosition().distanceMeters, frontLeft.getPosition().angle.getDegrees(),
+    // frontRight.getPosition().distanceMeters, frontRight.getPosition().angle.getDegrees(),
+    // backLeft.getPosition().distanceMeters, backLeft.getPosition().angle.getDegrees(),
+    // backRight.getPosition().distanceMeters, backRight.getPosition().angle.getDegrees(),
+    // gyro.getRotation2d().getDegrees());
   }
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
