@@ -28,10 +28,11 @@ public class CreateEventMap {
         eventMap.put("Ungrab", new UnGrab(grabberSubsystem));
         eventMap.put("Wait0.4", new WaitCommand(0.4));
         eventMap.put("Grab", new ChangeGrabState(grabberSubsystem, true));
-        eventMap.put("Wait0.2", new WaitCommand(0.4));
+        eventMap.put("Wait0.2", new WaitCommand(0.2));
         eventMap.put("StopDriving", new InstantCommand(() -> swerve.drive(0, 0, 0, false)));
         eventMap.put("UprightCone", armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround));
         eventMap.put("LowPlacing", armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing));
+        eventMap.put("Wait1", new WaitCommand(1));
         return eventMap;
     }
 }
