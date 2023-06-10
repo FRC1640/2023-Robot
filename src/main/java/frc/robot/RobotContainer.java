@@ -132,7 +132,10 @@ public class RobotContainer {
       .onFalse(new InstantCommand(() -> grabberSubsystem.setRollerSpeed(0)));
 
     new Trigger(() -> driverController.getXButton())
-    .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
+    .onTrue(new InstantCommand(() -> {
+      grabberSubsystem.toggleClamped();
+      grabberSubsystem.toggleRollerDirection();
+    }));
 
     new Trigger(() -> presetBoard.povIsUpwards())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)).andThen(new InstantCommand(() -> led.setStateGreen())));//.andThen(new InstantCommand(() -> led.setStateGreen()))
