@@ -21,9 +21,9 @@ public class CreateEventMap {
         HashMap<String, Command> eventMap = new HashMap<>();
         Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(
             Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-        eventMap.put("PlaceHigh", place.alongWith(new SequentialCommandGroup(new WaitCommand(
-            Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(
-            () -> grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE)))));
+        //eventMap.put("PlaceHigh", place.alongWith(new SequentialCommandGroup(new WaitCommand(
+        //    Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(
+        //    () -> grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE)))));
 
         eventMap.put("Ungrab", new UnGrab(grabberSubsystem));
         eventMap.put("Wait0.4", new WaitCommand(0.4));

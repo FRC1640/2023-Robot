@@ -51,7 +51,7 @@ public class PlaceOut {
     Command resetOdo = new ResetOdometryCommand(swerve, placePose);
 
     Command place =  armSubsystem.create2dEndEffectorProfileCommandNoInstant(Preset.HighPlacing,1.9, 4.3, 0.6, 2);
-    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new SequentialCommandGroup(new WaitCommand(Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(() -> grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE)))));
+    SequentialCommandGroup placeWait = new SequentialCommandGroup(place.alongWith(new SequentialCommandGroup(new WaitCommand(Constants.ServoSmasAngles.SERVO_WAIT)/*,new InstantCommand(() -> grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE))*/)));
     Command newSafe = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing);
     Command uprightCone = armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.Pickup);
 

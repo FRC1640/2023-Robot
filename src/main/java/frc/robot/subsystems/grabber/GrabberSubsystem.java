@@ -13,7 +13,7 @@ public class GrabberSubsystem extends SubsystemBase{
     CANSparkMax wheelLeft = new CANSparkMax(11, MotorType.kBrushless);
     CANSparkMax wheelRight = new CANSparkMax(12, MotorType.kBrushless);
 
-    double rollerSpeed = -0.6;
+    double rollerSpeed = 0.6;
 
     public GrabberSubsystem(){
         setClamped(true);
@@ -22,13 +22,26 @@ public class GrabberSubsystem extends SubsystemBase{
     public void setRollerSpeed(double motorSpeed){
         wheelLeft.set(motorSpeed);
         wheelRight.set(-motorSpeed);
-        rollerSpeed = motorSpeed;
+    }
+
+    public void setRollerDirection(boolean direction){
+        if (direction) {
+            wheelLeft.set(0.6);
+            wheelRight.set(-0.6);
+        } else {
+            wheelLeft.set(-0.6);
+            wheelRight.set(0.6);
+        }
     }
 
     public void toggleRollerDirection(){
-        rollerSpeed = -rollerSpeed;
-        wheelLeft.set(rollerSpeed);
-        wheelRight.set(-rollerSpeed);
+        if (wheelLeft.get() == 0) {
+            wheelLeft.set(0.6);
+            wheelRight.set(-0.6);
+        } else {
+            wheelLeft.set(0);
+            wheelRight.set(0);
+        }
     }
 
     public double getRollerSpeed(){

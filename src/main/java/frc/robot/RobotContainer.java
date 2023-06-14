@@ -23,7 +23,7 @@ import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.ChangeGrabState;
 import frc.robot.utilities.PresetBoard;
-
+import pabeles.concurrency.ConcurrencyOps.NewInstance;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -125,17 +125,19 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> autoGrabCommand().schedule()));
 
     new Trigger(() -> driverController.getRightBumper())
-      .onTrue(new InstantCommand(() -> {
-        grabberSubsystem.setClamped(true);
-        grabberSubsystem.setRollerSpeed(0.2);
-      }))
-      .onFalse(new InstantCommand(() -> grabberSubsystem.setRollerSpeed(0)));
+      .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
 
     new Trigger(() -> driverController.getXButton())
-    .onTrue(new InstantCommand(() -> {
-      grabberSubsystem.toggleClamped();
-      grabberSubsystem.toggleRollerDirection();
-    }));
+      .onTrue(new InstantCommand(() -> grabberSubsystem.toggleRollerDirection()));
+
+    new Trigger(() -> driverController.getAButton())
+      .onTrue(new InstantCommand(() -> {
+        grabberSubsystem.setRollerSpeed(-0.3);
+        grabberSubsystem.setClamped(false);
+      }));
+
+      new Trigger(() -> driverController.getAButton())
+      .onFalse(new InstantCommand(() -> grabberSubsystem.setRollerSpeed(0)));
 
     new Trigger(() -> presetBoard.povIsUpwards())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)).andThen(new InstantCommand(() -> led.setStateGreen())));//.andThen(new InstantCommand(() -> led.setStateGreen()))
