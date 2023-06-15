@@ -133,7 +133,7 @@ public class RobotContainer {
     new Trigger(() -> driverController.getAButton())
       .onTrue(new InstantCommand(() -> {
         grabberSubsystem.setRollerSpeed(-0.3);
-        grabberSubsystem.setClamped(false);
+        //grabberSubsystem.setClamped(false);
       }));
 
       new Trigger(() -> driverController.getAButton())
