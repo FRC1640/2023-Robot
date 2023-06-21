@@ -17,6 +17,8 @@ import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.arm.commands.ArmEndEffectorCommand;
 import frc.robot.subsystems.arm.commands.ArmManualCommand;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
+import frc.robot.subsystems.drive.DriveIO;
+import frc.robot.subsystems.drive.DriveLog;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
@@ -78,17 +80,24 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
     setupNetworkTables();
 
     gyro = new Gyro();
-    driveSubsystem = new DriveSubsystem(gyro);
+    // driveSubsystem = new DriveSubsystem(gyro);
     
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
     armStopCommand  = new ArmStopCommand(armSubsystem);
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
-
+    if (isReal()) {
+      // Instantiate IO implementations to talk to real hardware
+      driveSubsystem = new DriveSubsystem(gyro, new DriveLog());
+    } else {
+      // Use anonymous classes to create "dummy" IO implementations
+      driveSubsystem = new DriveSubsystem(gyro, new DriveLog() {});
+    }
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
     //grabberSubsystem.setServoTurned(false);
     grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);

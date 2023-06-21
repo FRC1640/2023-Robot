@@ -21,7 +21,6 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
@@ -48,16 +47,16 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   private long last;
-
-  public Field2d field = new Field2d();
+  private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
   
-  
+  DriveIO io;
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
   private final SwerveDriveOdometry odometry;
-    public DriveSubsystem(Gyro gyro) {
+    public DriveSubsystem(Gyro gyro, DriveIO io) {
+      this.io = io;
       this.gyro = gyro;
       setupNetworkTables();
       odometry = new SwerveDriveOdometry(
@@ -172,6 +171,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     updateOdometry();
     updateNetworkTables();
+    io.updateInputs(inputs);
   }
   NetworkTableInstance nt;
   NetworkTable table;
