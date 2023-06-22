@@ -6,17 +6,18 @@ package frc.robot.subsystems.drive;
 
 import java.util.stream.Stream;
 
-import com.revrobotics.CANSparkMax;
-
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
+import frc.robot.utilities.ArrayToPose;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
@@ -46,21 +48,17 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backLeft = new SwerveModule(PivotConfig.getConfig(PivotId.BL));
   private final SwerveModule backRight = new SwerveModule(PivotConfig.getConfig(PivotId.BR));
 
-
-  private long last;
-
   public Field2d field = new Field2d();
-  
-  
+
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-  private final SwerveDriveOdometry odometry;
+  private final SwerveDrivePoseEstimator odometry;
     public DriveSubsystem(Gyro gyro) {
       this.gyro = gyro;
       setupNetworkTables();
-      odometry = new SwerveDriveOdometry(
+      odometry = new SwerveDrivePoseEstimator(
           kinematics,
           gyro.getRotation2d(),
           new SwerveModulePosition[] {
@@ -68,8 +66,9 @@ public class DriveSubsystem extends SubsystemBase {
               frontRight.getPosition(),
               backLeft.getPosition(),
               backRight.getPosition()
-          });
-          
+          },
+          new Pose2d(0, 0, Rotation2d.fromDegrees(0))
+      );
     }
 
   public void resetOdometry(Pose2d pose) {
@@ -153,15 +152,17 @@ public class DriveSubsystem extends SubsystemBase {
   }
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    // System.out.println("Time: " + (System.currentTimeMillis() - last));
-    last = System.currentTimeMillis();
     odometry.update(
         gyro.getRotation2d(),
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
+    
+    double[] poseArray = limelightPosSub.get();
+    Pose3d pose = ArrayToPose.convert(poseArray);
+    odometry.addVisionMeasurement(pose.toPose2d(), poseArray[6]);
   }
+
   public Pose2d getPose() {
-    // System.out.println("x: " + odometry.getPoseMeters().getX() * 3.28084 + " y: " + odometry.getPoseMeters().getY() * 3.28084 + " Gyro: " + gyro.getGyroAngleDegrees());
-    return odometry.getPoseMeters();
+    return odometry.getEstimatedPosition();
   }
 
   public void resetEncoders() {
@@ -174,14 +175,18 @@ public class DriveSubsystem extends SubsystemBase {
     updateNetworkTables();
   }
   NetworkTableInstance nt;
-  NetworkTable table;
-  DoublePublisher xPub, yPub;
+  NetworkTable odometryTable, limelightTable;
+  DoublePublisher xPub, yPub; 
+  DoubleArraySubscriber limelightPosSub;
 
   private void setupNetworkTables() {
       nt = NetworkTableInstance.getDefault();
-      table = nt.getTable("odometry");
-      xPub = table.getDoubleTopic("x").publish();
-      yPub = table.getDoubleTopic("y").publish();
+      odometryTable = nt.getTable("odometry");
+      xPub = odometryTable.getDoubleTopic("x").publish();
+      yPub = odometryTable.getDoubleTopic("y").publish();
+
+      limelightTable = nt.getTable("limelight");
+      limelightPosSub = limelightTable.getDoubleArrayTopic("botpose").subscribe(new double[7]);
   }
 
   private void updateNetworkTables() {
