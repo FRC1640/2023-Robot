@@ -37,8 +37,8 @@ public class DashboardInit {
         // sChooser.addOption("2 Place Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("2 Place Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("ChargePickup", new ChargePickup().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        // sChooser.addOption("RED 2 Place Right", new RedPlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        // sChooser.addOption("RED 2 Place Left", new RedPlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("RED 2 Place Right", new RedPlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("RED 2 Place Left", new RedPlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED Charge Pickup", new RedPlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("No Bump", new NoBump().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("No Bump Triple", new NoBumpTriple().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
