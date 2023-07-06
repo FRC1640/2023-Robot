@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.auton.paths.Bump;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 
 public class DashboardInit {
+    
     private SendableChooser<Command> sChooser;
     public DashboardInit(Gyro gyro, ArmSubsystem armSubsystem, DriveSubsystem driveSubsystem, GrabberSubsystem grabberSubsystem, RobotContainer robotContainer){
         ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
@@ -47,7 +49,7 @@ public class DashboardInit {
         autonTab.add(sChooser).withSize(5, 5).withPosition(0, 0);
         driveTab.addString("Preset", () -> robotContainer.getCurrentPreset().name());
         driveTab.addBoolean("IsInCubeMode", () -> armSubsystem.getCubeMode()); //use .withProperties for color
-        CameraServer.startAutomaticCapture();
+        // CameraServer.startAutomaticCapture();
         // driveTab.addCamera("Drive Camera", "USB Camera", "usb:/dev/video0").withSize(3, 3);
 
         /*
@@ -63,4 +65,5 @@ public class DashboardInit {
     public Command getAuton(){
         return sChooser.getSelected();
     }
+    
 }

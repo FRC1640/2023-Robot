@@ -19,11 +19,13 @@ public class Limelight {
 	private NetworkTableEntry ta0;
 	private NetworkTableEntry ts0;
 	private NetworkTableEntry ta1;
+	private NetworkTableEntry tid;
 	private NetworkTableEntry pipeline;
 	private NetworkTableEntry camMode;
 	private NetworkTableEntry ledMode;
 	private NetworkTableEntry streamMode;
 	private NetworkTableEntry botpose;
+	private NetworkTableEntry targetpose_robotspace;
 	private NetworkTable table;
 
 	/**
@@ -103,7 +105,9 @@ public class Limelight {
 		pipeline = table.getEntry("pipeline");
 		camMode = table.getEntry("camMode");	
 		ledMode = table.getEntry("ledMode");
+		tid = table.getEntry("tid");
 		streamMode = table.getEntry("stream");
+		targetpose_robotspace = table.getEntry("targetpose_robotspace");
 
 		setLEDOn(LedEnum.FORCE_OFF);
 		setStreamMode(StreamEnum.PiP_1);
@@ -208,22 +212,14 @@ public class Limelight {
 	public double getTargetX(){
 		return tx.getDouble(-9999);
 	}
-	
-	public Pose2d getBotPose(){
-		double[] botPoseArray = botpose.getDoubleArray(new double[] {});
-		Translation2d translation2d = new Translation2d(-9999, -9999);
-		Rotation2d rotation2d = new Rotation2d(0);
-		
-		if (botPoseArray.length > 0) {
-			translation2d = new Translation2d(botPoseArray[0], botPoseArray[1]);
-			rotation2d = new Rotation2d(Math.toRadians(botPoseArray[5]));
-		}
-		else {
-			translation2d = null;
-			rotation2d = null;
-		}
-
-		return new Pose2d(translation2d, rotation2d);
+	public int getAprilTagID(){
+		return (int)tid.getDouble(-1);	
+	}
+	public double[] getTargetPoseRobotSpace(){
+		return targetpose_robotspace.getDoubleArray(new double[] {});
+	}
+	public double[] getBotPose(){
+		return botpose.getDoubleArray(new double[] {});
 	}
 	public double aprilTagLength(){
 		return botpose.getDoubleArray(new double[] {}).length;

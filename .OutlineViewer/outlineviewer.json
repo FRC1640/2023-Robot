@@ -1,22 +1,10 @@
 {
-  "Connections": {
-    "open": true
-  },
   "NetworkTables Settings": {
     "mode": "Client (NT4)",
     "serverTeam": "1640"
   },
-  "Persistent Values": {
-    "open": false
-  },
-  "Server": {
-    "open": true
-  },
   "transitory": {
-    "armSubsystem": {
-      "open": true
-    },
-    "robot": {
+    "odometry": {
       "open": true
     }
   }

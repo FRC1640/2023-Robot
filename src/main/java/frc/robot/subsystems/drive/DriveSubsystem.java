@@ -6,6 +6,8 @@ package frc.robot.subsystems.drive;
 
 import java.util.stream.Stream;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -16,17 +18,25 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.sensors.Gyro;
+import frc.robot.sensors.Limelight;
 import frc.robot.subsystems.drive.PivotConfig.PivotId;
 import frc.robot.utilities.ArrayToPose;
+import frc.robot.utilities.MathUtils;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
@@ -48,16 +58,26 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backLeft = new SwerveModule(PivotConfig.getConfig(PivotId.BL));
   private final SwerveModule backRight = new SwerveModule(PivotConfig.getConfig(PivotId.BR));
 
-  public Field2d field = new Field2d();
+  public double translationStdDevCoefficient = 0.3;
+  private final double rotationStdDevCoefficient = 0.9;
+  // private final Field2d field2d = new Field2d();
 
+  // public Field2d field = new Field2d();
+
+  Limelight limelight;
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(
           frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
   private final SwerveDrivePoseEstimator odometry;
-    public DriveSubsystem(Gyro gyro) {
+    public DriveSubsystem(Gyro gyro, Limelight limelight) {
       this.gyro = gyro;
+      this.limelight = limelight;
       setupNetworkTables();
+
+      ShuffleboardTab fieldTab = Shuffleboard.getTab("Field");
+      // fieldTab.add("Field", field2d);
+      
       odometry = new SwerveDrivePoseEstimator(
           kinematics,
           gyro.getRotation2d(),
@@ -151,14 +171,48 @@ public class DriveSubsystem extends SubsystemBase {
     // gyro.getRotation2d().getDegrees());
   }
   /** Updates the field relative position of the robot. */
+  private boolean isValidPose(Pose3d pose) {
+    boolean isWithinField = MathUtils.isInRange(pose.getY(), -5, FieldConstants.fieldWidth + 5)
+            && MathUtils.isInRange(pose.getX(), -5, FieldConstants.fieldLength + 5)
+            && MathUtils.isInRange(pose.getZ(), 0, 5);
+
+    boolean isNearRobot = getPose()
+                    .getTranslation()
+                    .getDistance(pose.getTranslation().toTranslation2d())
+            < 1.4;
+
+    return isWithinField && isNearRobot;
+}
+  private Matrix<N3, N1> calculateVisionStdDevs(double distance) {
+    var translationStdDev = translationStdDevCoefficient * Math.pow(distance, 2);
+    var rotationStdDev = rotationStdDevCoefficient * Math.pow(distance, 2);
+
+    return VecBuilder.fill(translationStdDev, translationStdDev, rotationStdDev);
+}
+
   public void updateOdometry() {
+
+    double[] poseArray = limelight.getBotPose();
+    if (limelight.getAprilTagID() >= 1 && limelight.getAprilTagID() <= 8){
+      
+      Pose3d pose = ArrayToPose.convert(poseArray);
+      var aprilTagPose = FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(limelight.getAprilTagID());
+      var distanceFromPrimaryTag = aprilTagPose.get().getTranslation().getDistance(pose.getTranslation());
+      if (isValidPose(pose)){
+        Pose2d pose2d = new Pose2d(new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ()));
+        odometry.addVisionMeasurement(pose2d, Timer.getFPGATimestamp() - poseArray[6] / 1000.0, calculateVisionStdDevs(distanceFromPrimaryTag));
+        
+      }
+      System.out.println("AprilTagPose: " + aprilTagPose.get().getTranslation());
+      System.out.println("Pose:" + pose.getTranslation());
+      
+    }
     odometry.update(
         gyro.getRotation2d(),
         new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()});
     
-    double[] poseArray = limelightPosSub.get();
-    Pose3d pose = ArrayToPose.convert(poseArray);
-    odometry.addVisionMeasurement(pose.toPose2d(), poseArray[6]);
+
+
   }
 
   public Pose2d getPose() {
@@ -173,20 +227,17 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     updateOdometry();
     updateNetworkTables();
+    // field.setRobotPose(getPose());
   }
   NetworkTableInstance nt;
   NetworkTable odometryTable, limelightTable;
   DoublePublisher xPub, yPub; 
-  DoubleArraySubscriber limelightPosSub;
 
   private void setupNetworkTables() {
       nt = NetworkTableInstance.getDefault();
       odometryTable = nt.getTable("odometry");
       xPub = odometryTable.getDoubleTopic("x").publish();
       yPub = odometryTable.getDoubleTopic("y").publish();
-
-      limelightTable = nt.getTable("limelight");
-      limelightPosSub = limelightTable.getDoubleArrayTopic("botpose").subscribe(new double[7]);
   }
 
   private void updateNetworkTables() {

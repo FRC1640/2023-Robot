@@ -121,7 +121,7 @@ public class GrabberSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        System.out.println(cymbalServo.getAngle());
+        // System.out.println(cymbalServo.getAngle());
     }
 
 

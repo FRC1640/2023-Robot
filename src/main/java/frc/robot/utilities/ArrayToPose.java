@@ -12,7 +12,7 @@ public class ArrayToPose {
         }
 
         Translation3d translation = new Translation3d(poseArray[0], poseArray[1], poseArray[2]);
-        Rotation3d rotation = new Rotation3d(poseArray[3], poseArray[4], poseArray[5]);
+        Rotation3d rotation = new Rotation3d(Math.toRadians(poseArray[3]), Math.toRadians(poseArray[4]), Math.toRadians(poseArray[5]));
         return new Pose3d(translation, rotation);
     }
 

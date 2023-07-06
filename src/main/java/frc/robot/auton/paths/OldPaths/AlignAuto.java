@@ -28,24 +28,24 @@ public class AlignAuto {
     public static final double x = Units.inchesToMeters(10.375); // 10.375"
     public static final double y = Units.inchesToMeters(12.375); // 12.375"
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(new Translation2d(y, x),new Translation2d(y, -x), new Translation2d(-y, x), new Translation2d(-y, -x));
-    public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, Limelight limelight, double x, double y) { 
-        gyro.resetGyro();
-        gyro.setOffset(-limelight.getBotPose().getRotation().getDegrees());
+    // public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, Limelight limelight, double x, double y) { 
+    //     gyro.resetGyro();
+    //     gyro.setOffset(-limelight.getBotPose().getRotation().getDegrees());
         
         
-        swerve.resetOdometry(new Pose2d(new Translation2d(limelight.getBotPose().getX() + 8, limelight.getBotPose().getY() + 4), limelight.getBotPose().getRotation()));
-        Translation2d pose = swerve.getPose().getTranslation();
+    //     swerve.resetOdometry(new Pose2d(new Translation2d(limelight.getBotPose().getX() + 8, limelight.getBotPose().getY() + 4), limelight.getBotPose().getRotation()));
+    //     Translation2d pose = swerve.getPose().getTranslation();
         
-        // System.out.println("Pose: " + pose);
-        PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
-            new PathConstraints(2, 1),
-            new PathPoint(pose, new Rotation2d(0), new Rotation2d(swerve.getPose().getRotation().getRadians())),
-            new PathPoint(new Translation2d(x, y), new Rotation2d(0), new Rotation2d(0))
-          );
-        PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,
-        swerve::getPose, // Functional interface to feed supplier
-        kDriveKinematics, new PIDController(0.4, 0.0, 0.0), new PIDController(0.4, 0.0, 0.0), new PIDController(0.5, 0, 0),
-        swerve::setModuleStates, false, swerve);
-        return path;
-      }
+    //     // System.out.println("Pose: " + pose);
+    //     PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
+    //         new PathConstraints(2, 1),
+    //         new PathPoint(pose, new Rotation2d(0), new Rotation2d(swerve.getPose().getRotation().getRadians())),
+    //         new PathPoint(new Translation2d(x, y), new Rotation2d(0), new Rotation2d(0))
+    //       );
+    //     PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,
+    //     swerve::getPose, // Functional interface to feed supplier
+    //     kDriveKinematics, new PIDController(0.4, 0.0, 0.0), new PIDController(0.4, 0.0, 0.0), new PIDController(0.5, 0, 0),
+    //     swerve::setModuleStates, false, swerve);
+    //     return path;
+    //   }
 }
