@@ -1,5 +1,9 @@
 package frc.robot.subsystems.grabber;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Servo;
@@ -14,6 +18,11 @@ import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 
 public class GrabberSubsystem extends SubsystemBase{
     DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0); 
+    CANSparkMax rollerMotor = new CANSparkMax(-1, MotorType.kBrushless);
+    PIDController wristController = new PIDController(0, 0, 0);
+    CANSparkMax wristMotor = new CANSparkMax(-1, MotorType.kBrushless);
+    final double wristMax =0; //TODO: set these
+    final double wristMin = 0;
     Servo cymbalServo = new Servo(0); 
     double servoOffset;
     RobotContainer robotContainer;
@@ -117,7 +126,28 @@ public class GrabberSubsystem extends SubsystemBase{
             cymbalServo.setAngle(cymbalServo.getAngle() - 5);
         }        
         
-    }  
+    }
+    public void spinGrabber(double speed){
+        rollerMotor.set(speed);
+    }
+    public double getWristPosition(){
+        return wristMotor.getEncoder().getPosition();
+    }
+    public void runWrist(double speed){
+        if (getWristPosition() >= wristMax){
+            speed = Math.max(0, speed);
+        }
+        if (getWristPosition() <= wristMin){
+            speed = Math.min(0, speed);
+        }
+        wristMotor.set(speed);
+    }
+
+    public void runWristToPosition(double position){
+        //TODO: this
+        wristMotor.set(wristController.calculate(getWristPosition(), position));
+
+    }
 
     @Override
     public void periodic() {

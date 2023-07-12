@@ -25,6 +25,8 @@ import frc.robot.subsystems.drive.commands.Stop;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.ChangeGrabState;
+import frc.robot.subsystems.grabber.commands.GrabberSpin;
+import frc.robot.subsystems.grabber.commands.RunWrist;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.utilities.PresetBoard;
 
@@ -94,7 +96,7 @@ public class RobotContainer {
 
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
     //grabberSubsystem.setServoTurned(false);
-    grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
+    // grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
 
 
     // Configure the trigger bindings
@@ -141,14 +143,17 @@ public class RobotContainer {
     //     () -> currentArmCommand.schedule()))
     // );
 
-    new Trigger(() -> c5sensor.getC5boolean() && driverController.getLeftBumper())
-      .onTrue(new InstantCommand(() -> autoGrabCommand().schedule()));
+    // new Trigger(() -> c5sensor.getC5boolean() && driverController.getLeftBumper())
+    //   .onTrue(new InstantCommand(() -> autoGrabCommand().schedule()));
       //grabberSubsystem.toggleClamped()
-    new Trigger(() -> driverController.getRightBumper())
-      .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
-
-    new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
-    new Trigger(()-> operatorController.getPOV() == 180).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoDown()));
+    // new Trigger(() -> driverController.getRightBumper())
+    //   .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
+    new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.2));
+    new Trigger(() -> driverController.getRightBumper()).whileTrue(new GrabberSpin(grabberSubsystem, 0.2));
+    new Trigger(() -> operatorController.getRightTriggerAxis() > 0.8).whileTrue(new RunWrist(grabberSubsystem, 0.2));
+    new Trigger(() -> operatorController.getRightTriggerAxis() > 0.8).whileTrue(new RunWrist(grabberSubsystem, -0.2));
+    // new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
+    // new Trigger(()-> operatorController.getPOV() == 180).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoDown()));
     new Trigger(() -> presetBoard.povIsUpwards())
       .whileTrue(new InstantCommand(() -> armSubsystem.setIsInCubeMode(false)).andThen(new InstantCommand(() -> led.setStateGreen())));//.andThen(new InstantCommand(() -> led.setStateGreen()))
 
@@ -157,7 +162,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new SequentialCommandGroup(new WaitCommand(Constants.ServoSmasAngles.SERVO_WAIT),new InstantCommand(() -> setServo()))));
+        () -> currentArmCommand.schedule()));
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
@@ -183,13 +188,9 @@ public class RobotContainer {
       new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButton())
       .whileTrue(new InstantCommand(
         () -> setPreset(
-          Preset.Pickup,
-          new InstantCommand(
-            () -> grabberSubsystem.setClamped(false)
-            )
-              .andThen(armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
+          Preset.Pickup, armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2))
           )
-        ));
+        );
 
       // new Trigger(() -> driverController.getLeftBumper())
       // .whileTrue(new InstantCommand(() -> driveSubsystem.resetOdometry(new Pose2d(0, 0, gyro.getRotation2d()))));
@@ -229,36 +230,6 @@ public class RobotContainer {
     //} 
     presetPub.set(currentPreset.toString());
   }
-
-  public void setServo(){
-    /*
-     * 0 - Hopper
-     * 1 - Ground
-     * 2 - Ground upright
-     */
-    if (currentPreset == Preset.HighPlacing && groundPickup == 0){
-      grabberSubsystem.servoMove(Constants.ServoSmasAngles.HIGH_ANGLE);
-    }
-    if (currentPreset == Preset.HighPlacing && groundPickup == 1){
-      grabberSubsystem.servoMove(70);
-    }
-    if (currentPreset == Preset.HighPlacing && groundPickup == 2){
-      grabberSubsystem.servoMove(0);
-    }
-
-
-
-    if (currentPreset == Preset.MidPlacing && groundPickup == 0){
-      grabberSubsystem.servoMove(30);
-    }
-    if (currentPreset == Preset.MidPlacing && groundPickup == 1){
-      grabberSubsystem.servoMove(130);
-    }
-    if (currentPreset == Preset.MidPlacing && groundPickup == 2){
-      grabberSubsystem.servoMove(20);
-    }
-
-  }
   public void setGround(int ground){
     groundPickup = ground;
   }
@@ -284,6 +255,9 @@ public class RobotContainer {
         new ChangeGrabState(grabberSubsystem, true));
     }
 
+  }
+  public void driveWrist(){
+    // grabberSubsystem.runWristToPosition(armSubsystem.getPresetWrist(currentPreset));
   }
 
   NetworkTableInstance nt;
