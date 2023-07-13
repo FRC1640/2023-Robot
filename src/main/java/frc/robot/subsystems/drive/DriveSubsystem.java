@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -60,6 +61,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double translationStdDevCoefficient = 0.3;
   private final double rotationStdDevCoefficient = 0.9;
+  public static final Transform3d limelightRobotToCamera = new Transform3d(
+    new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34.25)),
+    new Rotation3d(0, Math.toRadians(15), Math.PI));
   // private final Field2d field2d = new Field2d();
 
   // public Field2d field = new Field2d();
@@ -195,7 +199,7 @@ public class DriveSubsystem extends SubsystemBase {
     double[] poseArray = limelight.getBotPose();
     if (limelight.getAprilTagID() >= 1 && limelight.getAprilTagID() <= 8){
       
-      Pose3d pose = ArrayToPose.convert(poseArray);
+      Pose3d pose = ArrayToPose.convert(poseArray).transformBy(limelightRobotToCamera.inverse());
       var aprilTagPose = FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(limelight.getAprilTagID());
       var distanceFromPrimaryTag = aprilTagPose.get().getTranslation().getDistance(pose.getTranslation());
       if (isValidPose(pose)){
@@ -203,8 +207,9 @@ public class DriveSubsystem extends SubsystemBase {
         odometry.addVisionMeasurement(pose2d, Timer.getFPGATimestamp() - poseArray[6] / 1000.0, calculateVisionStdDevs(distanceFromPrimaryTag));
         
       }
-      System.out.println("AprilTagPose: " + aprilTagPose.get().getTranslation());
-      System.out.println("Pose:" + pose.getTranslation());
+      // System.out.println("AprilTagPose: " + aprilTagPose.get().getTranslation());
+      // System.out.println("Pose:" + pose.getTranslation());
+      System.out.println("Distance: " + distanceFromPrimaryTag);
       
     }
     odometry.update(
