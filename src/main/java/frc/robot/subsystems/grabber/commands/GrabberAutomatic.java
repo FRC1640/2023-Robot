@@ -1,17 +1,16 @@
 package frc.robot.subsystems.grabber.commands;
 
-import org.ejml.equation.IntegerSequence.Combined;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 
-public class RunWrist extends CommandBase{
+public class GrabberAutomatic extends CommandBase{
+    final double speedNormal = 0.3;
+    final double speedGrabbed = 0.5;
+    final double outputCurrentThreshold = 0;
     GrabberSubsystem grabberSubsystem;
-    double speed;
-    public RunWrist(GrabberSubsystem grabberSubsystem, double speed) {
+    public GrabberAutomatic(GrabberSubsystem grabberSubsystem) {
         this.grabberSubsystem = grabberSubsystem;
         addRequirements(grabberSubsystem);
-        this.speed = speed;
     }
 
     @Override
@@ -21,7 +20,11 @@ public class RunWrist extends CommandBase{
 
     @Override
     public void execute() {
-        grabberSubsystem.runWrist(speed);
+        double speed = speedNormal;
+        if (grabberSubsystem.getRollerCurrent() >= outputCurrentThreshold){
+            speed = speedGrabbed;
+        }
+        grabberSubsystem.spinGrabber(speed);
     }
 
     @Override
@@ -33,4 +36,6 @@ public class RunWrist extends CommandBase{
     public boolean isFinished() {
         return false;
     }
+
 }
+
