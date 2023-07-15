@@ -175,18 +175,6 @@ public class DriveSubsystem extends SubsystemBase {
     // gyro.getRotation2d().getDegrees());
   }
   /** Updates the field relative position of the robot. */
-  private boolean isValidPose(Pose3d pose) {
-    boolean isWithinField = MathUtils.isInRange(pose.getY(), -5, FieldConstants.fieldWidth + 5)
-            && MathUtils.isInRange(pose.getX(), -5, FieldConstants.fieldLength + 5)
-            && MathUtils.isInRange(pose.getZ(), 0, 5);
-
-    boolean isNearRobot = getPose()
-                    .getTranslation()
-                    .getDistance(pose.getTranslation().toTranslation2d())
-            < 1.4;
-
-    return isWithinField && isNearRobot;
-}
   private Matrix<N3, N1> calculateVisionStdDevs(double distance) {
     var translationStdDev = translationStdDevCoefficient * Math.pow(distance, 2);
     var rotationStdDev = rotationStdDevCoefficient * Math.pow(distance, 2);
@@ -202,14 +190,15 @@ public class DriveSubsystem extends SubsystemBase {
       Pose3d pose = ArrayToPose.convert(poseArray).transformBy(limelightRobotToCamera.inverse());
       var aprilTagPose = FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(limelight.getAprilTagID());
       var distanceFromPrimaryTag = aprilTagPose.get().getTranslation().getDistance(pose.getTranslation());
-      if (isValidPose(pose)){
-        Pose2d pose2d = new Pose2d(new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ()));
+      Pose2d pose2d = new Pose2d(new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ()));
+      if (distanceFromPrimaryTag < 3.3){
+        // System.out.println("AprilTagPose:" + pose2d);
         odometry.addVisionMeasurement(pose2d, Timer.getFPGATimestamp() - poseArray[6] / 1000.0, calculateVisionStdDevs(distanceFromPrimaryTag));
         
       }
       // System.out.println("AprilTagPose: " + aprilTagPose.get().getTranslation());
-      // System.out.println("Pose:" + pose.getTranslation());
-      System.out.println("Distance: " + distanceFromPrimaryTag);
+      
+      // System.out.println("Distance: " + distanceFromPrimaryTag);
       
     }
     odometry.update(
@@ -232,6 +221,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     updateOdometry();
     updateNetworkTables();
+    System.out.println("Pose: " + getPose());
     // field.setRobotPose(getPose());
   }
   NetworkTableInstance nt;

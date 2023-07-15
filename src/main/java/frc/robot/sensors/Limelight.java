@@ -101,7 +101,7 @@ public class Limelight {
 		ta0 = table.getEntry("ta0");
 		ts0 = table.getEntry("ts0");
 		ta1 = table.getEntry("ta1");
-		botpose = table.getEntry("botpose");
+		botpose = table.getEntry("botpose_wpiblue");
 		pipeline = table.getEntry("pipeline");
 		camMode = table.getEntry("camMode");	
 		ledMode = table.getEntry("ledMode");
