@@ -18,10 +18,12 @@ import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 
 public class GrabberSubsystem extends SubsystemBase{
     DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0); 
-    CANSparkMax rollerMotor = new CANSparkMax(-1, MotorType.kBrushless);
+    CANSparkMax rollerMotor1 = new CANSparkMax(11, MotorType.kBrushless);
+    CANSparkMax rollerMotor2 = new CANSparkMax(12, MotorType.kBrushless);
     Servo cymbalServo = new Servo(0); 
     double servoOffset;
     RobotContainer robotContainer;
+    double[] rollerCurrentAverage = {0.0, 0.0, 0.0};
 
 
 
@@ -75,6 +77,21 @@ public class GrabberSubsystem extends SubsystemBase{
 
     }
 
+    public void updateRollerCurrentAverage(){
+        rollerCurrentAverage[0] = getRollerCurrent();
+        for (int i = 0; i < rollerCurrentAverage.length - 1; i++){
+            rollerCurrentAverage[i + 1] = rollerCurrentAverage[i];
+        }
+    }
+    public double getRollerCurrentAverage(){
+        double average = 0;
+        for (int i = 0; i < rollerCurrentAverage.length; i++){
+            average += rollerCurrentAverage[i];
+        }
+        average = average / rollerCurrentAverage.length;
+        return average;
+    }
+
     public void servoMove(double angle){
         cymbalServo.setAngle(angle);
     }
@@ -124,11 +141,12 @@ public class GrabberSubsystem extends SubsystemBase{
         
     }
     public void spinGrabber(double speed){
-        rollerMotor.set(speed);
+        rollerMotor1.set(speed);
+        rollerMotor2.set(speed);
     }
 
     public double getRollerCurrent(){
-        return rollerMotor.getOutputCurrent();
+        return (rollerMotor1.getOutputCurrent() + rollerMotor2.getOutputCurrent()) / 2;
     }
 
     @Override

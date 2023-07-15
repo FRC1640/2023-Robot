@@ -21,7 +21,7 @@ public class GrabberAutomatic extends CommandBase{
     @Override
     public void execute() {
         double speed = speedNormal;
-        if (grabberSubsystem.getRollerCurrent() >= outputCurrentThreshold){
+        if (grabberSubsystem.getRollerCurrentAverage() >= outputCurrentThreshold){
             speed = speedGrabbed;
         }
         grabberSubsystem.spinGrabber(speed);
