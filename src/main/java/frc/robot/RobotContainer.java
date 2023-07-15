@@ -97,7 +97,7 @@ public class RobotContainer {
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
-    grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem));
+    // grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem));
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
     //grabberSubsystem.setServoTurned(false);
     // grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
@@ -166,7 +166,7 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()).alongWith(new RunWristToPosition(wristSubsystem, armSubsystem.getPresetWrist(currentPreset))));
+        () -> currentArmCommand.schedule()));//.alongWith(new RunWristToPosition(wristSubsystem, armSubsystem.getPresetWrist(currentPreset)))
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
