@@ -155,7 +155,7 @@ public class RobotContainer {
     new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.2));
     new Trigger(() -> driverController.getRightBumper()).whileTrue(new GrabberSpin(grabberSubsystem, 0.2));
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0.8).whileTrue(new RunWrist(wristSubsystem, 0.2));
-    new Trigger(() -> operatorController.getRightTriggerAxis() > 0.8).whileTrue(new RunWrist(wristSubsystem, -0.2));
+    new Trigger(() -> operatorController.getLeftTriggerAxis() > 0.8).whileTrue(new RunWrist(wristSubsystem, -0.2));
     // new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
     // new Trigger(()-> operatorController.getPOV() == 180).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoDown()));
     new Trigger(() -> presetBoard.povIsUpwards())

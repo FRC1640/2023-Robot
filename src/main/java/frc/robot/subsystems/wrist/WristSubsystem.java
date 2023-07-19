@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class WristSubsystem extends SubsystemBase{
     PIDController wristController = new PIDController(0, 0, 0);
-    CANSparkMax wristMotor = new CANSparkMax(-1, MotorType.kBrushless);
-    final double wristMax =0; //TODO: set these
-    final double wristMin = 0;
+    CANSparkMax wristMotor = new CANSparkMax(12, MotorType.kBrushless);
+    final double wristMax =99; //TODO: set these
+    final double wristMin = -99;
 
 
 
