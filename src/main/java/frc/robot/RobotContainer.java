@@ -18,6 +18,7 @@ import frc.robot.subsystems.arm.commands.ArmEndEffectorCommand;
 import frc.robot.subsystems.arm.commands.ArmManualCommand;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.commands.DriveToPosition;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
 import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
@@ -114,8 +115,10 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    new Trigger(() -> driverController.getYButton())
-    .whileTrue(new Stop(driveSubsystem));
+    // new Trigger(() -> driverController.getYButton()) TODO: put this back
+    // .whileTrue(new Stop(driveSubsystem));
+      new Trigger(() -> driverController.getYButton()) //TODO: make this not be here
+    .onTrue(new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(2.8, 4.6, new Rotation2d(0)), gyro).schedule()));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));

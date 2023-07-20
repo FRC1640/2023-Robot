@@ -210,7 +210,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return odometry.getEstimatedPosition();
+    return new Pose2d(odometry.getEstimatedPosition().getX(), odometry.getEstimatedPosition().getY(), odometry.getEstimatedPosition().getRotation());
   }
 
   public void resetEncoders() {
@@ -226,20 +226,23 @@ public class DriveSubsystem extends SubsystemBase {
   }
   NetworkTableInstance nt;
   NetworkTable odometryTable, limelightTable;
-  DoublePublisher xPub, yPub; 
+  DoublePublisher xPub, yPub, rotPub; 
 
   private void setupNetworkTables() {
       nt = NetworkTableInstance.getDefault();
       odometryTable = nt.getTable("odometry");
       xPub = odometryTable.getDoubleTopic("x").publish();
       yPub = odometryTable.getDoubleTopic("y").publish();
+      rotPub = odometryTable.getDoubleTopic("rot").publish();
   }
 
   private void updateNetworkTables() {
       double x = getPose().getX();
       double y = getPose().getY();
+      double rot = getPose().getRotation().getDegrees();
 
       xPub.set(x);
       yPub.set(y);
+      rotPub.set(rot);
   }
 }
