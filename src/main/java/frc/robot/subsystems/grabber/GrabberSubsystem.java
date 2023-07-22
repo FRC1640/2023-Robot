@@ -22,7 +22,7 @@ public class GrabberSubsystem extends SubsystemBase{
     Servo cymbalServo = new Servo(0); 
     double servoOffset;
     RobotContainer robotContainer;
-    double[] rollerCurrentAverage = {0.0, 0.0, 0.0};
+    double[] rollerCurrentAverage = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 
 
@@ -152,7 +152,8 @@ public class GrabberSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         // System.out.println(cymbalServo.getAngle());
-        System.out.println("Average: " + getRollerCurrent());
+        updateRollerCurrentAverage();
+        System.out.println("Average: " + getRollerCurrentAverage());
     }
     
 

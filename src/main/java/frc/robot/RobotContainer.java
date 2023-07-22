@@ -152,7 +152,7 @@ public class RobotContainer {
       //grabberSubsystem.toggleClamped()
     // new Trigger(() -> driverController.getRightBumper())
     //   .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
-    new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.5));
+    // new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.5));
     new Trigger(() -> driverController.getRightBumper()).whileTrue(new GrabberSpin(grabberSubsystem, 0.5));
 
     new Trigger(() -> operatorController.getRightBumper()).whileTrue(new RunWrist(wristSubsystem, 0.5));

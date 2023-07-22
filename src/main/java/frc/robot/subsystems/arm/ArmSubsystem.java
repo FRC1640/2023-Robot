@@ -73,7 +73,7 @@ public class ArmSubsystem extends SubsystemBase {
     final double lowerArmMin = -28; //-17
     final double lowerArmMax = 48; //45
     final double upperArmMin = 3; //10 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    final double upperArmMax = 175; //165 TODO Fix limit TEMP CHANGE
+    final double upperArmMax = 165; //165 TODO Fix limit TEMP CHANGE
 
     final double lowerArmTolerance = 3;
     final double upperArmTolerance = 3;
@@ -182,36 +182,36 @@ public class ArmSubsystem extends SubsystemBase {
         // System.out.println("upper " + getUpperPosition() + " lower " + getLowerPosition());
         //System.out.println("END EFFECTOR COODS" + getEndEffectorPosition());
 
-    //     if (getLowerPosition() >= lowerArmMax){ LIMITS PUT BACK
-    //         lowerArmVoltage = Math.max(lowerArmVoltage, 0);
-    //     }
-    //     if (getLowerPosition() <= lowerArmMin){
-    //         lowerArmVoltage = Math.min(lowerArmVoltage, 0);
-    //     }
+        if (getLowerPosition() >= lowerArmMax){ 
+            lowerArmVoltage = Math.max(lowerArmVoltage, 0);
+        }
+        if (getLowerPosition() <= lowerArmMin){
+            lowerArmVoltage = Math.min(lowerArmVoltage, 0);
+        }
         
-    //     if (getUpperPosition() >= upperArmMax){
-    //         upperArmVoltage = Math.max(upperArmVoltage, 0);
-    //     }
-    //     if (getUpperPosition() <= upperArmMin){
-    //         upperArmVoltage = Math.min(upperArmVoltage, 0);
-    //     }
+        if (getUpperPosition() >= upperArmMax){
+            upperArmVoltage = Math.max(upperArmVoltage, 0);
+        }
+        if (getUpperPosition() <= upperArmMin){
+            upperArmVoltage = Math.min(upperArmVoltage, 0);
+        }
 
 
 
-    //     //soft stops TODO fix soft stops
-    //   if (getLowerPosition() >= lowerArmMax - softStop){
-    //         lowerArmVoltage = Math.max(lowerArmVoltage, softSpeed);
-    //     }
-    //     if (getLowerPosition() <= lowerArmMin + softStop){
-    //         lowerArmVoltage = Math.min(lowerArmVoltage, softSpeed);
-    //     }
+        //soft stops TODO fix soft stops
+      if (getLowerPosition() >= lowerArmMax - softStop){
+            lowerArmVoltage = Math.max(lowerArmVoltage, softSpeed);
+        }
+        if (getLowerPosition() <= lowerArmMin + softStop){
+            lowerArmVoltage = Math.min(lowerArmVoltage, softSpeed);
+        }
         
-    //     if (getUpperPosition() >= upperArmMax - softStop){
-    //         upperArmVoltage = Math.max(upperArmVoltage, softSpeed);
-    //     }
-    //     if (getUpperPosition() <= upperArmMin + softStop){
-    //         upperArmVoltage = Math.min(upperArmVoltage, softSpeed);
-    //     } 
+        if (getUpperPosition() >= upperArmMax - softStop){
+            upperArmVoltage = Math.max(upperArmVoltage, softSpeed);
+        }
+        if (getUpperPosition() <= upperArmMin + softStop){
+            upperArmVoltage = Math.min(upperArmVoltage, softSpeed);
+        } 
 
         /* Current Stop */
         // if ((lowerArmMotor1.getOutputCurrent() >= 25 || upperArmMotor1.getOutputCurrent() >= 25)){
