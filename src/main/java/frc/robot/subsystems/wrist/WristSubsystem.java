@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class WristSubsystem extends SubsystemBase{
     PIDController wristController = new PIDController(0, 0, 0);
     CANSparkMax wristMotor = new CANSparkMax(12, MotorType.kBrushless);
-    final double wristMax =99; //TODO: set these
-    final double wristMin = -99;
+    final double wristMax =80; //TODO: set these
+    final double wristMin = -24;
 
 
 
@@ -22,10 +22,10 @@ public class WristSubsystem extends SubsystemBase{
     }
     public void runWrist(double speed){
         if (getWristPosition() >= wristMax){
-            speed = Math.max(0, speed);
+            speed = Math.min(0, speed);
         }
         if (getWristPosition() <= wristMin){
-            speed = Math.min(0, speed);
+            speed = Math.max(0, speed);
         }
         wristMotor.set(speed);
     }
@@ -35,7 +35,10 @@ public class WristSubsystem extends SubsystemBase{
         wristMotor.set(wristController.calculate(getWristPosition(), position));
 
     }
-    
+    @Override
+    public void periodic() {
+        // System.out.println("Wrist: " + getWristPosition());
+    }
 
 
 

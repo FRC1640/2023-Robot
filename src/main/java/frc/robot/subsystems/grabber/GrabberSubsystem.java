@@ -146,12 +146,13 @@ public class GrabberSubsystem extends SubsystemBase{
     }
 
     public double getRollerCurrent(){
-        return (rollerMotor.getOutputCurrent()) / 2;
+        return (rollerMotor.getOutputCurrent());
     }
 
     @Override
     public void periodic() {
         // System.out.println(cymbalServo.getAngle());
+        System.out.println("Average: " + getRollerCurrent());
     }
     
 

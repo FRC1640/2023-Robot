@@ -24,7 +24,7 @@ public class GrabberSpin extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-
+        grabberSubsystem.spinGrabber(0);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class RunWrist extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-
+        wristSubsystem.runWrist(0);
     }
 
     @Override

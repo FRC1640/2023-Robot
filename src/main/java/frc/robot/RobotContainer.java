@@ -97,7 +97,7 @@ public class RobotContainer {
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
-    // grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem));
+    grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem));
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
     //grabberSubsystem.setServoTurned(false);
     // grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
@@ -152,10 +152,11 @@ public class RobotContainer {
       //grabberSubsystem.toggleClamped()
     // new Trigger(() -> driverController.getRightBumper())
     //   .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
-    new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.2));
-    new Trigger(() -> driverController.getRightBumper()).whileTrue(new GrabberSpin(grabberSubsystem, 0.2));
-    new Trigger(() -> operatorController.getRightTriggerAxis() > 0.8).whileTrue(new RunWrist(wristSubsystem, 0.2));
-    new Trigger(() -> operatorController.getLeftTriggerAxis() > 0.8).whileTrue(new RunWrist(wristSubsystem, -0.2));
+    new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.5));
+    new Trigger(() -> driverController.getRightBumper()).whileTrue(new GrabberSpin(grabberSubsystem, 0.5));
+
+    new Trigger(() -> operatorController.getRightBumper()).whileTrue(new RunWrist(wristSubsystem, 0.5));
+    new Trigger(() -> operatorController.getLeftBumper()).whileTrue(new RunWrist(wristSubsystem, -0.5));
     // new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
     // new Trigger(()-> operatorController.getPOV() == 180).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoDown()));
     new Trigger(() -> presetBoard.povIsUpwards())
