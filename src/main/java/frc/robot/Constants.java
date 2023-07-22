@@ -10,6 +10,7 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -39,6 +40,12 @@ public final class Constants {
   }
   public static class FieldConstants{
     public static final double fieldLength = Units.inchesToMeters(651.25);
+
+    //blue 1, blue 2, blue 3,...,red 1, red 2, red 3
+    //blue and red 1 is the placement closest to the community wall. 
+    public static final Translation2d[] placementPositions = {new Translation2d(1.7, 5.2), new Translation2d(1.7,4.5), 
+        new Translation2d(1.7,3.9), new Translation2d(1.7,3.4), new Translation2d(1.7,2.7)};
+
     public static final double fieldWidth = Units.inchesToMeters(315.5);
     public static final List<AprilTag> aprilTags = List.of(
       new AprilTag(

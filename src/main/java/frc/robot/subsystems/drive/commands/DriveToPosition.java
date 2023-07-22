@@ -17,11 +17,13 @@ import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class DriveToPosition {
-    
+
     public static Command align(DriveSubsystem driveSubsystem, Pose2d position, Gyro gyro){
+        
         SwerveDriveKinematics kDriveKinematics = driveSubsystem.createKinematics();
+        
         PathPlannerTrajectory alignWithTag = PathPlanner.generatePath(
-            new PathConstraints(0.5, 0.5),
+            new PathConstraints(2, 2),
             new PathPoint(driveSubsystem.getPose().getTranslation(), new Rotation2d(0), new Rotation2d(driveSubsystem.getPose().getRotation().getRadians())),
             new PathPoint(position.getTranslation(), new Rotation2d(0), position.getRotation())
           );

@@ -33,6 +33,7 @@ import frc.robot.utilities.PresetBoard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -63,6 +64,7 @@ public class RobotContainer {
   Compressor pcmCompressor= new Compressor(0, PneumaticsModuleType.CTREPCM);
   GrabberSubsystem grabberSubsystem = new GrabberSubsystem(this);
   FootSubsystem footSubsystem = new FootSubsystem();
+  Pose2d closestNode;
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
@@ -118,13 +120,14 @@ public class RobotContainer {
     // new Trigger(() -> driverController.getYButton()) TODO: put this back
     // .whileTrue(new Stop(driveSubsystem));
       new Trigger(() -> driverController.getYButton()) //TODO: make this not be here
-    .onTrue(new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(2.8, 4.6, new Rotation2d(0)), gyro).schedule()));
+      
+    .onTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(2.8, 4.6, new Rotation2d(Math.PI)), gyro).schedule())));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
 
     new Trigger(() -> driverController.getStartButtonPressed())
-      .onTrue(new ResetGyroCommand(gyro));
+      .onTrue(new ResetGyroCommand(gyro, driveSubsystem));
 
     new Trigger(() -> (operatorController.getLeftTriggerAxis() > 0.7))
     .whileTrue(new ArmManualCommand(armSubsystem, operatorController));  
@@ -231,6 +234,12 @@ public class RobotContainer {
      //grabberSubsystem.setServoOffset(0); //TODO is right?
     //} 
     presetPub.set(currentPreset.toString());
+  }
+
+  public void findClosestNode(){
+    for (Translation2d n : Constants.FieldConstants.placementPositions){
+      
+    }
   }
 
   public void setServo(){
