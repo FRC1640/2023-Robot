@@ -64,7 +64,7 @@ public class RobotContainer {
   Compressor pcmCompressor= new Compressor(0, PneumaticsModuleType.CTREPCM);
   GrabberSubsystem grabberSubsystem = new GrabberSubsystem(this);
   FootSubsystem footSubsystem = new FootSubsystem();
-  Pose2d closestNode;
+  Translation2d closestNode;
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
@@ -121,7 +121,8 @@ public class RobotContainer {
     // .whileTrue(new Stop(driveSubsystem));
       new Trigger(() -> driverController.getYButton()) //TODO: make this not be here
       
-    .onTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(2.8, 4.6, new Rotation2d(Math.PI)), gyro).schedule())));
+    .onTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), 
+    new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(closestNode.getX(), closestNode.getY(), new Rotation2d(Math.PI)), gyro).schedule())));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
@@ -235,10 +236,16 @@ public class RobotContainer {
     //} 
     presetPub.set(currentPreset.toString());
   }
-
+  
   public void findClosestNode(){
+    double smallestDistance = 99999999;
     for (Translation2d n : Constants.FieldConstants.placementPositions){
-      
+      System.out.println("dist: " + driveSubsystem.getPose().getTranslation().getDistance(n));
+      if (driveSubsystem.getPose().getTranslation().getDistance(n) < smallestDistance){
+        smallestDistance = driveSubsystem.getPose().getTranslation().getDistance(n);
+        closestNode = n;
+        
+      }
     }
   }
 

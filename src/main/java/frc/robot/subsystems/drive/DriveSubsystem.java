@@ -225,7 +225,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     updateOdometry();
     updateNetworkTables();
-    System.out.println("Pose: " + getPose());
+    // System.out.println("Pose: " + getPose());
     // field.setRobotPose(getPose());
   }
   NetworkTableInstance nt;
