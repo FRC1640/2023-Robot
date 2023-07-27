@@ -67,10 +67,11 @@ public class RobotContainer {
   Compressor pcmCompressor= new Compressor(0, PneumaticsModuleType.CTREPCM);
   GrabberSubsystem grabberSubsystem = new GrabberSubsystem(this);
   FootSubsystem footSubsystem = new FootSubsystem();
-  WristSubsystem wristSubsystem = new WristSubsystem();
+  WristSubsystem wristSubsystem;
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
+  Resolver wristEncoder = new Resolver(7, 0.25, 4.75, 1, true);
   Preset currentPreset;
   Command currentArmCommand;
 
@@ -93,6 +94,7 @@ public class RobotContainer {
     driveSubsystem = new DriveSubsystem(gyro, limelight);
     
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
+    wristSubsystem = new WristSubsystem(wristEncoder);
     armStopCommand  = new ArmStopCommand(armSubsystem);
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
@@ -157,6 +159,9 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getRightBumper()).whileTrue(new RunWrist(wristSubsystem, 0.5));
     new Trigger(() -> operatorController.getLeftBumper()).whileTrue(new RunWrist(wristSubsystem, -0.5));
+    new Trigger(() -> operatorController.getPOV() == 0).onTrue(new RunWristToPosition(wristSubsystem, 1.2));
+
+
     // new Trigger(()-> operatorController.getPOV() == 0).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoUp()));
     // new Trigger(()-> operatorController.getPOV() == 180).onTrue(new InstantCommand(() -> grabberSubsystem.incramentServoDown()));
     new Trigger(() -> presetBoard.povIsUpwards())

@@ -153,7 +153,7 @@ public class GrabberSubsystem extends SubsystemBase{
     public void periodic() {
         // System.out.println(cymbalServo.getAngle());
         updateRollerCurrentAverage();
-        System.out.println("Average: " + getRollerCurrentAverage());
+        // System.out.println("Average: " + getRollerCurrentAverage());
     }
     
 

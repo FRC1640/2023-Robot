@@ -25,11 +25,11 @@ public class RunWristToPosition extends CommandBase{
 
     @Override
     public void end(boolean interrupted) {
-
+        wristSubsystem.runWrist(0);
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(position - wristSubsystem.getWristPosition()) < 3;
+        return Math.abs(position - wristSubsystem.getWristPosition()) < .03;
     }
 }
