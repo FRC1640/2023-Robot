@@ -5,8 +5,9 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 
 public class GrabberAutomatic extends CommandBase{
     final double speedNormal = -0.5;
-    final double speedGrabbed = -0.15;
-    final double outputCurrentThreshold = 35;
+    final double speedGrabbed = -0.05;
+    final double outputCurrentThreshold = 45;
+    boolean grabbed;
     GrabberSubsystem grabberSubsystem;
     public GrabberAutomatic(GrabberSubsystem grabberSubsystem) {
         this.grabberSubsystem = grabberSubsystem;
@@ -15,16 +16,21 @@ public class GrabberAutomatic extends CommandBase{
 
     @Override
     public void initialize() {
-
+        grabbed = false;
     }
 
     @Override
     public void execute() {
-        double speed = speedNormal;
         if (grabberSubsystem.getRollerCurrentAverage() >= outputCurrentThreshold){
-            speed = speedGrabbed;
+            grabbed = true;
         }
-        grabberSubsystem.spinGrabber(speed);
+        
+        if (grabbed){
+            grabberSubsystem.spinGrabber(speedGrabbed);
+        }
+        else{
+            grabberSubsystem.spinGrabber(speedNormal);
+        }
     }
 
     @Override

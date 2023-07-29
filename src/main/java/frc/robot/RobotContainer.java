@@ -172,10 +172,10 @@ public class RobotContainer {
 
     new Trigger(() -> operatorController.getAButtonPressed())
       .onTrue(new InstantCommand(
-        () -> currentArmCommand.schedule()));//.alongWith(new RunWristToPosition(wristSubsystem, armSubsystem.getPresetWrist(currentPreset)))
+        () -> currentArmCommand.schedule()).alongWith(new InstantCommand(() -> new RunWristToPosition(wristSubsystem, armSubsystem.getPresetWrist(currentPreset)).schedule())));//.alongWith(new RunWristToPosition(wristSubsystem, armSubsystem.getPresetWrist(currentPreset)))
 
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kLB))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.Substation, armSubsystem.createEndEffectorProfileCommand(Preset.Substation))));
+      .whileTrue(new InstantCommand(() -> setPreset(Preset.Test, armSubsystem.createEndEffectorProfileCommand(Preset.Test))));
   
     new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kLTAxis))
       .whileTrue(armStopCommand);

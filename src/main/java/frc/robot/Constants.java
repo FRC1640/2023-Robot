@@ -23,7 +23,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static class PhysicalDimensions {
     public static final double kLowerArmLength = Units.inchesToMeters(39);
-    public static final double kUpperArmLength = Units.inchesToMeters(35.4);
+    public static final double kUpperArmLength = Units.inchesToMeters(34);
   }
 
   public static class OperatorConstants {

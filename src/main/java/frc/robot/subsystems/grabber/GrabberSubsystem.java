@@ -22,13 +22,19 @@ public class GrabberSubsystem extends SubsystemBase{
     Servo cymbalServo = new Servo(0); 
     double servoOffset;
     RobotContainer robotContainer;
-    double[] rollerCurrentAverage = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    double[] rollerCurrentAverage = {
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 
 
     public GrabberSubsystem(RobotContainer robotContainer){
         setClamped(true); 
         this.robotContainer = robotContainer;
+        rollerMotor.setOpenLoopRampRate(0.5);
+        rollerMotor.setClosedLoopRampRate(0.5);
     }
 
     public void setClamped(boolean clamped){

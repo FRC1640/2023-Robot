@@ -103,6 +103,7 @@ public class ArmSubsystem extends SubsystemBase {
         Travel,
         Start,
         AutonTravel,
+        Test,
 
         Substation;
     }
@@ -113,15 +114,16 @@ public class ArmSubsystem extends SubsystemBase {
     public double conePickupY =  0.092684; // 0.1205 DEUX: 0.25
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
+        Map.entry(Preset.Test, ArmState.fromEndEffector(0.732920,1.083687,2.755127)),
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.490615, -0.096951,0)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY,0)), 
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.429764, -0.062263,0)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549,0)), // PRIME: 0.585774,0.890549 DEUX:
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.999581, 0.773865,0)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167,0)), // PRIME: 0.505084, 0.195167 DEUX:
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070,0)),// PRIME:0.290739, 0.354146 DEUX:
+        Map.entry(Preset.Travel, new ArmState(-27.929705, 141.601568,2.374267)),// PRIME:0.290739, 0.354146 DEUX:
         Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670,0)),// PRIME:0.113324, 0.311670 DEUX:
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.417123,1.089579,0)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.166123,1.258802,0.739746)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
@@ -131,8 +133,7 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316,0)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882,0)), 
         Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817,0)),
-        Map.entry(Preset.Start, ArmState.fromEndEffector(0.165677, 0.094516,0)),
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070,0)) 
+        Map.entry(Preset.Start, ArmState.fromEndEffector(0.165677, 0.094516,0))
     ));
 
     public ArmSubsystem(Resolver lowerEncoder,Resolver upperEncoder) {
