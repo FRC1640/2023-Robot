@@ -12,7 +12,7 @@ public class ExcusemeCommand extends CommandBase {
     public void initialize(){
 
         new Thread(() -> {
-            try(Socket s = new Socket("", 5000); OutputStream o = s.getOutputStream();){
+            try(Socket s = new Socket("10.16.40.146", 5000); OutputStream o = s.getOutputStream();){
                 o.write("GET /play HTTP/1.1\r\n".getBytes(StandardCharsets.UTF_8));
             }
             catch(Exception e){
