@@ -26,6 +26,10 @@ public class GrabberSubsystem extends SubsystemBase{
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
         0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 
@@ -117,23 +121,23 @@ public class GrabberSubsystem extends SubsystemBase{
     }
 
 
-    public void toggleClamped() {
-        boolean wasClamped = getClamped();
-        setClamped(!wasClamped);
-        if (wasClamped) {
-            cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); // reset servo after release
-            servoOffset = 0;
-            robotContainer.setGround(0);
-        }
-        else{
-            if (robotContainer.getCurrentPreset() == Preset.Ground){
-                robotContainer.setGround(1);
-            }
-            if (robotContainer.getCurrentPreset() == Preset.UprightConeGround){
-                robotContainer.setGround(2);
-            }
-        }
-    }
+    // public void toggleClamped() {
+    //     boolean wasClamped = getClamped();
+    //     setClamped(!wasClamped);
+    //     if (wasClamped) {
+    //         cymbalServo.setAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE); // reset servo after release
+    //         servoOffset = 0;
+    //         robotContainer.setGround(0);
+    //     }
+    //     else{
+    //         if (robotContainer.getCurrentPreset() == Preset.Ground){
+    //             robotContainer.setGround(1);
+    //         }
+    //         // if (robotContainer.getCurrentPreset() == Preset.UprightConeGround){
+    //         //     robotContainer.setGround(2);
+    //         // }
+    //     }
+    // }
 
     public void incramentServoUp(){
         if (cymbalServo.getAngle() < 176){

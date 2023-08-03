@@ -6,13 +6,15 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.auton.DoNothing;
 import frc.robot.auton.paths.Bump;
 import frc.robot.auton.paths.ChargePickup;
 import frc.robot.auton.paths.NoBump;
 import frc.robot.auton.paths.NoBumpTriple;
+import frc.robot.auton.paths.PlaceCharge;
+import frc.robot.auton.paths.PlaceLow;
 import frc.robot.auton.paths.OldPaths.DriveTest;
 import frc.robot.auton.paths.OldPaths.Place;
-import frc.robot.auton.paths.OldPaths.PlaceCharge;
 import frc.robot.auton.paths.OldPaths.PlaceCharge2;
 import frc.robot.auton.paths.OldPaths.PlaceOut;
 import frc.robot.auton.paths.OldPaths.PlaceOutPickupLeft;
@@ -38,17 +40,20 @@ public class DashboardInit {
         // sChooser.addOption("Place only", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("2 Place Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("2 Place Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("ChargePickup", new ChargePickup().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        // sChooser.addOption("ChargePickup", new ChargePickup().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Do Nothing", new DoNothing().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("RollerOut", new PlaceLow().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED 2 Place Right", new RedPlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED 2 Place Left", new RedPlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED Charge Pickup", new RedPlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("No Bump", new NoBump().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("No Bump Triple", new NoBumpTriple().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Bump", new Bump().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        // sChooser.addOption("No Bump", new NoBump().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        // sChooser.addOption("No Bump Triple", new NoBumpTriple().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        // sChooser.addOption("Bump", new Bump().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("Null", null);
         autonTab.add(sChooser).withSize(5, 5).withPosition(0, 0);
         driveTab.addString("Preset", () -> robotContainer.getCurrentPreset().name());
         driveTab.addBoolean("IsInCubeMode", () -> armSubsystem.getCubeMode()); //use .withProperties for color
+        
         // CameraServer.startAutomaticCapture();
         // driveTab.addCamera("Drive Camera", "USB Camera", "usb:/dev/video0").withSize(3, 3);
 

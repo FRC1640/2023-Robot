@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -13,6 +14,7 @@ import frc.robot.subsystems.arm.ArmSubsystem.Preset;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.ChangeGrabState;
+import frc.robot.subsystems.grabber.commands.GrabberSpin;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.subsystems.grabber.commands.UnGrab;
 
@@ -33,6 +35,8 @@ public class CreateEventMap {
         eventMap.put("UprightCone", armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.UprightConeGround));
         eventMap.put("LowPlacing", armSubsystem.createEndEffectorProfileCommandNoInstant(Preset.LowPlacing));
         eventMap.put("Wait1", new WaitCommand(1));
+        WaitCommand w = new WaitCommand(0.5);
+        eventMap.put("RollerPlace", new ParallelDeadlineGroup(w, w, new GrabberSpin(grabberSubsystem, 0.5)));
         return eventMap;
     }
 }

@@ -99,7 +99,7 @@ public class RobotContainer {
     dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
-    grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem));
+    grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem, driverController));
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
     //grabberSubsystem.setServoTurned(false);
     // grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
@@ -154,7 +154,7 @@ public class RobotContainer {
       //grabberSubsystem.toggleClamped()
     // new Trigger(() -> driverController.getRightBumper())
     //   .onTrue(new InstantCommand(() -> grabberSubsystem.toggleClamped()));
-    // new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.5));
+    new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.3));
     new Trigger(() -> driverController.getRightBumper()).whileTrue(new GrabberSpin(grabberSubsystem, 0.5));
 
     new Trigger(() -> operatorController.getRightBumper()).whileTrue(new RunWrist(wristSubsystem, 0.5));
@@ -186,8 +186,8 @@ public class RobotContainer {
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kA))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.MidPlacing, armSubsystem.create2dEndEffectorProfileCommand(Preset.MidPlacing, 1.9, 4.3, 0.6, 2))));
 
-    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kY))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround, armSubsystem.create2dEndEffectorProfileCommand(Preset.UprightConeGround, 4.5, 1.5, 2.5, 0.4))));
+    // new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kY))
+    //   .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround, armSubsystem.create2dEndEffectorProfileCommand(Preset.UprightConeGround, 4.5, 1.5, 2.5, 0.4))));
     
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kB))
       .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.LowPlacing))));
@@ -248,24 +248,24 @@ public class RobotContainer {
     return currentPreset;
   }
 
-  public Command autoGrabCommand(){
-    System.out.println(currentPreset);
-    if (currentPreset == Preset.Ground || currentPreset == Preset.UprightConeGround){
-      System.out.println("we9ugwui");
-      return new SequentialCommandGroup(
-        new WaitCommand(0.5),
-        new ChangeGrabState(grabberSubsystem, true),
-        new WaitCommand(0.3),
-        armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0));
-    }
-    else{
-      return new SequentialCommandGroup(
-        armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2),
-        new WaitCommand(0.5),
-        new ChangeGrabState(grabberSubsystem, true));
-    }
+  // public Command autoGrabCommand(){
+  //   System.out.println(currentPreset);
+  //   if (currentPreset == Preset.Ground || currentPreset == Preset.UprightConeGround){
+  //     System.out.println("we9ugwui");
+  //     return new SequentialCommandGroup(
+  //       new WaitCommand(0.5),
+  //       new ChangeGrabState(grabberSubsystem, true),
+  //       new WaitCommand(0.3),
+  //       armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 1.9, 4.3, 0.6, 2.0));
+  //   }
+  //   else{
+  //     return new SequentialCommandGroup(
+  //       armSubsystem.create2dEndEffectorProfileCommand(Preset.Pickup, 2, 2, 2, 2),
+  //       new WaitCommand(0.5),
+  //       new ChangeGrabState(grabberSubsystem, true));
+  //   }
 
-  }
+  // }
   public void driveWrist(){
     // grabberSubsystem.runWristToPosition(armSubsystem.getPresetWrist(currentPreset));
   }

@@ -114,25 +114,23 @@ public class ArmSubsystem extends SubsystemBase {
     public double conePickupY =  0.092684; // 0.1205 DEUX: 0.25
     private final Map<Preset, ArmState> coneMap =
     new EnumMap<>(Map.ofEntries(//0.230516, 0.311670
+        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(1, 1, 1)), // bad dont use
         Map.entry(Preset.Test, ArmState.fromEndEffector(0.732920,1.083687,2.755127)),
-        Map.entry(Preset.Ground, ArmState.fromEndEffector(0.490615, -0.096951,0)), // PRIME: 0.592344, -0.122320 DEW: 0.78, 0.16
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY,0)), 
-        Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.429764, -0.062263,0)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
+        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.141603, 0.232973,2.576904)),  // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549,0)), // PRIME: 0.585774,0.890549 DEUX:
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.999581, 0.773865,0)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.800977, 0.970380,1.058350)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167,0)), // PRIME: 0.505084, 0.195167 DEUX:
-        Map.entry(Preset.Travel, new ArmState(-27.929705, 141.601568,2.374267)),// PRIME:0.290739, 0.354146 DEUX:
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.343414, 0.551566, 2.261963)),// PRIME:0.290739, 0.354146 DEUX:
         Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670,0)),// PRIME:0.113324, 0.311670 DEUX:
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.166123,1.258802,0.739746)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.175758,1.297639,0.739746)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
     new EnumMap<>(Map.ofEntries(
         Map.entry(Preset.Ground, ArmState.fromEndEffector(0.513291, -0.073329,0)), // PRIME: 0.513291, -0.073329 DEUX: 0.75,  0.19
-        Map.entry(Preset.Pickup, ArmState.fromEndEffector(0.153788, 0.105571,0)), 
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.964549, 0.625316,0)),
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.800977, 0.970380,1.263428)),
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.595786, 0.809882,0)), 
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.379210, 0.943817,0)),
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(0.907304, 0.806891,2.521972)),
         Map.entry(Preset.Start, ArmState.fromEndEffector(0.165677, 0.094516,0))
     ));
 
