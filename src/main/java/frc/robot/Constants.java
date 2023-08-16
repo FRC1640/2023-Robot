@@ -25,7 +25,7 @@ public final class Constants {
   }
 
   public static class ServoSmasAngles {
-    public static double HIGH_ANGLE = 5;
+    public static double HIGH_ANGLE = 180;
     public static double SERVO_WAIT = 0.5;
     public static double CYMBAL_SERVO_MID_ANGLE = 30;
     public static double CYMBAL_SERVO_UPRIGHT_ANGLE = 90; 

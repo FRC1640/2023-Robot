@@ -203,7 +203,7 @@ public class RobotContainer {
       return;
     }
     wasEnabled = true;
-    // DataLogManager.log("Robot was enabled for the first time.");
+    // DataLogMana  ger.log("Robot was enabled for the first time.");
   }
 
   /**
@@ -246,7 +246,7 @@ public class RobotContainer {
 
 
     if (currentPreset == Preset.MidPlacing && groundPickup == 0){
-      grabberSubsystem.servoMove(30);
+      grabberSubsystem.servoMove(145);
     }
     if (currentPreset == Preset.MidPlacing && groundPickup == 1){
       grabberSubsystem.servoMove(130);

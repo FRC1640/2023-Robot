@@ -117,7 +117,7 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.Pickup, ArmState.fromEndEffector(conePickupX, conePickupY)), 
         Map.entry(Preset.UprightConeGround, ArmState.fromEndEffector(0.418894, -0.007084)), // PRIME: 0.464790, -0.010481 DEUX: 0.75,  0.19 !! Might work both?
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549)), // PRIME: 0.585774,0.890549 DEUX:
-        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.972195, 0.755963)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
+        Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.952172, 0.733479)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167)), // PRIME: 0.505084, 0.195167 DEUX:
         Map.entry(Preset.Travel, ArmState.fromEndEffector(0.272431, 0.269070)),// PRIME:0.290739, 0.354146 DEUX:
         Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670)),// PRIME:0.113324, 0.311670 DEUX:
