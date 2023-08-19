@@ -121,7 +121,7 @@ public class RobotContainer {
     //  .onFalse(new Stop(driveSubsystem));
     new Trigger(() -> driverController.getYButton())
       .whileTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), 
-      new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(closestNode.getX(), closestNode.getY(), new Rotation2d(Math.PI)), gyro).schedule())).finallyDo(() -> driveSubsystem.drive(0,0,0,true)));
+      new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(closestNode.getX(), closestNode.getY(), new Rotation2d(Math.PI)), gyro).schedule())).finallyDo((n) -> driveSubsystem.drive(0,0,0,true)));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
