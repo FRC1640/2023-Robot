@@ -117,12 +117,11 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    // new Trigger(() -> driverController.getYButton()) TODO: put this back
-    // .whileTrue(new Stop(driveSubsystem));
-      new Trigger(() -> driverController.getYButton()) //TODO: make this not be here
-      
-    .onTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), 
-    new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(closestNode.getX(), closestNode.getY(), new Rotation2d(Math.PI)), gyro).schedule())));
+    //new Trigger(() -> driverController.getYButton())
+    //  .onFalse(new Stop(driveSubsystem));
+    new Trigger(() -> driverController.getYButton())
+      .whileTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), 
+      new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(closestNode.getX(), closestNode.getY(), new Rotation2d(Math.PI)), gyro).schedule())).finallyDo(() -> driveSubsystem.drive(0,0,0,true)));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
@@ -268,7 +267,7 @@ public class RobotContainer {
 
 
     if (currentPreset == Preset.MidPlacing && groundPickup == 0){
-      grabberSubsystem.servoMove(30);
+      grabberSubsystem.servoMove(145);
     }
     if (currentPreset == Preset.MidPlacing && groundPickup == 1){
       grabberSubsystem.servoMove(130);

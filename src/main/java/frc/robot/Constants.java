@@ -32,7 +32,7 @@ public final class Constants {
   }
 
   public static class ServoSmasAngles {
-    public static double HIGH_ANGLE = 5;
+    public static double HIGH_ANGLE = 180;
     public static double SERVO_WAIT = 0.5;
     public static double CYMBAL_SERVO_MID_ANGLE = 30;
     public static double CYMBAL_SERVO_UPRIGHT_ANGLE = 90; 
@@ -43,8 +43,8 @@ public final class Constants {
 
     //blue 1, blue 2, blue 3,...,red 1, red 2, red 3
     //blue and red 1 is the placement closest to the community wall. 
-    public static final Translation2d[] placementPositions = {new Translation2d(1.7, 5.2), new Translation2d(1.7,4.5), 
-        new Translation2d(1.7,3.9), new Translation2d(1.7,3.4), new Translation2d(1.7,2.7)};
+    public static final Translation2d[] placementPositions = {new Translation2d(1.6, 5.2), new Translation2d(1.6,4.5), 
+        new Translation2d(1.6,4.028047), new Translation2d(1.6,3.4), new Translation2d(1.6,2.7)};
 
     public static final double fieldWidth = Units.inchesToMeters(315.5);
     public static final List<AprilTag> aprilTags = List.of(
