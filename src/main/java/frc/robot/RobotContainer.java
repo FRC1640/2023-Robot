@@ -23,6 +23,7 @@ import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
 import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.drive.commands.Stop;
+import frc.robot.subsystems.drive.commands.StopMovingCommand;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.ChangeGrabState;
@@ -117,8 +118,8 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    //new Trigger(() -> driverController.getYButton())
-    //  .onFalse(new Stop(driveSubsystem));
+    new Trigger(() -> driverController.getYButton())
+      .onFalse(new StopMovingCommand(driveSubsystem));
     new Trigger(() -> driverController.getYButton())
       .whileTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), 
       new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(closestNode.getX(), closestNode.getY(), new Rotation2d(Math.PI)), gyro).schedule())).finallyDo((n) -> driveSubsystem.drive(0,0,0,true)));

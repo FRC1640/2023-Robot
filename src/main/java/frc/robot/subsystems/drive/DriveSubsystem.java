@@ -191,14 +191,14 @@ public class DriveSubsystem extends SubsystemBase {
       var aprilTagPose = FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(limelight.getAprilTagID());
       var distanceFromPrimaryTag = aprilTagPose.get().getTranslation().getDistance(pose.getTranslation());
       Pose2d pose2d = new Pose2d(new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ() + Math.PI));
-      if (distanceFromPrimaryTag < 2){
+      if (distanceFromPrimaryTag < 2.6){
         // System.out.println("AprilTagPose:" + pose2d);
         odometry.addVisionMeasurement(pose2d, Timer.getFPGATimestamp() - poseArray[6] / 1000.0, calculateVisionStdDevs(distanceFromPrimaryTag));
         
       }
       // System.out.println("AprilTagPose: " + aprilTagPose.get().getTranslation());
       
-      // System.out.println("Distance: " + distanceFromPrimaryTag);
+      System.out.println("Distance: " + distanceFromPrimaryTag);
       
     }
     odometry.update(
