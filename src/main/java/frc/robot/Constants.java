@@ -44,7 +44,9 @@ public final class Constants {
     //blue 1, blue 2, blue 3,...,red 1, red 2, red 3
     //blue and red 1 is the placement closest to the community wall. 
     public static final Translation2d[] placementPositions = {new Translation2d(1.6, 5.2), new Translation2d(1.6,4.5), 
-        new Translation2d(1.6,4.028047), new Translation2d(1.6,3.4), new Translation2d(1.6,2.7)};
+        new Translation2d(1.6,3.839959), new Translation2d(1.6,3.4), new Translation2d(1.6,2.7), 
+        new Translation2d(1.6, 2.147737), new Translation2d(1.6, 1.694095), new Translation2d(1.6, 1.015319),
+        new Translation2d(1.6, 0.55)};
 
     public static final double fieldWidth = Units.inchesToMeters(315.5);
     public static final List<AprilTag> aprilTags = List.of(
