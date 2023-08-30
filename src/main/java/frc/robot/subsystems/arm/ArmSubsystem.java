@@ -120,9 +120,9 @@ public class ArmSubsystem extends SubsystemBase {
         Map.entry(Preset.Substation, ArmState.fromEndEffector(0.585774,0.890549,0)), // PRIME: 0.585774,0.890549 DEUX:
         Map.entry(Preset.MidPlacing, ArmState.fromEndEffector(0.800977, 0.970380,1.058350)), // PRIME: 0.941967, 0.860316 DEUX: 0.67, 1.34
         Map.entry(Preset.LowPlacing, ArmState.fromEndEffector(0.505084, 0.195167,0)), // PRIME: 0.505084, 0.195167 DEUX:
-        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.343414, 0.551566, 2.261963)),// PRIME:0.290739, 0.354146 DEUX:
+        Map.entry(Preset.Travel, ArmState.fromEndEffector(0.292684, 0.471422, 2.446289)),// PRIME:0.290739, 0.354146 DEUX:
         Map.entry(Preset.AutonTravel, ArmState.fromEndEffector(0.113324, 0.311670,0)),// PRIME:0.113324, 0.311670 DEUX:
-        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.175758,1.297639,0.739746)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
+        Map.entry(Preset.HighPlacing, ArmState.fromEndEffector(1.171923,1.267925,0.739746)) // PRIME: 1.432694,1.177668   1.447432, 1.202866
     ));
 
     private final Map<Preset, ArmState> cubeMap =
