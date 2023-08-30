@@ -13,6 +13,7 @@ import frc.robot.auton.paths.NoBump;
 import frc.robot.auton.paths.NoBumpTriple;
 import frc.robot.auton.paths.PlaceCharge;
 import frc.robot.auton.paths.PlaceLow;
+import frc.robot.auton.paths.TestSquare;
 import frc.robot.auton.paths.OldPaths.DriveTest;
 import frc.robot.auton.paths.OldPaths.Place;
 import frc.robot.auton.paths.OldPaths.PlaceCharge2;
@@ -42,6 +43,7 @@ public class DashboardInit {
         // sChooser.addOption("2 Place Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("ChargePickup", new ChargePickup().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("Do Nothing", new DoNothing().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Test Square", new TestSquare().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         sChooser.addOption("RollerOut", new PlaceLow().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED 2 Place Right", new RedPlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED 2 Place Left", new RedPlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
