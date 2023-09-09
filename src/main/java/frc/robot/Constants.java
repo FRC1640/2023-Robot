@@ -52,9 +52,9 @@ public final class Constants {
         new Pose2d(1.4, 2.147737, new Rotation2d(Math.PI)), new Pose2d(1.4, 1.694095, new Rotation2d(Math.PI)), new Pose2d(1.4, 1.015319, new Rotation2d(Math.PI)),
         new Pose2d(1.4, 0.55, new Rotation2d(Math.PI)),
         //red:
-        new Pose2d(1.6+13.5,3.839959, new Rotation2d(0)), new Pose2d(1.6+13.5,3.4, new Rotation2d(0)), new Pose2d(1.6+13.5,2.7, new Rotation2d(0)), 
-        new Pose2d(1.6+13.5, 2.147737, new Rotation2d(0)), new Pose2d(1.6+13.5, 1.694095, new Rotation2d(0)), new Pose2d(1.6+13.5, 1.015319, new Rotation2d(0)),
-        new Pose2d(1.6+13.5, 0.55, new Rotation2d(0))};
+        new Pose2d(1.6+13.6,3.839959, new Rotation2d(0)), new Pose2d(1.6+13.6,3.4, new Rotation2d(0)), new Pose2d(1.6+13.6,2.7, new Rotation2d(0)), 
+        new Pose2d(1.6+13.6, 2.147737, new Rotation2d(0)), new Pose2d(1.6+13.6, 1.694095, new Rotation2d(0)), new Pose2d(1.6+13.6, 1.015319, new Rotation2d(0)),
+        new Pose2d(1.6+13.6, 0.55, new Rotation2d(0))};
 
     public static final double fieldWidth = Units.inchesToMeters(315.5);
     public static final List<AprilTag> aprilTags = List.of(
