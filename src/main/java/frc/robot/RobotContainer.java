@@ -65,7 +65,7 @@ public class RobotContainer {
   Compressor pcmCompressor= new Compressor(0, PneumaticsModuleType.CTREPCM);
   GrabberSubsystem grabberSubsystem = new GrabberSubsystem(this);
   FootSubsystem footSubsystem = new FootSubsystem();
-  Translation2d closestNode;
+  Pose2d closestNode;
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
@@ -122,7 +122,7 @@ public class RobotContainer {
       .onFalse(new StopMovingCommand(driveSubsystem));
     new Trigger(() -> driverController.getYButton())
       .whileTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), 
-      new InstantCommand(() -> DriveToPosition.align(driveSubsystem, new Pose2d(closestNode.getX(), closestNode.getY(), new Rotation2d(Math.PI)), gyro).schedule())).finallyDo((n) -> driveSubsystem.drive(0,0,0,true)));
+      new InstantCommand(() -> DriveToPosition.align(driveSubsystem, closestNode, gyro).schedule())).finallyDo((n) -> driveSubsystem.drive(0,0,0,true)));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
@@ -239,10 +239,10 @@ public class RobotContainer {
   
   public void findClosestNode(){
     double smallestDistance = 99999999;
-    for (Translation2d n : Constants.FieldConstants.placementPositions){
-      System.out.println("dist: " + driveSubsystem.getPose().getTranslation().getDistance(n));
-      if (driveSubsystem.getPose().getTranslation().getDistance(n) < smallestDistance){
-        smallestDistance = driveSubsystem.getPose().getTranslation().getDistance(n);
+    for (Pose2d n : Constants.FieldConstants.placementPositions){
+      System.out.println("dist: " + driveSubsystem.getPose().getTranslation().getDistance(n.getTranslation()));
+      if (driveSubsystem.getPose().getTranslation().getDistance(n.getTranslation()) < smallestDistance){
+        smallestDistance = driveSubsystem.getPose().getTranslation().getDistance(n.getTranslation());
         closestNode = n;
         
       }

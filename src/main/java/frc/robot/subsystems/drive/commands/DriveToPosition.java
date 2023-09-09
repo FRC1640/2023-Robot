@@ -29,7 +29,7 @@ public class DriveToPosition {
           );
         PPSwerveControllerCommand path = new PPSwerveControllerCommand(alignWithTag,
             driveSubsystem::getPose, // Functional interface to feed supplier
-            kDriveKinematics, new PIDController(1, 0.0, 0.0), new PIDController(1, 0.0, 0.0), new PIDController(0.4, 0, 0),
+            kDriveKinematics, new PIDController(1, 0.0, 0.0), new PIDController(1, 0.0, 0.0), new PIDController(0.3, 0, 0),
             driveSubsystem::setModuleStates, false, driveSubsystem);
         return path;
     }

@@ -9,8 +9,9 @@ import java.util.List;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -43,10 +44,17 @@ public final class Constants {
 
     //blue 1, blue 2, blue 3,...,red 1, red 2, red 3
     //blue and red 1 is the placement closest to the community wall. 
-    public static final Translation2d[] placementPositions = {new Translation2d(1.6, 5.2), new Translation2d(1.6,4.5), 
-        new Translation2d(1.6,3.839959), new Translation2d(1.6,3.4), new Translation2d(1.6,2.7), 
-        new Translation2d(1.6, 2.147737), new Translation2d(1.6, 1.694095), new Translation2d(1.6, 1.015319),
-        new Translation2d(1.6, 0.55)};
+    
+    public static final Pose2d[] placementPositions = {
+        //blue:
+        new Pose2d(1.4, 5.2, new Rotation2d(Math.PI)), new Pose2d(1.4,4.5, new Rotation2d(Math.PI)), 
+        new Pose2d(1.4,3.839959, new Rotation2d(Math.PI)), new Pose2d(1.4,3.4, new Rotation2d(Math.PI)), new Pose2d(1.4,2.7, new Rotation2d(Math.PI)), 
+        new Pose2d(1.4, 2.147737, new Rotation2d(Math.PI)), new Pose2d(1.4, 1.694095, new Rotation2d(Math.PI)), new Pose2d(1.4, 1.015319, new Rotation2d(Math.PI)),
+        new Pose2d(1.4, 0.55, new Rotation2d(Math.PI)),
+        //red:
+        new Pose2d(1.6+13.5,3.839959, new Rotation2d(0)), new Pose2d(1.6+13.5,3.4, new Rotation2d(0)), new Pose2d(1.6+13.5,2.7, new Rotation2d(0)), 
+        new Pose2d(1.6+13.5, 2.147737, new Rotation2d(0)), new Pose2d(1.6+13.5, 1.694095, new Rotation2d(0)), new Pose2d(1.6+13.5, 1.015319, new Rotation2d(0)),
+        new Pose2d(1.6+13.5, 0.55, new Rotation2d(0))};
 
     public static final double fieldWidth = Units.inchesToMeters(315.5);
     public static final List<AprilTag> aprilTags = List.of(
