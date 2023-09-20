@@ -13,6 +13,9 @@ import frc.robot.auton.paths.NoBump;
 import frc.robot.auton.paths.NoBumpTriple;
 import frc.robot.auton.paths.PlaceCharge;
 import frc.robot.auton.paths.PlaceLow;
+import frc.robot.auton.paths.RollerHigh;
+import frc.robot.auton.paths.RollerHighWall;
+import frc.robot.auton.paths.RollerLow2;
 import frc.robot.auton.paths.TestSquare;
 import frc.robot.auton.paths.OldPaths.DriveTest;
 import frc.robot.auton.paths.OldPaths.Place;
@@ -27,24 +30,28 @@ import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class DashboardInit {
     
     private SendableChooser<Command> sChooser;
-    public DashboardInit(Gyro gyro, ArmSubsystem armSubsystem, DriveSubsystem driveSubsystem, GrabberSubsystem grabberSubsystem, RobotContainer robotContainer){
+    public DashboardInit(Gyro gyro, ArmSubsystem armSubsystem, DriveSubsystem driveSubsystem, GrabberSubsystem grabberSubsystem, RobotContainer robotContainer, WristSubsystem wristSubsystem){
         ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
         ShuffleboardTab autonTab = Shuffleboard.getTab("Auton");
         sChooser = new SendableChooser<Command>();
         // sChooser.addOption("Place out", new PlaceOut().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("NoBumpHigh", new RollerHigh().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
+        sChooser.addOption("BumpHigh",  new RollerHighWall().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
+        sChooser.addOption("RollerLowDouble", new RollerLow2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
+        sChooser.addOption("Charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         // sChooser.addOption("Charge Pickup", new PlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("Place only", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("2 Place Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("2 Place Right", new PlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("ChargePickup", new ChargePickup().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Do Nothing", new DoNothing().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("Test Square", new TestSquare().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
-        sChooser.addOption("RollerOut", new PlaceLow().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("Do Nothing", new DoNothing().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
+        sChooser.addOption("Test Square", new TestSquare().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
+        sChooser.addOption("RollerOut", new PlaceLow().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         // sChooser.addOption("RED 2 Place Right", new RedPlaceOutPickupRight().loadAuto( gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED 2 Place Left", new RedPlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("RED Charge Pickup", new RedPlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));

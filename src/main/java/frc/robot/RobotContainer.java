@@ -96,7 +96,7 @@ public class RobotContainer {
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
     wristSubsystem = new WristSubsystem(wristEncoder);
     armStopCommand  = new ArmStopCommand(armSubsystem);
-    dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this);
+    dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this, wristSubsystem);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
     grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem, driverController));
@@ -193,7 +193,7 @@ public class RobotContainer {
       .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.LowPlacing))));
     
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kRB))
-    .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.create2dEndEffectorProfileCommand(Preset.Ground, 4.5, 1.5, 2.5, 0.4))));
+    .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.create2dEndEffectorProfileCommand(Preset.Ground, 4.5, 0.4, 4, 0.1))));
     
       new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButton())
       .whileTrue(new InstantCommand(

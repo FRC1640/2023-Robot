@@ -47,14 +47,14 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.subsystems.grabber.commands.UnGrab;
 import frc.robot.subsystems.wrist.WristSubsystem;
-public class TestSquare {
+public class RollerHigh {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
-  List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("TestSquare", new PathConstraints(2, 2));
+  List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("RollerHigh", new PathConstraints(2, 2));
 
-  public TestSquare(){
+  public RollerHigh(){
 
   }
   /** Example static factory for an autonomous command. */

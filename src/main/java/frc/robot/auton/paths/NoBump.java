@@ -46,6 +46,7 @@ import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.SetGrabCommand;
 import frc.robot.subsystems.grabber.commands.UnGrab;
+import frc.robot.subsystems.wrist.WristSubsystem;
 public class NoBump {
   public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(Math.PI, Math.PI);
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
@@ -57,12 +58,12 @@ public class NoBump {
 
   }
   /** Example static factory for an autonomous command. */
-  public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem) { 
+  public CommandBase loadAuto(Gyro gyro, DriveSubsystem swerve, ArmSubsystem armSubsystem, GrabberSubsystem grabberSubsystem, WristSubsystem wristSubsystem) { 
     
     GyroOffsetCommand gyroCommand = new GyroOffsetCommand(gyro, 180);
     kDriveKinematics = swerve.createKinematics();
     Command setConeMode = new InstantCommand(() -> armSubsystem.setIsInCubeMode(false));
-    HashMap<String, Command> eventMap = CreateEventMap.EventMap(grabberSubsystem, armSubsystem, swerve);
+    HashMap<String, Command> eventMap = CreateEventMap.EventMap(grabberSubsystem, armSubsystem, swerve, wristSubsystem);
     SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
         swerve::getPose, // Pose2d supplier
         swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto

@@ -1,0 +1,109 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.8412648791069448,
+        "y": 1.0619826367911074
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.7482659580692523,
+        "y": 0.5937967431542155
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "RollerHigh"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 7.276788912545289,
+        "y": 0.9477909554164369
+      },
+      "prevControl": {
+        "x": 4.970116948776896,
+        "y": 0.6965692563916966
+      },
+      "nextControl": {
+        "x": 9.583460876313682,
+        "y": 1.199012654441177
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "RollerPickupTravel"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.8526840472484365,
+        "y": 1.073401804923269
+      },
+      "prevControl": {
+        "x": 4.753152754168759,
+        "y": 0.3083175397120046
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "RollerHigh"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 0.0,
+      "names": [
+        "event",
+        "RollerHigh"
+      ]
+    },
+    {
+      "position": 1.1,
+      "names": [
+        "event",
+        "RollerPickupTravel"
+      ]
+    },
+    {
+      "position": 0.0,
+      "names": [
+        "event",
+        "RollerGround"
+      ]
+    },
+    {
+      "position": 0.1,
+      "names": [
+        "event",
+        "RollerGround"
+      ]
+    }
+  ]
+}
