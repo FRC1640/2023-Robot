@@ -165,8 +165,4 @@ public class GrabberSubsystem extends SubsystemBase{
         updateRollerCurrentAverage();
         // System.out.println("Average: " + getRollerCurrentAverage());
     }
-    
-
-
-
 }

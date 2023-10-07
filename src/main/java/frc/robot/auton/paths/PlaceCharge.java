@@ -53,7 +53,7 @@ public class PlaceCharge {
   public static final double x = Units.inchesToMeters(10.375); // 10.375"
   public static final double y = Units.inchesToMeters(12.375); // 12.375"
   public static SwerveDriveKinematics kDriveKinematics;
-  List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("RollerCharge", new PathConstraints(1.75, 2));
+  List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("RollerCharge", new PathConstraints(1.5, 1.5));
 
   public PlaceCharge(){
 

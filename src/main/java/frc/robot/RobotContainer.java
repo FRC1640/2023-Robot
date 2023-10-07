@@ -189,11 +189,11 @@ public class RobotContainer {
     // new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kY))
     //   .whileTrue(new InstantCommand(() -> setPreset(Preset.UprightConeGround, armSubsystem.create2dEndEffectorProfileCommand(Preset.UprightConeGround, 4.5, 1.5, 2.5, 0.4))));
     
-    new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kB))
-      .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.LowPlacing))));
+    // new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kB))
+    //   .whileTrue(new InstantCommand(() -> setPreset(Preset.LowPlacing, armSubsystem.createEndEffectorProfileCommand(Preset.LowPlacing))));
     
     new Trigger(() -> presetBoard.getRawButton(PresetBoard.Button.kRB))
-    .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.create2dEndEffectorProfileCommand(Preset.Ground, 4.5, 0.4, 4, 0.1))));
+    .whileTrue(new InstantCommand(() -> setPreset(Preset.Ground, armSubsystem.create2dEndEffectorProfileCommand(Preset.Ground, 5, 0.1, 5, 0.1))));
     
       new Trigger(() -> presetBoard.getAxisButton(PresetBoard.Axis.kRTAxis) || operatorController.getXButton())
       .whileTrue(new InstantCommand(

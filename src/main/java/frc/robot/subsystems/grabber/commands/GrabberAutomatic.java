@@ -31,7 +31,7 @@ public class GrabberAutomatic extends CommandBase{
         
         if (grabbed){
             grabberSubsystem.spinGrabber(speedGrabbed);
-            controller.setRumble(RumbleType.kBothRumble, 0.1);
+            controller.setRumble(RumbleType.kBothRumble, 0.2);
             
         }
         else{
