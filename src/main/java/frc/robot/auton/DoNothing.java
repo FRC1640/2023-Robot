@@ -79,4 +79,3 @@ public class DoNothing {
     return new InstantCommand();
   }
 }
-

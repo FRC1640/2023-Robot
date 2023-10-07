@@ -9,7 +9,9 @@ import java.util.List;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -31,7 +33,7 @@ public final class Constants {
   }
 
   public static class ServoSmasAngles {
-    public static double HIGH_ANGLE = 5;
+    public static double HIGH_ANGLE = 180;
     public static double SERVO_WAIT = 0.5;
     public static double CYMBAL_SERVO_MID_ANGLE = 30;
     public static double CYMBAL_SERVO_UPRIGHT_ANGLE = 90; 
@@ -39,6 +41,21 @@ public final class Constants {
   }
   public static class FieldConstants{
     public static final double fieldLength = Units.inchesToMeters(651.25);
+
+    //blue 1, blue 2, blue 3,...,red 1, red 2, red 3
+    //blue and red 1 is the placement closest to the community wall. 
+    
+    public static final Pose2d[] placementPositions = {
+        //blue:
+        new Pose2d(1.4, 5.2, new Rotation2d(Math.PI)), new Pose2d(1.4,4.5, new Rotation2d(Math.PI)), 
+        new Pose2d(1.4,3.839959, new Rotation2d(Math.PI)), new Pose2d(1.4,3.4, new Rotation2d(Math.PI)), new Pose2d(1.4,2.7, new Rotation2d(Math.PI)), 
+        new Pose2d(1.4, 2.147737, new Rotation2d(Math.PI)), new Pose2d(1.4, 1.694095, new Rotation2d(Math.PI)), new Pose2d(1.4, 1.015319, new Rotation2d(Math.PI)),
+        new Pose2d(1.4, 0.55, new Rotation2d(Math.PI)),
+        //red:
+        new Pose2d(1.6+13.6,3.839959, new Rotation2d(0)), new Pose2d(1.6+13.6,3.4, new Rotation2d(0)), new Pose2d(1.6+13.6,2.7, new Rotation2d(0)), 
+        new Pose2d(1.6+13.6, 2.147737, new Rotation2d(0)), new Pose2d(1.6+13.6, 1.694095, new Rotation2d(0)), new Pose2d(1.6+13.6, 1.015319, new Rotation2d(0)),
+        new Pose2d(1.6+13.6, 0.55, new Rotation2d(0))};
+
     public static final double fieldWidth = Units.inchesToMeters(315.5);
     public static final List<AprilTag> aprilTags = List.of(
       new AprilTag(

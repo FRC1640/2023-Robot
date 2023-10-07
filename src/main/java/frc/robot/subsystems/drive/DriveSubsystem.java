@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -60,6 +61,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double translationStdDevCoefficient = 0.3;
   private final double rotationStdDevCoefficient = 0.9;
+  public static final Transform3d limelightRobotToCamera = new Transform3d(
+    new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(0), Units.inchesToMeters(34.25)),
+    new Rotation3d(0, Math.toRadians(15), Math.PI));
   // private final Field2d field2d = new Field2d();
 
   // public Field2d field = new Field2d();
@@ -171,18 +175,6 @@ public class DriveSubsystem extends SubsystemBase {
     // gyro.getRotation2d().getDegrees());
   }
   /** Updates the field relative position of the robot. */
-  private boolean isValidPose(Pose3d pose) {
-    boolean isWithinField = MathUtils.isInRange(pose.getY(), -5, FieldConstants.fieldWidth + 5)
-            && MathUtils.isInRange(pose.getX(), -5, FieldConstants.fieldLength + 5)
-            && MathUtils.isInRange(pose.getZ(), 0, 5);
-
-    boolean isNearRobot = getPose()
-                    .getTranslation()
-                    .getDistance(pose.getTranslation().toTranslation2d())
-            < 1.4;
-
-    return isWithinField && isNearRobot;
-}
   private Matrix<N3, N1> calculateVisionStdDevs(double distance) {
     var translationStdDev = translationStdDevCoefficient * Math.pow(distance, 2);
     var rotationStdDev = rotationStdDevCoefficient * Math.pow(distance, 2);
@@ -195,16 +187,18 @@ public class DriveSubsystem extends SubsystemBase {
     double[] poseArray = limelight.getBotPose();
     if (limelight.getAprilTagID() >= 1 && limelight.getAprilTagID() <= 8){
       
-      Pose3d pose = ArrayToPose.convert(poseArray);
+      Pose3d pose = ArrayToPose.convert(poseArray).transformBy(limelightRobotToCamera.inverse());
       var aprilTagPose = FieldConstants.APRIL_TAG_FIELD_LAYOUT.getTagPose(limelight.getAprilTagID());
       var distanceFromPrimaryTag = aprilTagPose.get().getTranslation().getDistance(pose.getTranslation());
-      if (isValidPose(pose)){
-        Pose2d pose2d = new Pose2d(new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ()));
+      Pose2d pose2d = new Pose2d(new Translation2d(pose.getX(), pose.getY()), new Rotation2d(pose.getRotation().getZ() + Math.PI));
+      if (distanceFromPrimaryTag < 2.6){
+        // System.out.println("AprilTagPose:" + pose2d);
         odometry.addVisionMeasurement(pose2d, Timer.getFPGATimestamp() - poseArray[6] / 1000.0, calculateVisionStdDevs(distanceFromPrimaryTag));
         
       }
-      System.out.println("AprilTagPose: " + aprilTagPose.get().getTranslation());
-      System.out.println("Pose:" + pose.getTranslation());
+      // System.out.println("AprilTagPose: " + aprilTagPose.get().getTranslation());
+      
+      System.out.println("Distance: " + distanceFromPrimaryTag);
       
     }
     odometry.update(
@@ -216,7 +210,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return odometry.getEstimatedPosition();
+    return new Pose2d(odometry.getEstimatedPosition().getX(), odometry.getEstimatedPosition().getY(), odometry.getEstimatedPosition().getRotation());
+  }
+
+  public void resetOdometryRot(){
+    resetOdometry(new Pose2d(getPose().getTranslation().getX(), getPose().getTranslation().getY(), gyro.getGyroAngle()));
   }
 
   public void resetEncoders() {
@@ -227,24 +225,28 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     updateOdometry();
     updateNetworkTables();
+    // System.out.println("Pose: " + getPose());
     // field.setRobotPose(getPose());
   }
   NetworkTableInstance nt;
   NetworkTable odometryTable, limelightTable;
-  DoublePublisher xPub, yPub; 
+  DoublePublisher xPub, yPub, rotPub; 
 
   private void setupNetworkTables() {
       nt = NetworkTableInstance.getDefault();
       odometryTable = nt.getTable("odometry");
       xPub = odometryTable.getDoubleTopic("x").publish();
       yPub = odometryTable.getDoubleTopic("y").publish();
+      rotPub = odometryTable.getDoubleTopic("rot").publish();
   }
 
   private void updateNetworkTables() {
       double x = getPose().getX();
       double y = getPose().getY();
+      double rot = getPose().getRotation().getDegrees();
 
       xPub.set(x);
       yPub.set(y);
+      rotPub.set(rot);
   }
 }

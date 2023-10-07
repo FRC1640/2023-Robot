@@ -18,10 +18,12 @@ import frc.robot.subsystems.arm.commands.ArmEndEffectorCommand;
 import frc.robot.subsystems.arm.commands.ArmManualCommand;
 import frc.robot.subsystems.arm.commands.ArmStopCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.commands.DriveToPosition;
 import frc.robot.subsystems.drive.commands.JoystickDriveCommand;
 import frc.robot.subsystems.drive.commands.ResetGyroCommand;
 import frc.robot.subsystems.drive.commands.ResetOdometryCommand;
 import frc.robot.subsystems.drive.commands.Stop;
+import frc.robot.subsystems.drive.commands.StopMovingCommand;
 import frc.robot.subsystems.foot.FootSubsystem;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.grabber.commands.ChangeGrabState;
@@ -37,6 +39,7 @@ import frc.robot.utilities.PresetBoard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
@@ -68,6 +71,8 @@ public class RobotContainer {
   GrabberSubsystem grabberSubsystem = new GrabberSubsystem(this);
   FootSubsystem footSubsystem = new FootSubsystem();
   WristSubsystem wristSubsystem;
+
+  Pose2d closestNode;
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
   Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
@@ -123,13 +128,16 @@ public class RobotContainer {
   private void configureBindings() {
 
     new Trigger(() -> driverController.getYButton())
-    .whileTrue(new Stop(driveSubsystem));
+      .onFalse(new StopMovingCommand(driveSubsystem));
+    new Trigger(() -> driverController.getYButton())
+      .whileTrue(new SequentialCommandGroup(new InstantCommand(() -> findClosestNode()), 
+      new InstantCommand(() -> DriveToPosition.align(driveSubsystem, closestNode, gyro).schedule())).finallyDo((n) -> driveSubsystem.drive(0,0,0,true)));
 
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
 
     new Trigger(() -> driverController.getStartButtonPressed())
-      .onTrue(new ResetGyroCommand(gyro));
+      .onTrue(new ResetGyroCommand(gyro, driveSubsystem));
 
     new Trigger(() -> (operatorController.getLeftTriggerAxis() > 0.7))
     .whileTrue(new ArmManualCommand(armSubsystem, operatorController));  
@@ -239,6 +247,18 @@ public class RobotContainer {
      //grabberSubsystem.setServoOffset(0); //TODO is right?
     //} 
     presetPub.set(currentPreset.toString());
+  }
+ 
+  public void findClosestNode(){
+    double smallestDistance = 99999999;
+    for (Pose2d n : Constants.FieldConstants.placementPositions){
+      System.out.println("dist: " + driveSubsystem.getPose().getTranslation().getDistance(n.getTranslation()));
+      if (driveSubsystem.getPose().getTranslation().getDistance(n.getTranslation()) < smallestDistance){
+        smallestDistance = driveSubsystem.getPose().getTranslation().getDistance(n.getTranslation());
+        closestNode = n;
+        
+      }
+    }
   }
   public void setGround(int ground){
     groundPickup = ground;
