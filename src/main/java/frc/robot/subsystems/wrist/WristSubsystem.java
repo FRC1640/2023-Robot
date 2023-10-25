@@ -13,7 +13,7 @@ import frc.robot.sensors.Resolver;
 public class WristSubsystem extends SubsystemBase{
     PIDController wristController = new PIDController(1, 0, 0);
     CANSparkMax wristMotor = new CANSparkMax(12, MotorType.kBrushless);
-    final double wristMax =2.6; 
+    final double wristMax =2.857666; 
     final double wristMin = 0.5;
 
     private Resolver wristEncoder;
