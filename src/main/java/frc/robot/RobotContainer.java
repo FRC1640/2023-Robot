@@ -157,8 +157,8 @@ public class RobotContainer {
     new Trigger(() -> driverController.getLeftBumper()).whileTrue(new GrabberSpin(grabberSubsystem, -0.3));
     new Trigger(() -> driverController.getRightBumper()).whileTrue(new GrabberSpin(grabberSubsystem, 0.5));
 
-    new Trigger(() -> operatorController.getRightBumper()).whileTrue(new RunWrist(wristSubsystem, 0.5));
-    new Trigger(() -> operatorController.getLeftBumper()).whileTrue(new RunWrist(wristSubsystem, -0.5));
+    new Trigger(() -> operatorController.getRightBumper()).whileTrue(new RunWrist(wristSubsystem, 0.2));
+    new Trigger(() -> operatorController.getLeftBumper()).whileTrue(new RunWrist(wristSubsystem, -0.2));
     new Trigger(() -> operatorController.getPOV() == 0).onTrue(new RunWristToPosition(wristSubsystem, 1.2));
 
 

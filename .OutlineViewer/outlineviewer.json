@@ -10,6 +10,9 @@
     "open": false
   },
   "Server": {
+    "Publishers": {
+      "open": true
+    },
     "open": true
   },
   "transitory": {
