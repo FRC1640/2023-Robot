@@ -70,7 +70,8 @@ public class RobotContainer {
   WristSubsystem wristSubsystem;
 
   Resolver lowEncoder = new Resolver(4, 0.25, 4.75, -180, false);
-  Resolver upperEncoder = new Resolver(5, 0.25, 4.75, -180, true);
+  Resolver upperEncoder = new Resolver(6
+  , 0.25, 4.75, -180, true);
   Resolver wristEncoder = new Resolver(7, 0.25, 4.75, 1, true);
   Preset currentPreset;
   Command currentArmCommand;

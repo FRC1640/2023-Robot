@@ -8,7 +8,7 @@ import frc.robot.subsystems.grabber.GrabberSubsystem;
 public class GrabberAutomatic extends CommandBase{
     final double speedNormal = -0.5;
     final double speedGrabbed = -0.05;
-    final double outputCurrentThreshold = 45;
+    final double outputCurrentThreshold = 50;
     boolean grabbed;
     GrabberSubsystem grabberSubsystem;
     XboxController controller;
