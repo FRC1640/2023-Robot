@@ -12,6 +12,8 @@ import frc.robot.auton.paths.ChargePickup;
 import frc.robot.auton.paths.NoBump;
 import frc.robot.auton.paths.NoBumpTriple;
 import frc.robot.auton.paths.PlaceCharge;
+import frc.robot.auton.paths.PlaceChargeCube;
+import frc.robot.auton.paths.PlaceLow;
 import frc.robot.auton.paths.PlaceLow;
 import frc.robot.auton.paths.RollerHigh;
 import frc.robot.auton.paths.RollerHighWall;
@@ -44,6 +46,7 @@ public class DashboardInit {
         sChooser.addOption("BumpHigh",  new RollerHighWall().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         sChooser.addOption("RollerLowDouble", new RollerLow2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         sChooser.addOption("Charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
+        sChooser.addOption("ChargeCube", new PlaceChargeCube().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         // sChooser.addOption("Charge Pickup", new PlaceCharge2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("Place only", new Place().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
         // sChooser.addOption("2 Place Left", new PlaceOutPickupLeft().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));

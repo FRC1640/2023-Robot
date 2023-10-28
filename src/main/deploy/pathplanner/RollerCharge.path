@@ -18,8 +18,7 @@
       "stopEvent": {
         "names": [
           "RollerHigh",
-          "RollerPlace",
-          "RollerTravel"
+          "RollerPlace"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -79,6 +78,13 @@
       "position": 1.0,
       "names": [
         "event"
+      ]
+    },
+    {
+      "position": 0.05,
+      "names": [
+        "event",
+        "RollerTravel"
       ]
     }
   ]
