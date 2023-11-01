@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 
 public class GrabberAutomatic extends CommandBase{
-    final double speedNormal = -0.5;
+    final double speedNormal = -0.75;
     final double speedGrabbed = -0.05;
     final double outputCurrentThreshold = 50;
     boolean grabbed;

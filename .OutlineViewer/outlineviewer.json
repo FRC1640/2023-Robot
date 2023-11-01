@@ -13,7 +13,9 @@
     "Publishers": {
       "open": true
     },
-    "open": true
+    "Subscribers": {
+      "open": true
+    }
   },
   "transitory": {
     "armSubsystem": {
