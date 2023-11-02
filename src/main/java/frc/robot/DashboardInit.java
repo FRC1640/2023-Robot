@@ -18,6 +18,7 @@ import frc.robot.auton.paths.PlaceLow;
 import frc.robot.auton.paths.RollerHigh;
 import frc.robot.auton.paths.RollerHighWall;
 import frc.robot.auton.paths.RollerLow2;
+import frc.robot.auton.paths.SuperDuperUltraPlacer;
 import frc.robot.auton.paths.TestSquare;
 import frc.robot.auton.paths.OldPaths.DriveTest;
 import frc.robot.auton.paths.OldPaths.Place;
@@ -28,6 +29,7 @@ import frc.robot.auton.paths.OldPaths.PlaceOutPickupRight;
 import frc.robot.auton.paths.OldPaths.RedPlaceCharge2;
 import frc.robot.auton.paths.OldPaths.RedPlaceOutPickupLeft;
 import frc.robot.auton.paths.OldPaths.RedPlaceOutPickupRight;
+import frc.robot.auton.paths.RedPaths.RollerHighRed;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -40,9 +42,11 @@ public class DashboardInit {
     public DashboardInit(Gyro gyro, ArmSubsystem armSubsystem, DriveSubsystem driveSubsystem, GrabberSubsystem grabberSubsystem, RobotContainer robotContainer, WristSubsystem wristSubsystem){
         ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
         ShuffleboardTab autonTab = Shuffleboard.getTab("Auton");
-        sChooser = new SendableChooser<Command>();
+        sChooser = new SendableChooser<Command>(); //SuperDuperUltraPlacer
         // sChooser.addOption("Place out", new PlaceOut().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem));
+        sChooser.addOption("SuperDuperUltraPlacer", new SuperDuperUltraPlacer().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         sChooser.addOption("NoBumpHigh", new RollerHigh().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
+        sChooser.addOption("NoBumpHighRed", new RollerHighRed().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         sChooser.addOption("BumpHigh",  new RollerHighWall().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         sChooser.addOption("RollerLowDouble", new RollerLow2().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));
         sChooser.addOption("Charge", new PlaceCharge().loadAuto(gyro, driveSubsystem, armSubsystem, grabberSubsystem, wristSubsystem));

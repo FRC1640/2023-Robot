@@ -1,0 +1,151 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 14.729999999999999,
+        "y": 5.013014812354411
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 11.372773482686693,
+        "y": 5.2301169124952835
+      },
+      "holonomicAngle": 0.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "RollerHigh",
+          "RollerPlace"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 10.53,
+        "y": 4.63618226381752
+      },
+      "prevControl": {
+        "x": 10.689871197659773,
+        "y": 4.670426494776976
+      },
+      "nextControl": {
+        "x": 10.689871197659773,
+        "y": 4.670426494776976
+      },
+      "holonomicAngle": -180.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 9.469999999999999,
+        "y": 4.601924759405074
+      },
+      "prevControl": {
+        "x": 9.86967034213417,
+        "y": 4.636188594467953
+      },
+      "nextControl": {
+        "x": 9.308897777834552,
+        "y": 4.588113426947769
+      },
+      "holonomicAngle": -180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 14.7,
+        "y": 4.430637237342851
+      },
+      "prevControl": {
+        "x": 15.296308807893466,
+        "y": 4.771317739972995
+      },
+      "nextControl": {
+        "x": 14.5401238638343,
+        "y": 4.339297512511507
+      },
+      "holonomicAngle": 0.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "RollerPlace"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 11.28,
+        "y": 4.423255560796836
+      },
+      "prevControl": {
+        "x": 14.586667549946862,
+        "y": 4.924522717297104
+      },
+      "nextControl": null,
+      "holonomicAngle": -180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 0.04363636363636322,
+      "names": [
+        "event",
+        "RollerGround"
+      ]
+    },
+    {
+      "position": 2.0,
+      "names": [
+        "event",
+        "RollerPickupTravel"
+      ]
+    },
+    {
+      "position": 0.7,
+      "names": [
+        "event",
+        "Intake"
+      ]
+    }
+  ]
+}
