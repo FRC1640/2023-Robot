@@ -2,11 +2,11 @@ package frc.robot.subsystems.wrist.commands;
 
 import org.ejml.equation.IntegerSequence.Combined;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
-public class RunWrist extends CommandBase{
+public class RunWrist extends Command{
     WristSubsystem wristSubsystem;
     double speed;
     public RunWrist(WristSubsystem wristSubsystem, double speed) {

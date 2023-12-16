@@ -1,10 +1,10 @@
 package frc.robot.subsystems.wrist.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
-public class RunWristToPosition extends CommandBase{
+public class RunWristToPosition extends Command{
     WristSubsystem wristSubsystem;
     double position;
     public RunWristToPosition(WristSubsystem wristSubsystem, double position) {

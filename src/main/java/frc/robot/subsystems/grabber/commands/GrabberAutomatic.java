@@ -2,10 +2,10 @@ package frc.robot.subsystems.grabber.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 
-public class GrabberAutomatic extends CommandBase{
+public class GrabberAutomatic extends Command{
     final double speedNormal = -1;
     final double speedGrabbed = -0.05;
     final double outputCurrentThreshold = 50;

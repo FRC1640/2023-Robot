@@ -1,11 +1,11 @@
 package frc.robot.subsystems.drive.commands;
 
 // import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.sensors.Gyro;
 import frc.robot.utilities.Logger;
 
-public class ResetGyroCommand extends CommandBase {
+public class ResetGyroCommand extends Command {
 
     private Gyro gyro;
     public ResetGyroCommand (Gyro gyro) {

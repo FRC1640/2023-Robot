@@ -6,6 +6,12 @@ package frc.robot.subsystems.drive;
 
 import java.util.stream.Stream;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -53,6 +59,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final Translation2d backLeftLocation = new Translation2d(-x, y);
   private final Translation2d backRightLocation = new Translation2d(-x, -y);
 
+
+  ChassisSpeeds chassisSpeeds;
   private final SwerveModule frontLeft = new SwerveModule(PivotConfig.getConfig(PivotId.FL));
   private final SwerveModule frontRight = new SwerveModule(PivotConfig.getConfig(PivotId.FR));
   private final SwerveModule backLeft = new SwerveModule(PivotConfig.getConfig(PivotId.BL));
@@ -89,8 +97,28 @@ public class DriveSubsystem extends SubsystemBase {
           },
           new Pose2d(0, 0, Rotation2d.fromDegrees(0))
       );
+
+      //Configure path autobuilder
+      chassisSpeeds = new ChassisSpeeds(0, 0, 0);
+      AutoBuilder.configureHolonomic(
+        this::getPose, // Robot pose supplier
+        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::driveChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+            new PIDConstants(0.1, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(0.4, 0.0, 0.0), // Rotation PID constants
+            4.5, // Max module speed, in m/s
+            Units.inchesToMeters(16.1487228597), // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options here
+        ),
+        this // Reference to this subsystem to set requirements
+    );
     }
 
+  public ChassisSpeeds getChassisSpeeds(){
+    return chassisSpeeds;
+  }
   public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(
       gyro.getRotation2d(),
@@ -113,11 +141,22 @@ public class DriveSubsystem extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    
     var swerveModuleStates = kinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot,
                 new Rotation2d(gyro.getRotation2d().getRadians()))
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+    frontLeft.setDesiredState(swerveModuleStates[0]);
+    frontRight.setDesiredState(swerveModuleStates[1]);
+    backLeft.setDesiredState(swerveModuleStates[2]);
+    backRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  public void driveChassisSpeeds(ChassisSpeeds s){
+    chassisSpeeds = s;
+    var swerveModuleStates = kinematics.toSwerveModuleStates(s);
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);

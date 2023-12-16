@@ -1,9 +1,9 @@
 package frc.robot.subsystems.grabber.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.grabber.GrabberSubsystem;
 
-public class GrabberSpin extends CommandBase{
+public class GrabberSpin extends Command{
     GrabberSubsystem grabberSubsystem;
     double speed;
     public GrabberSpin(GrabberSubsystem grabberSubsystem, double speed) {

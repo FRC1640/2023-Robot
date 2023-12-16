@@ -2,11 +2,11 @@ package frc.robot.auton.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
-public class Balance extends CommandBase{
+public class Balance extends Command{
     private final DriveSubsystem driveSubsystem;
     PIDController rotateController = new PIDController(0.0015, 0, 0.0);
     PIDController driveController = new PIDController(0.007, 0, 0.002);

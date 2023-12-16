@@ -3,12 +3,12 @@ package frc.robot.subsystems.arm.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.ArmKinematics;
 import frc.robot.subsystems.arm.ArmMath;
 import frc.robot.subsystems.arm.ArmSubsystem;
 
-public class ArmEndEffectorCommand extends CommandBase{
+public class ArmEndEffectorCommand extends Command{
     ArmSubsystem armSubsystem;
     XboxController controller;
     ArmMath math = new ArmMath(Units.inchesToMeters(39), Units.inchesToMeters(35.4));

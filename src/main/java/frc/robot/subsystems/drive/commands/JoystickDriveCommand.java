@@ -1,7 +1,7 @@
 package frc.robot.subsystems.drive.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.PixyCam;
@@ -11,7 +11,7 @@ import frc.robot.subsystems.foot.FootSubsystem;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
-public class JoystickDriveCommand extends CommandBase {
+public class JoystickDriveCommand extends Command {
     final double SLOW_LINEAR_SPEED = 0.6;
     final double SLOW_ROTATIONAL_SPEED = 0.55;
 

@@ -2,11 +2,11 @@ package frc.robot.auton.commands;
 
 import java.util.Currency;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.sensors.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
-public class EndPitch extends CommandBase {
+public class EndPitch extends Command {
     private final DriveSubsystem driveSubsystem;
     double initTime;
     boolean setTime = true;

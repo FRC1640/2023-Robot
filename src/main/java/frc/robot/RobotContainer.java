@@ -3,9 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import frc.robot.auton.paths.OldPaths.ChargeStation;
-import frc.robot.auton.paths.OldPaths.PlaceOut;
+import frc.robot.auton.CreateAutoNamedCommands;
 import frc.robot.sensors.Gyro;
 import frc.robot.sensors.LED;
 import frc.robot.sensors.Limelight;
@@ -33,6 +31,8 @@ import frc.robot.subsystems.wrist.commands.RunWrist;
 import frc.robot.subsystems.wrist.commands.RunWristToPosition;
 import frc.robot.utilities.PresetBoard;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -44,7 +44,11 @@ import edu.wpi.first.wpilibj.Compressor;
 // import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -63,6 +67,7 @@ public class RobotContainer {
   boolean wasEnabled = false;
   DriveSubsystem driveSubsystem;
   Limelight limelight = new Limelight();
+  
   ArmSubsystem armSubsystem;
   Compressor pcmCompressor= new Compressor(0, PneumaticsModuleType.CTREPCM);
   GrabberSubsystem grabberSubsystem = new GrabberSubsystem(this);
@@ -79,9 +84,9 @@ public class RobotContainer {
   Command armStopCommand;
   LED led = new LED();
   PixyCam pixyCam = new PixyCam(led);
-  DashboardInit dashboardInit;
 
   int groundPickup = 0;
+  private final SendableChooser<Command> autoChooser;
 
   
 
@@ -89,22 +94,27 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    setupNetworkTables();
-
     gyro = new Gyro();
     driveSubsystem = new DriveSubsystem(gyro, limelight);
+    setupNetworkTables();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+    autoTab.add(autoChooser).withSize(5, 5).withPosition(1, 1);
+    
+    
+    
+    
     
     armSubsystem = new ArmSubsystem(lowEncoder, upperEncoder);
     wristSubsystem = new WristSubsystem(wristEncoder);
     armStopCommand  = new ArmStopCommand(armSubsystem);
-    dashboardInit = new DashboardInit(gyro, armSubsystem, driveSubsystem, grabberSubsystem, this, wristSubsystem);
     driveSubsystem.setDefaultCommand(new JoystickDriveCommand(driveSubsystem, true, gyro, driverController, footSubsystem, pixyCam));
     armSubsystem.setDefaultCommand(new ArmEndEffectorCommand(armSubsystem, operatorController));
     grabberSubsystem.setDefaultCommand(new GrabberAutomatic(grabberSubsystem, driverController));
     setPreset(Preset.Pickup, armSubsystem.createArmProfileCommand(Preset.Pickup));
     //grabberSubsystem.setServoTurned(false);
     // grabberSubsystem.setServoAngle(Constants.ServoSmasAngles.CYMBAL_SERVO_UPRIGHT_ANGLE);
-
+    CreateAutoNamedCommands.EventMap(grabberSubsystem, armSubsystem, driveSubsystem, wristSubsystem);
 
     // Configure the trigger bindings
     configureBindings();
@@ -125,7 +135,6 @@ public class RobotContainer {
 
     new Trigger(() -> driverController.getYButton())
     .whileTrue(new Stop(driveSubsystem));
-
     new Trigger(() -> driverController.getXButton())
       .onTrue(new InstantCommand(() -> footSubsystem.toggleClamped()));
 
@@ -134,11 +143,10 @@ public class RobotContainer {
 
     new Trigger(() -> (operatorController.getLeftTriggerAxis() > 0.7))
     .whileTrue(new ArmManualCommand(armSubsystem, operatorController));  
-
     new Trigger(() -> operatorController.getBButton())
       .whileTrue(new InstantCommand(() -> setPreset(Preset.Travel, armSubsystem.create2dEndEffectorProfileCommand(Preset.Travel, 2, 2, 2, 2))));
     
-
+    
     // new Trigger(() -> driverController.getLeftBumper() && (currentPreset == Preset.Ground || currentPreset == Preset.UprightConeGround))
     // .onTrue(new InstantCommand(
     //   () -> currentArmCommand.schedule()));
@@ -227,10 +235,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {    
-    Command autoCommand = dashboardInit.getAuton();
 
     // Run path following command, then stop at the end.
-    return autoCommand.andThen(() -> driveSubsystem.drive(0, 0, 0, false)).until(() -> gyro.isCalibrating());
+    return autoChooser.getSelected();
   }
 
   public void setPreset(Preset preset, Command armCommand){
